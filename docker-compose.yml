@@ -1,0 +1,206 @@
+# =====================================================================
+# SERVER / DEPLOY: đóng gói toàn bộ hệ thống (nginx + backend + hạ tầng).
+#   cp .env.example .env   (sửa secret)
+#   docker compose up -d --build              -> http://<máy>:${HTTP_PORT}
+#   phpMyAdmin chạy cùng stack: http://127.0.0.1:${DEPLOY_PHPMYADMIN_PORT} (chỉ trên máy server)
+#   docker compose --profile tools up -d      -> thêm Kafka UI (127.0.0.1:${DEPLOY_KAFKA_UI_PORT})
+#   docker compose --profile tunnel up -d     -> thêm Cloudflare Tunnel (trỏ tunnel tới http://nginx:80)
+#
+# Chạy song song với môi trường dev trên cùng máy (docker-compose.local.yml, :9100, :4200):
+# chỉ nginx mở cổng ra host; mysql/redis/minio/kafka/backend chỉ nằm trong mạng docker nội bộ
+# và dùng volume riêng của project "aeoc".
+# =====================================================================
+name: aeoc
+
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+  # ---------------- Gateway: SPA + reverse proxy ----------------
+  nginx:
+    <<: *restart
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api
+    image: aeoc/web:latest
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - ./deploy/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deploy/nginx/snippets:/etc/nginx/snippets:ro
+      - nginx-cache:/var/cache/nginx
+    depends_on:
+      backend:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ---------------- Backend (Spring Boot, profile dev) ----------------
+  backend:
+    <<: *restart
+    build:
+      context: ./backend
+    image: aeoc/backend:latest
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      BACKEND_PORT: 8088
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-bpm}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Cần đặt MYSQL_ROOT_PASSWORD trong .env}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Cần đặt MINIO_ROOT_PASSWORD trong .env}
+      MINIO_BUCKET: ${MINIO_BUCKET:-crm}
+      SYSTEM_FILE_URL: ${PUBLIC_URL:-http://localhost}/s3
+      UPLOAD_MAX_SIZE: ${UPLOAD_MAX_SIZE:-10MB}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Cần đặt JWT_SECRET_KEY trong .env}
+      API_KEY: ${API_KEY:?Cần đặt API_KEY trong .env}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_CONSUMER_CONCURRENCY: ${KAFKA_CONSUMER_CONCURRENCY:-3}
+      KAFKA_MAX_POLL_RECORDS: ${KAFKA_MAX_POLL_RECORDS:-50}
+      KAFKA_IDLE_BETWEEN_POLLS: ${KAFKA_IDLE_BETWEEN_POLLS:-0}
+      JAVA_OPTS: ${BACKEND_JAVA_OPTS:--XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError -Duser.timezone=Asia/Ho_Chi_Minh}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  # ---------------- Hạ tầng ----------------
+  mysql:
+    <<: *restart
+    image: mysql:8.4
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Cần đặt MYSQL_ROOT_PASSWORD trong .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-bpm}
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # Dữ liệu ban đầu (dump bpm.sql). Chỉ chạy khi volume còn trống; schema do Flyway (backend) quản lý
+      - ./deploy/mysql/server-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    <<: *restart
+    image: redis:7-alpine
+    command: ["sh", "-c", "exec redis-server --appendonly yes $${REDIS_PASSWORD:+--requirepass $$REDIS_PASSWORD}"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli $${REDIS_PASSWORD:+-a $$REDIS_PASSWORD} ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    <<: *restart
+    # Docker Hub không còn phát hành minio/minio => dùng registry chính thức quay.io
+    image: quay.io/minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Cần đặt MINIO_ROOT_PASSWORD trong .env}
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka 1 node (KRaft): bộ đệm command giữa API và DB, chỉ trong mạng docker
+  kafka:
+    <<: *restart
+    image: apache/kafka:3.8.1
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_HEAP_OPTS: ${KAFKA_HEAP_OPTS:--Xmx512m -Xms256m}
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+
+  # Quản trị DB server: chỉ bind 127.0.0.1 (mở trên chính máy server), đăng nhập root / MYSQL_ROOT_PASSWORD
+  phpmyadmin:
+    <<: *restart
+    image: phpmyadmin:5
+    environment:
+      PMA_HOST: mysql
+      # Cho phép import file dump lớn qua giao diện
+      UPLOAD_LIMIT: 256M
+    ports:
+      - "127.0.0.1:${DEPLOY_PHPMYADMIN_PORT:-8082}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ---------------- Tuỳ chọn (profiles) ----------------
+  kafka-ui:
+    <<: *restart
+    image: provectuslabs/kafka-ui:v0.7.2
+    profiles: ["tools"]
+    environment:
+      KAFKA_CLUSTERS_0_NAME: aeoc
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    ports:
+      - "127.0.0.1:${DEPLOY_KAFKA_UI_PORT:-8086}:8080"
+    depends_on:
+      - kafka
+
+  cloudflare:
+    <<: *restart
+    image: cloudflare/cloudflared:latest
+    profiles: ["tunnel"]
+    command: tunnel run --token ${CLOUDFLARE_TOKEN:-}
+    depends_on:
+      - nginx
+
+volumes:
+  mysql-data:
+  redis-data:
+  minio-data:
+  kafka-data:
+  nginx-cache:

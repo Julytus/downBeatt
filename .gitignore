@@ -1,0 +1,54 @@
+# ============ Chung ============
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.DS_Store
+Thumbs.db
+tmp/
+volumes/
+
+# Secrets: chỉ commit file mẫu
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Dump DB thật (user, hash mật khẩu): chỉ để trên máy server
+deploy/mysql/server-init/*.sql
+*.sql.gz
+/bpm.sql
+
+# ============ Backend (Maven) ============
+# Mọi thư mục build của Maven ở mọi module (backend/target, backend/app/target, ...)
+**/target/
+*.jar
+
+# ============ Test (không đưa lên git) ============
+# Mã test backend (JUnit) ở mọi module
+backend/**/src/test/
+# Test E2E Playwright + kết quả chạy test
+frontend/tests/
+**/test-results/
+**/playwright-report/
+**/blob-report/
+
+# ============ Frontend (Vite / pnpm) ============
+node_modules/
+dist/
+*.local
+*.tsbuildinfo
+playwright/.cache/
+
+# ============ AI / harness (runtime, không commit) ============
+# harness/ + .claude/settings.json do scripts/ai/setup.* sinh theo từng máy (khối được quản lý ở dưới)
+.agents/
+design/*
+k8s/scripts/utils/__pycache__/
+
+.harness/
+.claude
+.claude/settings.local.json

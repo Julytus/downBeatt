@@ -1,0 +1,46 @@
+# =====================================================================
+# LOCAL: chạy app trên máy dev (IDE / mvn spring-boot:run),
+# hạ tầng (mysql, redis, minio) chạy bằng docker-compose và expose ra localhost.
+# Secrets đọc từ backend/.env
+# =====================================================================
+server:
+  port: ${BACKEND_PORT:9200}
+
+spring:
+  mail:
+    host: localhost
+    port: ${MAILPIT_SMTP_PORT:1026}
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:${MYSQL_PORT:3326}/${MYSQL_DATABASE:downBeat}?useSSL=false&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&allowPublicKeyRetrieval=true}
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_ROOT_PASSWORD:root}
+  flyway:
+    # Local: thêm dữ liệu mẫu (admin@downbeat.local / Admin@123)
+    locations: classpath:db/migration,classpath:db/seed
+
+logging:
+  level:
+    vn.aeoc: DEBUG
+    org.jooq: DEBUG
+
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:${MINIO_PORT:9020}}
+
+system:
+  enabled-register: true
+  # Local không qua nginx: trỏ thẳng MinIO
+  file-url: ${SYSTEM_FILE_URL:http://localhost:${MINIO_PORT:9020}}
+
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true

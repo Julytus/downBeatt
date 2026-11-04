@@ -1,0 +1,5 @@
+allowBuilds:
+  '@carbon/grid': false
+  '@carbon/layout': false
+  '@swc/core': true
+  esbuild: true

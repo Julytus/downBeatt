@@ -1,0 +1,7 @@
+**/target/
+.idea/
+*.iml
+.env
+volumes/
+docker-compose.yml
+CLAUDE.md
