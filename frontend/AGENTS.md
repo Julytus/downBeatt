@@ -96,7 +96,7 @@ Chưa có trang CRUD nào để chép; làm theo thứ tự dưới đây với 
 - Class Tailwind gộp bằng `cn` từ `@/lib/utils`. Import dùng alias `@/`.
 - Text giao diện, comment và toast viết tiếng Việt. Biến môi trường chỉ có `VITE_API_URL` (`lib/env.ts`); không đặt secret trong `VITE_*`.
 
-## Skill UI/UX (nằm ở `.agents/skills/`, Antigravity tự nạp)
+## Skill UI/UX (nằm ở `.agents/skills/`, Antigravity tự nạp, khi design hay xây giao diện nên dùng /ui-ux-pro-max)
 
 | Skill | Nguồn | Dùng khi |
 |---|---|---|

@@ -4,7 +4,7 @@ Mỗi file `<slug>.md` là một lát chức năng (backend + frontend + test), 
 
 Một plan chỉ được cook khi `status: approved`, nghĩa là người dùng đã đọc và duyệt.
 
-**Cửa hàng LUT (DownBeat):** thiết kế tổng quát cơ sở dữ liệu + API và lộ trình các lát nằm ở [thiet-ke-tong-quat.md](thiet-ke-tong-quat.md) (draft). Các plan trong bảng dưới là của dự án AEOC cũ, chỉ để tham khảo cách viết.
+**Cửa hàng LUT (DownBeat):** thiết kế tổng quát cơ sở dữ liệu + API và lộ trình các lát nằm ở [thiet-ke-tong-quat.md](thiet-ke-tong-quat.md) (draft), gồm cả thuật toán gợi ý theo nội dung (§11). Bản đầy đủ để viết báo cáo: [../docs/tai-lieu-thiet-ke.md](../docs/tai-lieu-thiet-ke.md). Các plan trong bảng dưới là của dự án AEOC cũ, chỉ để tham khảo cách viết.
 
 `tasks/` lưu task spec đã giao cho Codex / agy (`<slug>-be.md`, `<slug>-fe.md`, `<slug>-be-fix1.md` …).
 
