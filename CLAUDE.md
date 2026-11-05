@@ -1,7 +1,7 @@
 # DownBeat — Đồ án: ứng dụng thương mại điện tử
 
 Monorepo: `backend/` (Spring Boot 3.2, Java 21, jOOQ, MySQL) · `frontend/` (React 19, Vite, TanStack, Playwright).
-Base hiện tại chỉ có luồng đăng nhập (backend `authenticate`) + trang quản trị `/admin` (frontend; `/` chuyển sang cửa hàng `/luts`); module `business` trống, chờ các chức năng ecom.
+Base hiện tại chỉ có luồng đăng nhập (backend `authenticate`) + trang quản trị `/admin` (frontend; `/` là trang chủ cửa hàng, kho LUT ở `/luts`); module `business` trống, chờ các chức năng ecom.
 Danh sách plan: `plan/README.md`. Các plan cũ trong `plan/` thuộc dự án AEOC (hoá đơn, khách hàng thân thiết), chỉ để tham khảo cách viết.
 
 ## Vai trò

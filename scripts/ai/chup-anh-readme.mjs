@@ -41,7 +41,16 @@ async function open(urlPath, { theme = "light", user = null, viewport = DESKTOP,
 async function settle(page) {
   await page.waitForLoadState("networkidle");
   await page.evaluate(async () => {
-    await Promise.all([...document.images].map((img) => (img.complete ? null : img.decode().catch(() => null))));
+    // Bỏ qua ảnh lazy ngoài khung nhìn: chưa tải thì decode() chờ mãi
+    const inView = (img) => {
+      const r = img.getBoundingClientRect();
+      return r.bottom > 0 && r.top < innerHeight;
+    };
+    await Promise.all(
+      [...document.images].map((img) =>
+        img.complete || (img.loading === "lazy" && !inView(img)) ? null : img.decode().catch(() => null)
+      )
+    );
     await Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished));
   });
   await page.waitForTimeout(300);
@@ -59,8 +68,21 @@ async function shot(page, name, opts = {}) {
 const done = async (page) => page.context().close();
 const dialog = (page) => page.getByRole("dialog");
 
+// 0. Trang chủ (giao diện tối): đầu trang, băng tính năng. README_ONLY=trang-chu thì chỉ chụp phần này.
+let page = await open("/", { theme: "dark", ready: "#hero-title" });
+await shot(page, "00-trang-chu");
+await page.locator("section[aria-labelledby=features-title]").evaluate((el) => el.scrollIntoView({ block: "start" }));
+await page.waitForTimeout(600);
+await settle(page);
+await shot(page, "00-trang-chu-tinh-nang");
+await done(page);
+if (process.env.README_ONLY === "trang-chu") {
+  await browser.close();
+  process.exit(0);
+}
+
 // 1. Kho LUT (sáng / tối)
-let page = await open("/luts", { ready: 'ul[aria-label="Danh sách LUT"]' });
+page = await open("/luts", { ready: 'ul[aria-label="Danh sách LUT"]' });
 await shot(page, "01-kho-lut");
 await done(page);
 
