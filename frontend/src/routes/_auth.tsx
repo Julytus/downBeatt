@@ -4,7 +4,7 @@ import { Command } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/theme/theme-toggle";
 import { useAuthStore } from "@/lib/stores/auth";
 
-/** Layout cho các trang chưa đăng nhập (login, forgot-password). Đã có token thì vào thẳng trang quản trị. */
+/** Layout cho các trang chưa đăng nhập (login). Đã có token thì vào thẳng trang quản trị. */
 export const Route = createFileRoute("/_auth")({
   beforeLoad: ({ location }) => {
     if (location.pathname !== "/logout" && useAuthStore.getState().accessToken) {

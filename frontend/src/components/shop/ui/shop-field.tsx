@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 interface ShopFieldProps extends Omit<React.ComponentProps<"input">, "id"> {
   label: string;
   error?: string;
-  /** Nội dung bên phải nhãn (vd link "Quên mật khẩu?") */
+  /** Nội dung bên phải nhãn */
   labelAside?: React.ReactNode;
 }
 

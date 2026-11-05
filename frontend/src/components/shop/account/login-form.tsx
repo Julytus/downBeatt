@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { z } from "zod";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import { ShopCheckbox, ShopField } from "@/components/shop/ui/shop-field";
@@ -59,15 +58,7 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
         autoComplete="current-password"
         error={errors.password}
       />
-      <div className="flex items-center justify-between gap-3">
-        <button
-          type="button"
-          className="text-sm font-semibold underline underline-offset-4"
-          // Chỗ giữ chỗ: lát `tai-khoan-khach` sẽ nối vào luồng OTP có sẵn (/auth/forgot-password)
-          onClick={() => toast.info("Tính năng lấy lại mật khẩu sẽ có ở bản sau")}
-        >
-          Quên mật khẩu?
-        </button>
+      <div className="flex items-center">
         <ShopCheckbox
           label="Hiện mật khẩu"
           checked={showPassword}

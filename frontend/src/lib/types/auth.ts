@@ -29,18 +29,6 @@ export interface LoginApiResponse {
   result: LoginResponseDTO;
 }
 
-/** POST /auth/forgot-password */
-export interface ForgotPasswordApiRequest {
-  email: string;
-}
-
-/** POST /auth/reset-password — OTP 6 số gửi qua email, sống 5 phút, sai 5 lần thì phải xin mã mới. */
-export interface ResetPasswordApiRequest {
-  email: string;
-  otp: string;
-  newPassword: string;
-}
-
 /** GET /user/info — người đang đăng nhập. */
 export interface MeDTO {
   id: number;

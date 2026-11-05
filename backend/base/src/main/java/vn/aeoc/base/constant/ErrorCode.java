@@ -28,8 +28,6 @@ public enum ErrorCode {
     WEAK_PASSWORD(400, "Mật khẩu phải có từ 8 đến 72 ký tự"),
     REFRESH_TOKEN_INVALID(401, "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại"),
     LOGIN_TOO_MANY_ATTEMPTS(429, "Đăng nhập sai quá nhiều lần, vui lòng thử lại sau ít phút"),
-    OTP_INVALID(400, "Mã OTP không đúng hoặc đã hết hạn"),
-    OTP_TOO_MANY_ATTEMPTS(429, "Nhập sai OTP quá nhiều lần, vui lòng yêu cầu mã mới"),
     REGISTRATION_DISABLED(403, "Hệ thống không mở đăng ký"),
     DATA_NOT_FOUND(404, "Dữ liệu không tồn tại"),
     DEFAULT_ROLE_NOT_FOUND(404, "Role mặc định không tồn tại"),

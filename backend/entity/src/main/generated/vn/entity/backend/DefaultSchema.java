@@ -13,6 +13,7 @@ import org.jooq.impl.SchemaImpl;
 
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.Permission;
+import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.UserApp;
@@ -40,6 +41,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>permission</code>.
      */
     public final Permission PERMISSION = Permission.PERMISSION;
+
+    /**
+     * The table <code>refresh_token</code>.
+     */
+    public final RefreshToken REFRESH_TOKEN = RefreshToken.REFRESH_TOKEN;
 
     /**
      * The table <code>resource</code>.
@@ -74,6 +80,7 @@ public class DefaultSchema extends SchemaImpl {
         return Arrays.asList(
             Module.MODULE,
             Permission.PERMISSION,
+            RefreshToken.REFRESH_TOKEN,
             Resource.RESOURCE,
             Role.ROLE,
             UserApp.USER_APP

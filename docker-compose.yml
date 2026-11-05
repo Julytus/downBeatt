@@ -7,7 +7,7 @@
 #   docker compose --profile tunnel up -d     -> thêm Cloudflare Tunnel (trỏ tunnel tới http://nginx:80)
 #
 # Chạy song song với môi trường dev trên cùng máy (docker-compose.local.yml, :9100, :4200):
-# chỉ nginx mở cổng ra host; mysql/redis/minio/kafka/backend chỉ nằm trong mạng docker nội bộ
+# chỉ nginx mở cổng ra host; mysql/minio/kafka/backend chỉ nằm trong mạng docker nội bộ
 # và dùng volume riêng của project "aeoc".
 # =====================================================================
 name: aeoc
@@ -52,9 +52,6 @@ services:
       BACKEND_PORT: 8088
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-bpm}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Cần đặt MYSQL_ROOT_PASSWORD trong .env}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
       MINIO_ENDPOINT: http://minio:9000
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Cần đặt MINIO_ROOT_PASSWORD trong .env}
@@ -63,10 +60,6 @@ services:
       UPLOAD_MAX_SIZE: ${UPLOAD_MAX_SIZE:-10MB}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Cần đặt JWT_SECRET_KEY trong .env}
       API_KEY: ${API_KEY:?Cần đặt API_KEY trong .env}
-      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
-      MAIL_PORT: ${MAIL_PORT:-587}
-      MAIL_USERNAME: ${MAIL_USERNAME:-}
-      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_CONSUMER_CONCURRENCY: ${KAFKA_CONSUMER_CONCURRENCY:-3}
       KAFKA_MAX_POLL_RECORDS: ${KAFKA_MAX_POLL_RECORDS:-50}
@@ -74,8 +67,6 @@ services:
       JAVA_OPTS: ${BACKEND_JAVA_OPTS:--XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError -Duser.timezone=Asia/Ho_Chi_Minh}
     depends_on:
       mysql:
-        condition: service_healthy
-      redis:
         condition: service_healthy
       minio:
         condition: service_healthy
@@ -103,20 +94,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 30s
-
-  redis:
-    <<: *restart
-    image: redis:7-alpine
-    command: ["sh", "-c", "exec redis-server --appendonly yes $${REDIS_PASSWORD:+--requirepass $$REDIS_PASSWORD}"]
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
-    volumes:
-      - redis-data:/data
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli $${REDIS_PASSWORD:+-a $$REDIS_PASSWORD} ping | grep -q PONG"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
 
   minio:
     <<: *restart
@@ -200,7 +177,6 @@ services:
 
 volumes:
   mysql-data:
-  redis-data:
   minio-data:
   kafka-data:
   nginx-cache:

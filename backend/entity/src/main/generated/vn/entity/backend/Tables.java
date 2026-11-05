@@ -6,6 +6,7 @@ package vn.entity.backend;
 
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.Permission;
+import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.UserApp;
@@ -26,6 +27,11 @@ public class Tables {
      * The table <code>permission</code>.
      */
     public static final Permission PERMISSION = Permission.PERMISSION;
+
+    /**
+     * The table <code>refresh_token</code>.
+     */
+    public static final RefreshToken REFRESH_TOKEN = RefreshToken.REFRESH_TOKEN;
 
     /**
      * The table <code>resource</code>.
