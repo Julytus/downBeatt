@@ -4,6 +4,7 @@ import { memo, useState } from "react";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { LutCoverTextStyle, LutDTO } from "@/lib/types/lut";
+import { cn } from "@/lib/utils";
 import { BeforeAfter, useSplitPosition } from "./before-after";
 
 /** Kiểu chữ in trên ảnh bìa mẫu. Khi có ảnh bìa thật (đã có chữ) thì bỏ phần này. */
@@ -18,6 +19,81 @@ export const COVER_TEXT_CLASS: Record<LutCoverTextStyle, string> = {
   outline:
     "font-display text-[34px] font-black text-(--sh-pink) [-webkit-text-stroke:1px_white] drop-shadow-lg"
 };
+
+/** Kiểu chữ thu nhỏ cho thẻ nhỏ (trang chủ) để chữ không tràn khỏi ảnh */
+export const COVER_TEXT_CLASS_SM: Record<LutCoverTextStyle, string> = {
+  bold: "font-display text-[13px] font-bold tracking-tight text-[#f5c542] drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]",
+  caption: "font-display text-[9px] leading-tight font-bold tracking-wide text-white drop-shadow",
+  serif: "font-['Playfair_Display',serif] text-[16px] italic text-white/95 drop-shadow-md",
+  condensed:
+    "font-display text-[16px] font-black tracking-tight text-white uppercase drop-shadow-md [transform:scaleY(1.15)]",
+  spaced:
+    "font-display text-[10px] font-semibold tracking-[0.2em] text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]",
+  outline:
+    "font-display text-[15px] font-black text-(--sh-pink) [-webkit-text-stroke:0.5px_white] drop-shadow-md"
+};
+
+export function LutCoverText({
+  coverText,
+  coverTextStyle = "bold",
+  size = "md",
+  className
+}: {
+  coverText?: string;
+  coverTextStyle?: LutCoverTextStyle;
+  size?: "sm" | "md";
+  className?: string;
+}) {
+  if (!coverText) return null;
+  const classes = size === "sm" ? COVER_TEXT_CLASS_SM : COVER_TEXT_CLASS;
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        "pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center",
+        className
+      )}
+    >
+      {/* Ô hẹp (cụm ảnh trang chủ trên mobile): thu nhỏ chữ để không tràn khỏi ảnh */}
+      <span className={cn("@max-[140px]:scale-50", classes[coverTextStyle])}>{coverText}</span>
+    </div>
+  );
+}
+
+export interface LutCoverProps {
+  coverUrl: string;
+  previewFilter?: string;
+  coverText?: string;
+  coverTextStyle?: LutCoverTextStyle;
+  title?: string;
+  size?: "sm" | "md";
+  className?: string;
+}
+
+export function LutCover({
+  coverUrl,
+  previewFilter,
+  coverText,
+  coverTextStyle = "bold",
+  title = "",
+  size = "md",
+  className
+}: LutCoverProps) {
+  return (
+    <div className={cn("@container relative size-full overflow-hidden bg-(--sh-surface)", className)}>
+      <img
+        src={coverUrl}
+        alt={title}
+        style={{ filter: previewFilter }}
+        className="size-full object-cover"
+        loading="lazy"
+        width={320}
+        height={180}
+      />
+      <LutCoverText coverText={coverText} coverTextStyle={coverTextStyle} size={size} />
+    </div>
+  );
+}
 
 interface LutCardProps {
   lut: LutDTO;
@@ -56,11 +132,11 @@ export const LutCard = memo(function LutCard({
         position={split.position}
         className="absolute inset-0"
       >
-        {lut.coverText && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 text-center">
-            <span className={COVER_TEXT_CLASS[lut.coverTextStyle ?? "bold"]}>{lut.coverText}</span>
-          </div>
-        )}
+        <LutCoverText
+          coverText={lut.coverText}
+          coverTextStyle={lut.coverTextStyle ?? "bold"}
+          className="px-6"
+        />
       </BeforeAfter>
 
       {isVideo && playing && (

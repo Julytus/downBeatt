@@ -1,16 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Check, ChevronDown, Lock, Minus, QrCode, RefreshCcw, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PLAN_COMPARISON } from "@/lib/mock/data/plans";
 import { useShopDialog } from "@/lib/stores/shop-dialog";
-import { useShopSession } from "@/lib/stores/shop-session";
 import { plansQueryOptions } from "@/lib/tanstack/options/account";
-import type { BillingCycle, PlanDTO } from "@/lib/types/account";
+import type { BillingCycle } from "@/lib/types/account";
 import { cn } from "@/lib/utils";
 import { PlanCard } from "./plan-card";
+import { usePlanSelect } from "./use-plan-select";
 
 const PLATFORMS = ["YouTube", "TikTok", "Facebook", "Instagram", "Zalo Video", "Website", "Podcast video", "Livestream"];
 
@@ -38,22 +38,8 @@ const PRICING_FAQ = [
 export function PricingPage() {
   const [cycle, setCycle] = useState<BillingCycle>("year");
   const { data: plans, isPending } = useQuery(plansQueryOptions);
-  const user = useShopSession((s) => s.user);
   const openDialog = useShopDialog((s) => s.open);
-  const navigate = useNavigate();
-
-  const select = (plan: PlanDTO) => {
-    if (plan.code === "free") {
-      if (!user) openDialog({ type: "register" });
-      else navigate({ to: "/luts" });
-      return;
-    }
-    if (!user) openDialog({ type: "register", plan: plan.code });
-    else openDialog({ type: "checkout", plan: plan.code, cycle });
-  };
-
-  const ctaLabel = (plan: PlanDTO) =>
-    plan.code === "free" ? (user ? "Vào kho LUT" : "Bắt đầu miễn phí") : `Chọn gói ${plan.name}`;
+  const { select, ctaLabel, user } = usePlanSelect(cycle);
 
   return (
     <div className="mx-auto max-w-[1080px]">

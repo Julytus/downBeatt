@@ -60,3 +60,10 @@ export const createLutCategoryQueryOptions = (slug: string) =>
     queryFn: () => getLutCategory(slug),
     staleTime: Infinity
   });
+
+
+export const homeFeaturedLutsQueryOptions = queryOptions({
+  queryKey: ["luts", "home-featured"],
+  queryFn: () => getLuts({ sort: "popular", paging: { page: 1, limit: 12 } }),
+  staleTime: 60_000
+});
