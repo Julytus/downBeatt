@@ -6,17 +6,17 @@ export function AuthorsSection() {
   return (
     <section
       aria-labelledby="authors-title"
-      className="px-4 py-16 md:px-8 md:py-24"
+      className="bg-(--sh-home-a) px-4 py-16 md:px-8 md:py-28"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[1280px]">
         <h2
           id="authors-title"
-          className="font-display text-center text-2xl font-bold tracking-tight text-(--sh-fg) md:text-4xl"
+          className="font-display text-3xl leading-[1.1] font-bold text-(--sh-fg) md:text-5xl"
         >
           <span className="block">Nơi quy tụ những colorist</span>
-          <span className="block text-(--sh-accent)">độc lập hàng đầu</span>
+          <span className="block">độc lập hàng đầu</span>
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-center text-sm text-(--sh-muted) md:text-base">
+        <p className="mt-5 max-w-xl text-base text-(--sh-fg) md:text-lg">
           Màu chuẩn studio, giấy phép đơn giản.
         </p>
 
@@ -27,7 +27,7 @@ export function AuthorsSection() {
               key={c.name}
               to="/luts"
               search={{ q: c.name }}
-              className="group relative block overflow-hidden rounded-[12px] bg-(--sh-surface) outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-(--sh-pink)"
+              className="group relative block break-inside-avoid overflow-hidden bg-(--sh-surface) outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-(--sh-pink)"
             >
               <img
                 src={picsumId(c.imageId, 480, c.height)}
@@ -40,12 +40,12 @@ export function AuthorsSection() {
                   c.grayscale && "grayscale"
                 )}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-              <div className="absolute inset-x-3.5 bottom-3.5 text-white">
-                <p className="font-display text-base font-bold md:text-lg">
+              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/75 to-transparent" />
+              <div className="absolute inset-x-6 bottom-6 text-white">
+                <p className="text-lg font-bold md:text-xl">
                   {c.name}
                 </p>
-                <p className="mt-1 line-clamp-2 text-xs text-white/80 md:text-sm">
+                <p className="mt-1 line-clamp-3 text-sm leading-6 text-white md:text-base">
                   {c.desc}
                 </p>
               </div>

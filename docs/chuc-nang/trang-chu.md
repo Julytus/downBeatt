@@ -35,7 +35,26 @@ Trang có đúng một `h1` ("Màu điện ảnh cho mọi khung hình"), mỗi 
 | 10 | Lời mời cuối | "Kể câu chuyện của bạn bằng màu sắc", 3 ảnh chồng nhau, dải sóng ở đáy |
 | 11 | Câu hỏi thường gặp | 6 câu, mở nhiều câu cùng lúc được |
 
-Header riêng của trang chủ (`HomeHeader`) dính trên cùng: logo, menu 5 mục (lấy từ cấu hình điều hướng của sidebar nên luôn khớp) chỉ hiện từ màn hình `lg` trở lên và chỉ sau khi cuộn qua nút của hero, nút sáng / tối, nhóm nút tài khoản, và menu mobile. Logo cửa hàng nay trỏ về `/` thay vì `/luts`.
+Header riêng của trang chủ (`HomeHeader`) dính trên cùng, cao 72px. Ở đầu trang header trong suốt, logo lớn, để dải lụa của hero lộ ra phía sau. Khi tiêu đề hero cuộn khuất, header chuyển nền tối, logo thu nhỏ và hiện menu 5 mục ở bên phải sát các nút (chỉ từ màn hình `lg`). Menu lấy từ cấu hình điều hướng của sidebar nên luôn khớp. Ngoài ra có nút sáng / tối, nhóm nút tài khoản và menu mobile. Logo cửa hàng nay trỏ về `/` thay vì `/luts`.
+
+Về hình thức, giao diện được chỉnh theo trang tham chiếu mà người dùng cung cấp. Kích thước đo trên khung 1858×996 rồi so từng khối:
+
+- Ở giao diện tối, các khối xen kẽ hai tông nền #1d232c và #151a20. Các token này nằm trong lớp `.shop-home` nên chỉ áp cho trang chủ.
+- Tiêu đề `h1`/`h2` dùng font đơn cách Chivo Mono 800.
+- Hai dải lụa ở hero là ảnh `public/hero-wave-upper.webp` và `public/hero-wave-lower.webp`. Dải dưới tràn xuống khối nhà sáng tạo.
+- Kích thước thẻ:
+
+  | Khối | Kích thước |
+  |---|---|
+  | Hero | 272×232, nhãn cao 62px |
+  | Nhà sáng tạo | 360×540 |
+  | Colorist | rộng 308px, cao xen kẽ 480/400 |
+  | Ghép ảnh | ô vuông |
+  | Tìm bằng lời | thẻ 654×367 |
+  | Tính năng | 296px, băng tràn hết bề ngang |
+
+- Thẻ bảng giá có phần đầu tô nền và nút trắng.
+- Dải sóng ở khối 10 có đỉnh lớn và đỉnh nhỏ xen kẽ, mép tan thành hạt.
 
 Về trợ năng và hiệu năng: bản lặp của băng chạy được ẩn khỏi trình đọc màn hình; khi người dùng bật giảm chuyển động, băng chạy, ảnh trôi và hiệu ứng gõ chữ đều tắt; không cuộn ngang ở 360–400px; mọi ảnh có `width`/`height` để không nhảy bố cục.
 
@@ -58,6 +77,9 @@ Query lỗi thì khối liên quan ẩn phần lưới, các khối khác vẫn 
 - `luts/lut-card.tsx`: tách phần bìa thành `LutCover` để khối ghép ảnh dùng lại; thẻ LUT trong `/luts` không đổi.
 - `shop-theme.css`: thêm biến `--sh-band-pink`, `--sh-band-green` và keyframe `shop-marquee`, `shop-float` (tắt khi giảm chuyển động).
 - `layout/shop-logo.tsx`: logo trỏ về `/`.
+- `home/feature-art.tsx`: tranh minh hoạ dạng giao diện thu nhỏ cho 8 thẻ tính năng. `home/grain-filter.tsx`: bộ lọc SVG tạo mép hạt cho dải sóng.
+- `pricing/plan-card.tsx`: thêm kiểu `home` cho thẻ gói ở trang chủ; trang `/pricing` không đổi.
+- `layout/shop-shell.tsx`: nạp thêm font Chivo Mono. `shop-theme.css`: token riêng `.shop-home` và quy tắc font cho tiêu đề.
 
 ## 6. Kiểm thử
 
@@ -93,7 +115,7 @@ Kiểm thử hoàn toàn bằng Playwright (lát không có backend nên không 
 | TC-24 | Ảnh đúng nguồn picsum đã chọn | Pass |
 | **Tổng** | | **26/26 pass** |
 
-Kiểm tra hồi quy: `shop-flows.spec.ts` 24/24 pass (test cũ "/ chuyển về /luts" được đổi thành "/ là trang chủ"). `pnpm build` và `pnpm lint` xanh.
+TC-15 được sửa để cú bấm "Sau" có giới hạn thời gian, tránh treo khi nút vừa tắt lúc băng thẻ cuộn tới cuối. Kiểm tra hồi quy: `shop-flows.spec.ts` 24/24 pass (test cũ "/ chuyển về /luts" được đổi thành "/ là trang chủ"). `pnpm build` và `pnpm lint` xanh.
 
 ## 7. Ảnh minh hoạ
 
@@ -101,11 +123,11 @@ Kiểm tra hồi quy: `shop-flows.spec.ts` 24/24 pass (test cũ "/ chuyển về
 
 ![Trang chủ trên desktop, giao diện sáng](img/trang-chu/01-trang-chu-desktop-sang.png)
 
-Hình 1. Trang chủ trên desktop, giao diện sáng: hero với 5 ô danh mục và dải lụa trang trí.
+Hình 1. Trang chủ trên desktop, giao diện sáng: header trong suốt, hero với 5 ô danh mục và hai dải lụa.
 
 ![Header sau khi cuộn](img/trang-chu/02-header-khi-cuon.png)
 
-Hình 2. Sau khi cuộn qua hero, menu loại tài nguyên hiện trên header.
+Hình 2. Sau khi tiêu đề hero cuộn khuất, header chuyển nền đặc và hiện menu loại tài nguyên ở bên phải.
 
 ![Khối colorist](img/trang-chu/03-colorist.png)
 
@@ -117,7 +139,7 @@ Hình 4. Khối "Tìm màu bằng lời" với ô nhập và các gợi ý.
 
 ![Băng tính năng](img/trang-chu/05-tinh-nang.png)
 
-Hình 5. Băng tính năng cuộn ngang với hai nút điều hướng.
+Hình 5. Băng tính năng tràn bề ngang, mỗi thẻ có tranh minh hoạ giao diện, hai nút tròn ở hai mép.
 
 ![Bảng giá rút gọn](img/trang-chu/06-bang-gia.png)
 
@@ -133,13 +155,14 @@ Hình 8. Trang chủ trên điện thoại (400px), hero xếp 2 cột.
 
 ![Trang chủ giao diện tối](img/trang-chu/09-trang-chu-desktop-toi.png)
 
-Hình 9. Giao diện tối; hai dải hồng và xanh lá giữ nguyên màu.
+Hình 9. Giao diện tối: các khối xen kẽ hai tông nền như trang tham chiếu; hai dải hồng và xanh lá giữ nguyên màu.
 
 ## 8. Điểm lệch plan và hạn chế
 
 - Sau khi người dùng so với video tham khảo, plan §6 khối 1, 5, 10 được sửa: dải lụa hero rõ nét hơn, cụm ảnh khối 5 bố cục tự do không khung và không xoay ±4° (bản đầu dạng lưới và bị cắt mép), khối 10 tràn bề ngang thay vì thẻ bo góc. Tài liệu này theo bản đã làm.
 - Dải lụa hero ban đầu bị nền che mất; đã sửa bằng cách tạo ngữ cảnh xếp chồng riêng cho hero và làm mờ dần phần đáy.
-- Dải sóng ở đáy khối 10 hiện chỉ có 1–2 đỉnh và chưa có hiệu ứng hạt nhiễu ở mép, ít hơn yêu cầu (≥ 4 đỉnh trên desktop). Chấp nhận, có thể làm tiếp khi hoàn thiện giao diện.
+- Sau khi mở PR, người dùng so với video trang tham chiếu và yêu cầu chỉnh cho giống nhất có thể. Lần chỉnh này do Claude làm trực tiếp, không giao cho agy. Phần giao diện ở §3 theo bản đã chỉnh, và dải sóng khối 10 nay đã đủ đỉnh, có hạt ở mép.
+- Một số điểm vẫn khác trang tham chiếu. Tiêu đề tiếng Việt dài hơn nên vài tiêu đề chiếm 3 dòng. Font tiêu đề chỉ là font gần giống. Hình trái tim ở dải xanh là icon. Tranh minh hoạ thẻ tính năng do nhóm tự dựng.
 - Tìm bằng lời hiện là tìm giả khớp nguyên cụm `q`; câu dài có thể không ra kết quả cho đến khi làm chức năng kho LUT thật.
 - Ảnh tải từ picsum.photos lúc chạy; mất mạng thì ô ảnh để trống trên nền `--sh-surface`, bố cục không vỡ. Số liệu minh hoạ ("Hơn 5.000 nhà sáng tạo") và tên nhà sáng tạo là dữ liệu mẫu.
 

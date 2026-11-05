@@ -47,6 +47,36 @@
   --sh-band-green: #22382a;
 }
 
+/* Trang chủ: nền xen kẽ 2 tông + màu thẻ / nút theo bản tham chiếu (chỉ áp cho `.shop-home`). */
+.shop-home {
+  --sh-home-a: #ffffff;
+  --sh-home-b: #f4f5f7;
+  --sh-home-c: #eef0f3;
+  --sh-home-card: #edeef0;
+  --sh-home-kicker: #d01a5c;
+}
+
+.dark .shop-home {
+  --sh-bg: #1d232c;
+  --sh-surface: #3d4653;
+  --sh-surface-hover: #4a5462;
+  --sh-border: #2c3440;
+  --sh-elevated: #222a35;
+  --sh-home-a: #1d232c;
+  --sh-home-b: #151a20;
+  --sh-home-c: #1a222b;
+  --sh-home-card: #323a45;
+  --sh-home-kicker: #f7b9d6;
+}
+
+.shop-home :is(h1, h2).font-display {
+  /* Bản tham chiếu dùng chữ đơn cách (mỗi ký tự ~0.52em) cho tiêu đề khối */
+  font-family: "Chivo Mono", ui-monospace, monospace;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  word-spacing: -0.18em;
+}
+
 .shop .font-display {
   font-family: "Space Grotesk", "DM Sans", system-ui, sans-serif;
 }

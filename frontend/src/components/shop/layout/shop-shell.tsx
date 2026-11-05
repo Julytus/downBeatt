@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { RouteProgress } from "./route-progress";
 
 const FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&family=Playfair+Display:ital,wght@1,500&display=swap";
+  "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&family=Playfair+Display:ital,wght@1,500&family=Chivo+Mono:wght@400;800&display=swap";
 
 /**
  * Phần chung của mọi layout cửa hàng: token màu (.shop), font, link "Bỏ qua menu",

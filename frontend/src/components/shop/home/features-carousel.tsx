@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import { cn } from "@/lib/utils";
+import { FeatureArt } from "./feature-art";
 import { FEATURES } from "./home-data";
 
 export function FeaturesCarousel() {
@@ -34,83 +35,78 @@ export function FeaturesCarousel() {
     el.scrollBy({ left: -Math.max(el.clientWidth * 0.8, 260), behavior: "smooth" });
   };
 
+  // Mép trái băng thẻ thẳng hàng với tiêu đề (khung 1280px), còn băng thì tràn hết bề ngang
+  const gutter = "max(1rem, calc((100% - 1280px) / 2))";
+
   return (
     <section
       aria-labelledby="features-title"
-      className="relative overflow-hidden px-4 py-16 md:px-8 md:py-24"
+      className="relative overflow-hidden bg-(--sh-home-c) py-16 md:py-28"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[1280px] px-4 xl:px-0">
         <h2
           id="features-title"
-          className="font-display text-center text-2xl font-bold tracking-tight text-(--sh-fg) md:text-4xl"
+          className="font-display text-3xl leading-[1.1] font-bold text-(--sh-fg) md:text-5xl"
         >
           <span className="block">Công cụ mạnh mẽ, cộng đồng</span>
-          <span className="block text-(--sh-accent)">và sự an tâm</span>
+          <span className="block">và sự an tâm</span>
         </h2>
+      </div>
 
-        {/* Khung băng thẻ kèm 2 nút chồng mép trái / phải */}
-        <div className="relative mt-12">
-          {/* Nút Trước chồng mép trái */}
-          <ShopButton
-            variant="secondary"
-            size="icon"
-            aria-label="Trước"
-            disabled={prevDisabled}
-            onClick={scrollPrev}
-            className="absolute -left-2 top-1/2 z-20 size-10 -translate-y-1/2 rounded-full border border-(--sh-border) bg-(--sh-elevated) shadow-md hover:bg-(--sh-surface) md:-left-4"
-          >
-            <ChevronLeft className="size-5" />
-          </ShopButton>
+      {/* Băng thẻ tràn bề ngang, 2 nút tròn viền trắng ở hai mép màn hình */}
+      <div className="relative mt-12 md:mt-14">
+        <ShopButton
+          variant="ghost"
+          size="icon"
+          aria-label="Trước"
+          disabled={prevDisabled}
+          onClick={scrollPrev}
+          className="absolute top-1/2 left-3 z-20 size-12 -translate-y-1/2 rounded-full border-[3px] border-(--sh-fg) bg-(--sh-home-c)/60 text-(--sh-fg) backdrop-blur-sm hover:bg-(--sh-home-c) disabled:opacity-30 md:left-6 md:size-16 [&_svg]:size-7 md:[&_svg]:size-9"
+        >
+          <ChevronLeft strokeWidth={2.25} />
+        </ShopButton>
 
-          {/* Băng thẻ cuộn ngang */}
-          <div
-            ref={scrollerRef}
-            onScroll={checkScroll}
-            className="flex gap-4 overflow-x-auto px-1 pb-4 snap-x snap-proximity [scrollbar-width:none]"
-          >
-            {FEATURES.map((f, i) => (
-              <div
-                key={f.part1}
-                className={cn(
-                  "w-[240px] shrink-0 rounded-[16px] border border-(--sh-border) bg-(--sh-elevated) p-4 shadow-sm md:w-[220px]",
-                  i === FEATURES.length - 1 ? "snap-end" : "snap-start"
-                )}
-              >
-                {/* Vùng minh hoạ 4:3 */}
-                <div className="flex aspect-[4/3] flex-col items-center justify-center rounded-[10px] bg-(--sh-surface) p-4">
-                  <f.icon className="size-10 text-(--sh-primary)" aria-hidden="true" />
-                  <div className="mt-3 flex w-3/4 flex-col gap-1.5 opacity-40">
-                    <div className="h-1.5 w-full rounded bg-(--sh-fg)" />
-                    <div className="h-1.5 w-2/3 rounded bg-(--sh-fg)" />
-                  </div>
-                </div>
+        <div
+          ref={scrollerRef}
+          onScroll={checkScroll}
+          className="flex snap-x snap-proximity gap-6 overflow-x-auto pb-4 [scrollbar-width:none]"
+          style={{ paddingInline: gutter, scrollPaddingInline: gutter }}
+        >
+          {FEATURES.map((f, i) => (
+            <div
+              key={f.part1}
+              className={cn(
+                "flex w-[264px] shrink-0 flex-col overflow-hidden rounded-[12px] border border-(--sh-border) bg-gradient-to-b from-(--sh-elevated) to-(--sh-home-c) md:w-[296px]",
+                i === FEATURES.length - 1 ? "snap-end" : "snap-start"
+              )}
+            >
+              {/* Tranh minh hoạ chiếm phần trên thẻ */}
+              <FeatureArt kind={f.art} />
 
-                {/* Tiêu đề 2 phần */}
-                <h3 className="mt-4 font-display text-base font-bold">
-                  <span className="text-(--sh-fg)">{f.part1} </span>
-                  <span className="text-(--sh-accent)">{f.part2}</span>
-                </h3>
+              {/* Tiêu đề 2 phần */}
+              <h3 className="mt-8 px-6 text-xl leading-snug font-bold md:px-8 md:text-2xl">
+                <span className="block text-(--sh-fg)">{f.part1}</span>
+                <span className={cn("block text-(--sh-accent)", f.tone)}>{f.part2}</span>
+              </h3>
 
-                {/* Đoạn mô tả */}
-                <p className="mt-1.5 text-xs leading-relaxed text-(--sh-muted)">
-                  {f.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Nút Sau chồng mép phải */}
-          <ShopButton
-            variant="secondary"
-            size="icon"
-            aria-label="Sau"
-            disabled={nextDisabled}
-            onClick={scrollNext}
-            className="absolute -right-2 top-1/2 z-20 size-10 -translate-y-1/2 rounded-full border border-(--sh-border) bg-(--sh-elevated) shadow-md hover:bg-(--sh-surface) md:-right-4"
-          >
-            <ChevronRight className="size-5" />
-          </ShopButton>
+              {/* Đoạn mô tả */}
+              <p className="mt-3 px-6 pb-10 text-base leading-relaxed text-(--sh-fg)/90 md:px-8 md:text-lg">
+                {f.desc}
+              </p>
+            </div>
+          ))}
         </div>
+
+        <ShopButton
+          variant="ghost"
+          size="icon"
+          aria-label="Sau"
+          disabled={nextDisabled}
+          onClick={scrollNext}
+          className="absolute top-1/2 right-3 z-20 size-12 -translate-y-1/2 rounded-full border-[3px] border-(--sh-fg) bg-(--sh-home-c)/60 text-(--sh-fg) backdrop-blur-sm hover:bg-(--sh-home-c) disabled:opacity-30 md:right-6 md:size-16 [&_svg]:size-7 md:[&_svg]:size-9"
+        >
+          <ChevronRight strokeWidth={2.25} />
+        </ShopButton>
       </div>
     </section>
   );

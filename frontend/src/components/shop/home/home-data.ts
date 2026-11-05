@@ -1,14 +1,4 @@
-import {
-  Bookmark,
-  Columns2,
-  FileCode2,
-  Headset,
-  LayoutGrid,
-  PlayCircle,
-  ShieldCheck,
-  SlidersHorizontal,
-  type LucideIcon
-} from "lucide-react";
+import type { FeatureArtKind } from "./feature-art";
 
 /** Hàm tạo URL ảnh picsum theo id cố định (Claude đã chọn theo chủ đề). Không dùng picsum(seed). */
 export function picsumId(id: number, w: number, h: number): string {
@@ -85,44 +75,44 @@ export const COLORISTS: ColoristItem[] = [
     name: "Minh Color",
     desc: "Colorist 10 năm cho MV và phim quảng cáo",
     imageId: 91,
-    height: 600
+    height: 750
   },
   {
     name: "Analog Lab",
     desc: "Tái hiện màu film Kodak, Fuji cổ điển",
     imageId: 454,
-    height: 720
+    height: 625
   },
   {
     name: "Mono Works",
     desc: "Chuyên đen trắng và tông tối tương phản",
     imageId: 1027,
-    height: 640,
+    height: 625,
     grayscale: true
   },
   {
     name: "Wander Grade",
     desc: "Màu du lịch, phong cảnh rực rỡ",
     imageId: 550,
-    height: 600
+    height: 750
   },
   {
     name: "Wedding Tone",
     desc: "Tông mềm, ấm cho phim cưới",
     imageId: 325,
-    height: 720
+    height: 750
   },
   {
     name: "Studio Kem",
     desc: "Pastel và tông lạnh nhẹ nhàng",
     imageId: 628,
-    height: 640
+    height: 625
   },
   {
     name: "DownBeat Studio",
     desc: "Đội ngũ chỉnh màu của DownBeat",
     imageId: 531,
-    height: 600
+    height: 625
   }
 ];
 
@@ -136,20 +126,20 @@ export interface CollagePosition {
   zIndex: number;
 }
 
-/** 12 vị trí cố định theo % cho 12 ảnh bìa LUT phổ biến */
+/** 12 vị trí ô vuông theo % (đo từ bản tham chiếu, vùng tỉ lệ 660×430). */
 export const COLLAGE_POSITIONS: CollagePosition[] = [
-  { left: 6, top: 8, width: 22, size: "sm", floatDuration: 7.2, floatDelay: 0.2, zIndex: 2 },
-  { left: 34, top: 4, width: 26, size: "md", floatDuration: 8.5, floatDelay: 1.1, zIndex: 3 },
-  { left: 68, top: 6, width: 21, size: "sm", floatDuration: 6.8, floatDelay: 0.5, zIndex: 2 },
-  { left: 2, top: 32, width: 18, size: "sm", floatDuration: 7.6, floatDelay: 1.8, zIndex: 1 },
-  { left: 23, top: 28, width: 26, size: "md", floatDuration: 6.5, floatDelay: 0.0, zIndex: 5 },
-  { left: 52, top: 26, width: 21, size: "sm", floatDuration: 8.0, floatDelay: 2.2, zIndex: 4 },
-  { left: 77, top: 29, width: 20, size: "sm", floatDuration: 7.0, floatDelay: 0.8, zIndex: 2 },
-  { left: 8, top: 56, width: 21, size: "sm", floatDuration: 8.2, floatDelay: 1.4, zIndex: 3 },
-  { left: 33, top: 52, width: 20, size: "sm", floatDuration: 6.9, floatDelay: 0.3, zIndex: 4 },
-  { left: 58, top: 48, width: 26, size: "md", floatDuration: 7.7, floatDelay: 1.9, zIndex: 5 },
-  { left: 19, top: 76, width: 22, size: "sm", floatDuration: 7.4, floatDelay: 0.7, zIndex: 2 },
-  { left: 49, top: 74, width: 25, size: "md", floatDuration: 8.8, floatDelay: 1.6, zIndex: 3 }
+  { left: 0, top: 16.5, width: 17.9, size: "sm", floatDuration: 7.2, floatDelay: 0.2, zIndex: 2 },
+  { left: 27.7, top: 10.2, width: 16.8, size: "sm", floatDuration: 8.5, floatDelay: 1.1, zIndex: 2 },
+  { left: 43.9, top: 17.7, width: 15.2, size: "sm", floatDuration: 6.8, floatDelay: 0.5, zIndex: 3 },
+  { left: 67.9, top: 0, width: 16.2, size: "sm", floatDuration: 7.6, floatDelay: 1.8, zIndex: 2 },
+  { left: 76.8, top: 20.5, width: 17.3, size: "sm", floatDuration: 6.5, floatDelay: 0.0, zIndex: 3 },
+  { left: 20.9, top: 44, width: 17.9, size: "sm", floatDuration: 8.0, floatDelay: 2.2, zIndex: 4 },
+  { left: 51.5, top: 54.7, width: 15.2, size: "sm", floatDuration: 7.0, floatDelay: 0.8, zIndex: 1 },
+  { left: 64.8, top: 42.3, width: 17.6, size: "sm", floatDuration: 8.2, floatDelay: 1.4, zIndex: 4 },
+  { left: 83.3, top: 54.2, width: 16.7, size: "sm", floatDuration: 6.9, floatDelay: 0.3, zIndex: 2 },
+  { left: 8.2, top: 67.7, width: 16.4, size: "sm", floatDuration: 7.7, floatDelay: 1.9, zIndex: 3 },
+  { left: 37.4, top: 70.2, width: 17, size: "sm", floatDuration: 7.4, floatDelay: 0.7, zIndex: 3 },
+  { left: 70.5, top: 72.3, width: 17.9, size: "sm", floatDuration: 8.8, floatDelay: 1.6, zIndex: 5 }
 ];
 
 export const SEARCH_PLACEHOLDERS = [
@@ -164,7 +154,9 @@ export interface FeatureItem {
   part1: string;
   part2: string;
   desc: string;
-  icon: LucideIcon;
+  art: FeatureArtKind;
+  /** Lớp màu chữ phần 2 ở giao diện tối */
+  tone: string;
 }
 
 export const FEATURES: FeatureItem[] = [
@@ -172,49 +164,57 @@ export const FEATURES: FeatureItem[] = [
     part1: "Người thật,",
     part2: "hỗ trợ thật",
     desc: "Trò chuyện với đội ngũ DownBeat khi cần, không phải chatbot.",
-    icon: Headset
+    art: "chat",
+    tone: "dark:text-pink-300"
   },
   {
     part1: "Không lo",
     part2: "bản quyền",
     desc: "Giấy phép rõ ràng cho từng gói, đăng video ở đâu cũng yên tâm.",
-    icon: ShieldCheck
+    art: "shield",
+    tone: "dark:text-violet-300"
   },
   {
     part1: "Tìm kiếm",
     part2: "và bộ lọc thông minh",
     desc: "Lọc theo phong cách, từ khoá, độ phổ biến để chọn màu nhanh hơn.",
-    icon: SlidersHorizontal
+    art: "filters",
+    tone: "dark:text-pink-300"
   },
   {
     part1: "So sánh",
     part2: "trước và sau",
     desc: "Kéo thanh trượt để thấy LUT đổi màu cảnh quay thế nào trước khi tải.",
-    icon: Columns2
+    art: "compare",
+    tone: "dark:text-purple-300"
   },
   {
     part1: "Hàng chục",
     part2: "danh mục",
     desc: "Điện ảnh, phim nhựa, đám cưới, du lịch… đủ cho mọi thể loại video.",
-    icon: LayoutGrid
+    art: "cloud",
+    tone: "dark:text-orange-300"
   },
   {
     part1: "Lưu vào",
     part2: "bộ sưu tập",
     desc: "Đánh dấu LUT yêu thích và gom theo từng dự án.",
-    icon: Bookmark
+    art: "board",
+    tone: "dark:text-amber-200"
   },
   {
     part1: "Xem trước",
     part2: "bằng video",
     desc: "Một số LUT có video mẫu để bạn thấy màu khi chuyển động.",
-    icon: PlayCircle
+    art: "video",
+    tone: "dark:text-sky-300"
   },
   {
     part1: "Một file .cube,",
     part2: "mọi phần mềm",
     desc: "Dùng được với DaVinci Resolve, Premiere Pro, Final Cut Pro, CapCut.",
-    icon: FileCode2
+    art: "cube",
+    tone: "dark:text-pink-300"
   }
 ];
 

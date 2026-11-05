@@ -13,19 +13,19 @@ export function PlansSection() {
   return (
     <section
       aria-labelledby="plans-title"
-      className="px-4 py-16 md:px-8 md:py-24"
+      className="bg-(--sh-home-b) px-4 py-16 md:px-8 md:py-32"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[1280px]">
         <h2
           id="plans-title"
-          className="font-display text-center text-2xl font-bold tracking-tight text-(--sh-fg) md:text-4xl"
+          className="font-display text-3xl leading-[1.1] font-bold text-(--sh-fg) md:text-5xl"
         >
           <span className="block">Gói cho mọi kiểu</span>
-          <span className="block text-(--sh-accent)">nhà sáng tạo</span>
+          <span className="block">nhà sáng tạo</span>
         </h2>
 
         {/* 3 gói rút gọn cố định theo tháng */}
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
           {isPending || !plans
             ? Array.from({ length: 3 }, (_, i) => (
                 <Skeleton
@@ -41,6 +41,7 @@ export function PlansSection() {
                   current={!!user && user.plan === p.code}
                   ctaLabel={ctaLabel(p)}
                   onSelect={() => select(p)}
+                  home
                 />
               ))}
         </div>

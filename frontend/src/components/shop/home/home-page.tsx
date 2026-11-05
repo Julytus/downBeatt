@@ -20,7 +20,7 @@ export function HomePage() {
   }, []);
 
   return (
-    <ShopShell className="flex flex-col">
+    <ShopShell className="shop-home flex flex-col">
       <HomeHeader />
       <main id="shop-main" className="flex-1">
         <HeroSection />

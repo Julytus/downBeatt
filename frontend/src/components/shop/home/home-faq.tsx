@@ -16,7 +16,7 @@ function HomeFaqRow({ item }: { item: FaqItem }) {
       <CollapsibleTrigger asChild>
         <button
           type="button"
-          className="flex w-full items-center justify-between gap-4 py-4.5 text-left text-sm font-semibold text-(--sh-fg) outline-none transition-colors hover:text-(--sh-primary) focus-visible:ring-2 focus-visible:ring-(--sh-pink) md:text-base"
+          className="flex w-full items-center justify-between gap-4 px-1 py-5 text-left text-base font-semibold text-(--sh-fg) outline-none transition-colors hover:text-(--sh-primary) focus-visible:ring-2 focus-visible:ring-(--sh-pink) md:text-base"
         >
           <span>{item.q}</span>
           <ChevronDown
@@ -39,18 +39,19 @@ export function HomeFaq() {
   return (
     <section
       aria-labelledby="faq-title"
-      className="px-4 py-16 md:px-8 md:py-24"
+      className="bg-(--sh-home-a) px-4 pt-16 pb-16 md:px-8 md:pt-32 md:pb-40"
     >
-      <div className="mx-auto max-w-[720px]">
+      <div className="mx-auto max-w-[1280px]">
         <h2
           id="faq-title"
-          className="font-display text-center text-2xl font-bold tracking-tight text-(--sh-fg) md:text-4xl"
+          className="font-display text-3xl leading-[1.1] font-bold text-(--sh-fg) md:text-5xl"
         >
-          Câu hỏi thường gặp
+          Câu hỏi <br className="hidden md:block" />
+          thường gặp
         </h2>
 
         {/* Danh sách 6 câu hỏi */}
-        <div className="mt-10 divide-y divide-(--sh-border) border-t border-(--sh-border)">
+        <div className="mx-auto mt-24 max-w-[792px] divide-y divide-(--sh-border)">
           {HOME_FAQ.map((item) => (
             <HomeFaqRow key={item.q} item={item} />
           ))}
