@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 import vn.aeoc.authenticate.repository.auth.PermissionRepository;
 import vn.aeoc.authenticate.repository.auth.RoleRepository;
 import vn.aeoc.authenticate.service.cache.CacheKeyFactory;
+import vn.aeoc.base.service.BaseService;
 import vn.aeoc.base.util.CommonUtils;
+import vn.aeoc.base.util.QueryExecutor;
+import vn.aeoc.entity.data.mysql.auth.Permission;
 import vn.aeoc.entity.data.mysql.auth.Role;
 import vn.aeoc.entity.data.mysql.auth.User;
 import vn.aeoc.entity.data.pojo.EBPermissionResource;
@@ -15,15 +18,15 @@ import java.util.List;
 
 /** Tra quyền theo role (có cache L1). Role operator có toàn quyền. */
 @Service
-public class PermissionService {
-    private final PermissionRepository permissionRepository;
+public class PermissionService extends BaseService<PermissionRepository, Permission, Integer> {
     private final RoleRepository roleRepository;
     private final Cache<String, Object> authCache;
 
-    public PermissionService(PermissionRepository permissionRepository,
+    public PermissionService(PermissionRepository repository,
                              RoleRepository roleRepository,
-                             @Qualifier("authCache") Cache<String, Object> authCache) {
-        this.permissionRepository = permissionRepository;
+                             @Qualifier("authCache") Cache<String, Object> authCache,
+                             QueryExecutor queryExecutor) {
+        super(repository, queryExecutor);
         this.roleRepository = roleRepository;
         this.authCache = authCache;
     }
@@ -38,13 +41,13 @@ public class PermissionService {
         if (role == null) {
             return List.of();
         }
-        return permissionRepository.getPermissionResources(role.getId(), role.getIsOperator());
+        return repository.getPermissionResources(role.getId(), role.getIsOperator());
     }
 
     public long checkPermission(Integer roleId, String uri, String action) {
         String cacheKey = CacheKeyFactory.authPermission(roleId, uri, action);
         Long count = (Long) authCache.get(cacheKey,
-                key -> permissionRepository.checkPermission(roleId, uri, action));
+                key -> repository.checkPermission(roleId, uri, action));
         return count == null ? 0L : count;
     }
 }

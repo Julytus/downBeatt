@@ -2,9 +2,13 @@ package vn.aeoc.authenticate.repository.auth;
 
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.jooq.impl.TableImpl;
 import org.springframework.stereotype.Repository;
+import vn.aeoc.base.repo.AbsMysqlRepository;
 import vn.aeoc.base.util.CommonUtils;
+import vn.aeoc.entity.data.mysql.auth.Permission;
 import vn.aeoc.entity.data.pojo.EBPermissionResource;
+import vn.entity.backend.tables.records.PermissionRecord;
 
 import java.util.List;
 
@@ -13,11 +17,14 @@ import static vn.entity.backend.tables.Resource.RESOURCE;
 
 /** Đọc quyền của role. Quyền được cấp bằng migration / SQL (chưa có màn hình quản trị). */
 @Repository
-public class PermissionRepository {
-    private final DSLContext dslContext;
-
+public class PermissionRepository extends AbsMysqlRepository<PermissionRecord, Permission, Integer> {
     public PermissionRepository(DSLContext dslContext) {
-        this.dslContext = dslContext;
+        super(dslContext);
+    }
+
+    @Override
+    protected TableImpl<PermissionRecord> getTable() {
+        return PERMISSION;
     }
 
     /** Danh sách resource + actions của role (menu phía client); operator => mọi resource. */

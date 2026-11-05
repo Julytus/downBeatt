@@ -1,23 +1,32 @@
 package vn.aeoc.business.lut.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import vn.aeoc.base.constant.ErrorCode;
 import vn.aeoc.base.exception.AppException;
+import vn.aeoc.base.service.BaseService;
+import vn.aeoc.base.util.QueryExecutor;
 import vn.aeoc.business.lut.repository.LutCategoryRepository;
 import vn.aeoc.entity.data.mysql.lut.LutCategory;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class LutCategoryService {
-    private final LutCategoryRepository repository;
+public class LutCategoryService extends BaseService<LutCategoryRepository, LutCategory, Integer> {
+    private static final String CACHE_KEY = "all";
+
     private final Cache<String, List<LutCategory>> lutCategoryCache;
 
+    public LutCategoryService(LutCategoryRepository repository,
+                              @Qualifier("lutCategoryCache") Cache<String, List<LutCategory>> lutCategoryCache,
+                              QueryExecutor queryExecutor) {
+        super(repository, queryExecutor);
+        this.lutCategoryCache = lutCategoryCache;
+    }
+
     public List<LutCategory> listPublic() {
-        return lutCategoryCache.get("all", key -> repository.getActive());
+        return lutCategoryCache.get(CACHE_KEY, key -> repository.getActive());
     }
 
     public LutCategory getPublic(String slug) {

@@ -1,64 +1,55 @@
 package vn.aeoc.business.lut.repository;
 
-import lombok.RequiredArgsConstructor;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.impl.TableImpl;
 import org.springframework.stereotype.Repository;
-import vn.entity.backend.tables.LutCategoryMap;
+import vn.aeoc.base.repo.AbsMysqlRepository;
 import vn.aeoc.entity.data.mysql.lut.LutCategory;
+import vn.entity.backend.tables.records.LutCategoryRecord;
 
 import java.util.List;
 import java.util.Map;
 
-@Repository
-@RequiredArgsConstructor
-public class LutCategoryRepository {
-    private final DSLContext dsl;
+import static vn.entity.backend.tables.LutCategory.LUT_CATEGORY;
+import static vn.entity.backend.tables.LutCategoryMap.LUT_CATEGORY_MAP;
 
-    private final vn.entity.backend.tables.LutCategory category =
-            vn.entity.backend.tables.LutCategory.LUT_CATEGORY;
-    private final LutCategoryMap categoryMap = LutCategoryMap.LUT_CATEGORY_MAP;
+@Repository
+public class LutCategoryRepository extends AbsMysqlRepository<LutCategoryRecord, LutCategory, Integer> {
+    public LutCategoryRepository(DSLContext dslContext) {
+        super(dslContext);
+    }
+
+    @Override
+    protected TableImpl<LutCategoryRecord> getTable() {
+        return LUT_CATEGORY;
+    }
+
+    private static Condition active() {
+        return LUT_CATEGORY.STATUS.eq((byte) 1);
+    }
 
     public List<LutCategory> getActive() {
-        return dsl.select(
-                        category.ID,
-                        category.SLUG,
-                        category.NAME,
-                        category.GROUP_CODE,
-                        category.DESCRIPTION,
-                        category.IS_POPULAR,
-                        category.SORT_ORDER,
-                        category.STATUS
-                )
-                .from(category)
-                .where(category.STATUS.eq((byte) 1))
-                .orderBy(category.SORT_ORDER.asc(), category.ID.asc())
-                .fetchInto(LutCategory.class);
+        return getListByCriteriaWithJoin(
+                getFields(),
+                LUT_CATEGORY,
+                active(),
+                List.of(LUT_CATEGORY.SORT_ORDER.asc(), LUT_CATEGORY.ID.asc()));
     }
 
     public LutCategory getActiveBySlug(String slug) {
-        return dsl.select(
-                        category.ID,
-                        category.SLUG,
-                        category.NAME,
-                        category.GROUP_CODE,
-                        category.DESCRIPTION,
-                        category.IS_POPULAR,
-                        category.SORT_ORDER,
-                        category.STATUS
-                )
-                .from(category)
-                .where(category.SLUG.eq(slug).and(category.STATUS.eq((byte) 1)))
-                .fetchOneInto(LutCategory.class);
+        return getOne(active().and(LUT_CATEGORY.SLUG.eq(slug)));
     }
 
+    /** Slug danh mục đang hiện của nhiều LUT trong một truy vấn, xếp theo sort_order. */
     public Map<Integer, List<String>> getActiveSlugsByLutIds(List<Integer> ids) {
         if (ids == null || ids.isEmpty()) {
             return Map.of();
         }
-        return dsl.select(categoryMap.LUT_ID, category.SLUG)
-                .from(categoryMap.join(category).on(categoryMap.CATEGORY_ID.eq(category.ID)))
-                .where(categoryMap.LUT_ID.in(ids).and(category.STATUS.eq((byte) 1)))
-                .orderBy(category.SORT_ORDER.asc())
-                .fetchGroups(categoryMap.LUT_ID, category.SLUG);
+        return dslContext.select(LUT_CATEGORY_MAP.LUT_ID, LUT_CATEGORY.SLUG)
+                .from(LUT_CATEGORY_MAP.join(LUT_CATEGORY).on(LUT_CATEGORY.ID.eq(LUT_CATEGORY_MAP.CATEGORY_ID)))
+                .where(LUT_CATEGORY_MAP.LUT_ID.in(ids).and(active()))
+                .orderBy(LUT_CATEGORY.SORT_ORDER.asc())
+                .fetchGroups(LUT_CATEGORY_MAP.LUT_ID, LUT_CATEGORY.SLUG);
     }
 }
