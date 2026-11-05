@@ -11,7 +11,7 @@ interface ShopLogoProps {
 export function ShopLogo({ compact = false, className }: ShopLogoProps) {
   return (
     <Link
-      to="/luts"
+      to="/"
       aria-label="DownBeat - về trang chủ"
       className={cn("inline-flex h-12 items-center rounded-[8px] outline-none focus-visible:ring-2 focus-visible:ring-(--sh-pink)/60", className)}
     >

@@ -11,3 +11,4 @@ Một plan chỉ được cook khi `status: approved`, nghĩa là người dùng
 | Slug | Chức năng | Đợt | Trạng thái |
 |---|---|---|---|
 | [go-redis-mail](go-redis-mail.md) | Gỡ Redis + gửi mail (Mailpit): refresh token sang MySQL, bỏ quên mật khẩu OTP | — (hạ tầng) | approved |
+| [trang-chu](trang-chu.md) | Trang chủ `/` (landing page cửa hàng, chỉ frontend, dữ liệu giả) theo video tham khảo | — (giao diện) | done |

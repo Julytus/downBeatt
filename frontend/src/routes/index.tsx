@@ -1,8 +1,13 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { HomePage } from "@/components/shop/home/home-page";
 
-/** Trang chính là cửa hàng (kho LUT). Trang quản trị ở /admin. */
 export const Route = createFileRoute("/")({
-  beforeLoad: () => {
-    throw redirect({ to: "/luts" });
-  }
+  head: () => ({
+    meta: [
+      {
+        title: "DownBeat | Kho LUT chỉnh màu cho nhà sáng tạo"
+      }
+    ]
+  }),
+  component: HomePage
 });
