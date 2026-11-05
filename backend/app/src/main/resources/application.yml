@@ -30,19 +30,6 @@ spring:
       leak-detection-threshold: 20000
       max-lifetime: 1500000
       pool-name: downbeat-hikari
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
-      timeout: 2s
-      lettuce:
-        pool:
-          enabled: true
-          max-active: 32
-          max-idle: 16
-          min-idle: 4
-          max-wait: 500ms
   flyway:
     enabled: true
     # Schema dùng chung mọi môi trường; local thêm classpath:db/seed (application-local.yml)
@@ -58,17 +45,6 @@ spring:
       max-request-size: 50MB
       # File > 1MB ghi tạm ra đĩa thay vì giữ trong heap
       file-size-threshold: 1MB
-  mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
 
 management:
   endpoints:
@@ -78,10 +54,6 @@ management:
   endpoint:
     health:
       show-details: never
-  health:
-    # SMTP không ảnh hưởng việc phục vụ request => không làm container "unhealthy"
-    mail:
-      enabled: false
 
 logging:
   level:
@@ -98,15 +70,12 @@ security:
     header: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
     # Access token (ms): ngắn để khoá/đổi mật khẩu có hiệu lực nhanh; client tự gia hạn qua POST /auth/refresh
     expired-in: 1800000000
-    # Refresh token (Redis, dùng 1 lần, bị thu hồi khi đổi mật khẩu / khoá / xoá user)
+    # Refresh token (MySQL, dùng 1 lần, bị thu hồi khi đổi mật khẩu / khoá / xoá user)
     refresh-expired-in: 30d
   api-key:
     value: ${API_KEY:admin_api_key}
-  # Chống dò mật khẩu / OTP theo tài khoản (Redis). Giới hạn theo IP nằm ở nginx (zone auth_limit)
+  # Chống dò mật khẩu theo tài khoản (Caffeine, trong bộ nhớ; restart là mất bộ đếm). Giới hạn theo IP do nginx đảm nhận.
   guard:
-    otp-ttl: 5m
-    otp-max-attempts: 5
-    otp-resend-interval: 60s
     login-max-failures: 10
     login-lock-duration: 15m
 
@@ -121,15 +90,6 @@ upload:
   max-size: ${UPLOAD_MAX_SIZE:10MB}
 
 app:
-  cache:
-    template:
-      l1-max-size: 50000
-      l1-ttl: 2m
-      redis-ttl: 10m
-      lock-ttl: 10s
-      wait-timeout: 2s
-      wait-poll-interval: 60ms
-      single-flight-timeout: 5s
   rate-limit:
     enabled: true
     max-requests: 120

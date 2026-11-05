@@ -1,6 +1,6 @@
 "use client";
 
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 
 import { useAppForm } from "@/components/form/hooks";
@@ -91,8 +91,8 @@ export function LoginForm() {
               {(field) => <field.Password label="Mật khẩu*" description="" />}
             </form.AppField>
 
-            {/* Remember Me & Forgot Password Row */}
-            <div className="flex items-center justify-between">
+            {/* Remember Me Row */}
+            <div className="flex items-center">
               <form.AppField name="rememberMe">
                 {(field) => (
                   <div className="flex items-center space-x-2">
@@ -100,13 +100,6 @@ export function LoginForm() {
                   </div>
                 )}
               </form.AppField>
-
-              <Link
-                to="/forgot-password"
-                className="text-primary text-sm font-medium underline-offset-4 hover:underline"
-              >
-                Quên mật khẩu?
-              </Link>
             </div>
 
             {/* Submit Button */}

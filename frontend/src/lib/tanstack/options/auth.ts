@@ -1,7 +1,5 @@
-import { forgotPassword, getMe, getPermissionResources, login, resetPassword } from "@/lib/axios/auth";
+import { getMe, getPermissionResources, login } from "@/lib/axios/auth";
 import type {
-  ForgotPasswordApiRequest,
-  ResetPasswordApiRequest,
   LoginApiRequest,
   LoginResponseDTO
 } from "@/lib/types/auth";
@@ -26,27 +24,6 @@ export const createLoginMutationOptions = (): MutationOptions<
     }
   };
 };
-
-export const createForgotPasswordMutationOptions = (): MutationOptions<
-  string,
-  AxiosError<ErrorResponse>,
-  ForgotPasswordApiRequest
-> => ({
-  mutationKey: ["forgot-password"],
-  mutationFn: forgotPassword
-});
-
-export const createResetPasswordMutationOptions = (): MutationOptions<
-  string,
-  AxiosError<ErrorResponse>,
-  ResetPasswordApiRequest
-> => ({
-  mutationKey: ["reset-password"],
-  mutationFn: resetPassword,
-  meta: {
-    successMessage: "Đặt lại mật khẩu thành công, vui lòng đăng nhập"
-  }
-});
 
 export const meQueryOptions = queryOptions({
   queryKey: ["me"],

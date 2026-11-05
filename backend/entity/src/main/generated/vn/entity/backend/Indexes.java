@@ -9,6 +9,7 @@ import org.jooq.OrderField;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
 
+import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.UserApp;
 
@@ -23,6 +24,7 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index REFRESH_TOKEN_REFRESH_TOKEN_USER_INDEX = Internal.createIndex(DSL.name("refresh_token_user_index"), RefreshToken.REFRESH_TOKEN, new OrderField[] { RefreshToken.REFRESH_TOKEN.USER_ID }, false);
     public static final Index RESOURCE_RESOURCE_URI_INDEX = Internal.createIndex(DSL.name("resource_uri_index"), Resource.RESOURCE, new OrderField[] { Resource.RESOURCE.URI }, false);
     public static final Index USER_APP_USER_APP_ROLE_INDEX = Internal.createIndex(DSL.name("user_app_role_index"), UserApp.USER_APP, new OrderField[] { UserApp.USER_APP.ROLE_ID }, false);
 }

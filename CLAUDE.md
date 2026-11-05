@@ -23,7 +23,7 @@ Quy tắc cho worker nằm ở `AGENTS.md` (chung), `backend/AGENTS.md`, `fronte
         │  người dùng đọc, sửa, nói "duyệt"  → status: approved
         ▼  (/clear rồi mới cook, để ngữ cảnh lập plan không lẫn vào)
 /cook <slug>            — phiên A (plan approved)
-  1. Preflight: Orca, Docker (MySQL/Redis…), backend :9200
+  1. Preflight: Orca, Docker (MySQL/MinIO), backend :9200
   2. Claude viết frontend/tests/e2e/<slug>.spec.ts từ test case (nhóm "API" phủ mọi endpoint §5 + lỗi §5.4)
   3. Orca giao song song: Codex ← plan/tasks/<slug>-be.md · agy ← plan/tasks/<slug>-fe.md → dừng
         ▼  /clear
@@ -52,7 +52,7 @@ Trạng thái plan (frontmatter `status`): `draft` → `approved` → `in-progre
 
 ```bash
 sh scripts/ai/backend-restart.sh                    # build + restart backend :9200, in dòng Flyway
-docker compose -f docker-compose.local.yml --env-file backend/.env up -d   # MySQL / Redis / MinIO / Mailpit local (container downBeat-*)
+docker compose -f docker-compose.local.yml --env-file backend/.env up -d   # MySQL / MinIO local (container downBeat-*)
 cd backend && mvn -q "-Djooq.codegen.skip=true" -pl <module> -am test
 cd frontend && pnpm build && pnpm lint
 cd frontend && E2E_SLOWMO=400 pnpm test:e2e tests/e2e/<slug>.spec.ts --headed --workers=1 --reporter=line

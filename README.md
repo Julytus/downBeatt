@@ -12,7 +12,7 @@ Cửa hàng LUT chỉnh màu cho người làm video. Người dùng xem trướ
 |---|---|
 | Trang chủ `/`: hero, nhà sáng tạo, colorist, ghép ảnh LUT phổ biến, tìm màu bằng lời, băng tính năng, bảng giá rút gọn, FAQ | Xong, dữ liệu giả; tài liệu ở [docs/chuc-nang/trang-chu.md](docs/chuc-nang/trang-chu.md) |
 | Giao diện cửa hàng: kho LUT, chi tiết, danh mục, tìm kiếm, bảng giá, đăng ký/đăng nhập, nâng cấp, thanh toán | Xong, chạy bằng **dữ liệu giả** trong `frontend/src/lib/mock` (chưa gọi API) |
-| Đăng nhập trang quản trị `/login` → `/admin` | Xong, chạy với backend thật (JWT + refresh token, quên mật khẩu bằng OTP qua email) |
+| Đăng nhập trang quản trị `/login` → `/admin` | Xong, chạy với backend thật (JWT + refresh token lưu MySQL; đã bỏ quên mật khẩu qua email) |
 | Trang quản trị (quản lý LUT, đơn hàng, gói) | Mới có khung, chức năng làm theo từng lát trong `plan/` |
 | Thanh toán payOS | Chưa nối; hộp thoại thanh toán hiện là bản giả lập |
 | CSDL và API cho cửa hàng | Đã thiết kế ở [plan/thiet-ke-tong-quat.md](plan/thiet-ke-tong-quat.md), chưa làm |
@@ -85,10 +85,10 @@ Trang chủ có nút sáng / tối như các trang khác. Ở giao diện tối,
 
 | | |
 |---|---|
-| **Backend** | Java 21, Spring Boot 3.2, jOOQ, Flyway, MySQL 8.4, Redis, MinIO (lưu file), JWT |
+| **Backend** | Java 21, Spring Boot 3.2, jOOQ, Flyway, MySQL 8.4, MinIO (lưu file), JWT |
 | **Frontend** | React 19, Vite 7, TypeScript, TanStack Router + Query + Form, Tailwind CSS 4, shadcn/ui (Radix), zustand, zod |
 | **Kiểm thử** | JUnit (backend), Playwright + axe-core (E2E, kiểm tra khả năng truy cập WCAG) |
-| **Hạ tầng local** | Docker Compose: MySQL, Redis, MinIO, Mailpit (hộp thư thử), phpMyAdmin |
+| **Hạ tầng local** | Docker Compose: MySQL, MinIO, phpMyAdmin |
 
 ## Cấu trúc thư mục
 
@@ -96,7 +96,7 @@ Trang chủ có nút sáng / tối như các trang khác. Ở giao diện tối,
 backend/            Spring Boot, nhiều module Maven
   entity/           Lớp sinh từ CSDL (jOOQ codegen)
   base/             Hạ tầng dùng chung: repository, xử lý lỗi, phân quyền
-  authenticate/     Đăng nhập, refresh token, quên mật khẩu (OTP)
+  authenticate/     Đăng nhập, refresh token (bảng MySQL), đếm đăng nhập sai (bộ nhớ)
   business/         Nghiệp vụ cửa hàng (chưa có)
   app/              Điểm khởi chạy, cấu hình, migration Flyway (src/main/resources/db)
 frontend/
@@ -117,7 +117,7 @@ Cần: JDK 21, Maven, Node 22+, pnpm, Docker.
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 
-# 2. MySQL, Redis, MinIO, Mailpit
+# 2. MySQL, MinIO
 docker compose -f docker-compose.local.yml --env-file backend/.env up -d
 
 # 3. Backend: http://localhost:9200/api (Flyway tự tạo bảng và tài khoản mẫu)
@@ -135,7 +135,6 @@ Các địa chỉ khác khi chạy local:
 | | |
 |---|---|
 | Tài liệu API (Swagger) | http://localhost:9200/api/swagger-ui.html |
-| Mailpit (xem email OTP) | http://localhost:8026 |
 | phpMyAdmin | http://localhost:8092 |
 | MinIO console | http://localhost:9021 |
 

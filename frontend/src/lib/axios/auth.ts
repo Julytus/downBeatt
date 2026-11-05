@@ -1,7 +1,5 @@
 import type { ApiResponse } from "@/lib/types/common";
 import type {
-  ForgotPasswordApiRequest,
-  ResetPasswordApiRequest,
   LoginApiRequest,
   LoginApiResponse,
   MeApiResponse,
@@ -14,17 +12,6 @@ import { useAuthStore } from "@/lib/stores/auth";
 
 export const login = async (data: LoginApiRequest) => {
   const response = await axiosInstance.post<LoginApiResponse>("/user/authenticate", data);
-  return response.data.result;
-};
-
-/** Gửi OTP về email. Backend luôn trả cùng 1 thông báo (không tiết lộ email có tồn tại hay không). */
-export const forgotPassword = async (data: ForgotPasswordApiRequest) => {
-  const response = await axiosInstance.post<ApiResponse<string>>("/auth/forgot-password", data);
-  return response.data.result;
-};
-
-export const resetPassword = async (data: ResetPasswordApiRequest) => {
-  const response = await axiosInstance.post<ApiResponse<string>>("/auth/reset-password", data);
   return response.data.result;
 };
 

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import vn.aeoc.base.constant.ErrorCode;
 import vn.aeoc.base.exception.ApiErrorResponse.FieldViolation;
@@ -112,6 +114,12 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         return buildResponse(request, ErrorCode.FILE_TOO_LARGE, ErrorCode.FILE_TOO_LARGE.message, null);
+    }
+
+    @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
+    public ResponseEntity<ApiErrorResponse> handleMissingApi(Exception ex, HttpServletRequest request) {
+        return ResponseEntity.status(404).body(ApiErrorResponse.of(resolvePath(request), ErrorCode.DATA_NOT_FOUND,
+                "Không tìm thấy API", null));
     }
 
     @ExceptionHandler(Exception.class)

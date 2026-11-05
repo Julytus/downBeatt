@@ -12,7 +12,7 @@
 
     <!--
         Nghiệp vụ ecom (sản phẩm, đơn hàng, ...). Mỗi chức năng một package vn.aeoc.business.<chuc_nang>
-        gồm controller / service / repository. authenticate kéo theo base + entity + web/jOOQ/redis.
+        gồm controller / service / repository. authenticate kéo theo base + entity + web/jOOQ.
     -->
     <artifactId>business</artifactId>
 

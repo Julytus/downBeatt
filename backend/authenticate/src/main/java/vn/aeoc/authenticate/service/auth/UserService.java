@@ -2,15 +2,11 @@ package vn.aeoc.authenticate.service.auth;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.gson.Gson;
-import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import vn.aeoc.authenticate.constant.EmailContent;
 import vn.aeoc.authenticate.repository.auth.UserRepository;
 import vn.aeoc.authenticate.service.RestService;
 import vn.aeoc.authenticate.service.cache.CacheKeyFactory;
@@ -32,27 +28,21 @@ public class UserService {
     private final UserRepository userRepository;
     private final PermissionService permissionService;
     private final JWTService jwtService;
-    private final JavaMailSender mailSender;
     private final RestService restService;
     private final Cache<String, Object> authCache;
-    private final OtpService otpService;
     private final RefreshTokenService refreshTokenService;
 
     public UserService(UserRepository userRepository,
                        PermissionService permissionService,
                        JWTService jwtService,
-                       JavaMailSender mailSender,
                        RestService restService,
                        @Qualifier("authCache") Cache<String, Object> authCache,
-                       OtpService otpService,
                        RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.permissionService = permissionService;
         this.jwtService = jwtService;
-        this.mailSender = mailSender;
         this.restService = restService;
         this.authCache = authCache;
-        this.otpService = otpService;
         this.refreshTokenService = refreshTokenService;
     }
 
@@ -100,7 +90,7 @@ public class UserService {
         }
     }
 
-    /** Cấp cặp access token (JWT ngắn hạn) + refresh token (Redis, dài hạn). */
+    /** Cấp cặp access token (JWT ngắn hạn) + refresh token lưu MySQL (dài hạn). */
     public TokenResponse issueTokens(User userDb) {
         return new TokenResponse(
                 jwtService.generateJwt(toSimpleSecurityUser(userDb)),
@@ -150,44 +140,6 @@ public class UserService {
         return getUserById(id);
     }
 
-    /**
-     * Gửi OTP khôi phục mật khẩu. Không báo email có tồn tại / bị khoá hay không
-     * (tránh dò danh sách tài khoản): controller luôn trả cùng 1 thông báo.
-     */
-    public void forgotPassword(String email) {
-        if (StringUtils.isBlank(email)) {
-            throw new AppException("Email không được để trống", BAD_REQUEST.value());
-        }
-
-        User user = userRepository.getUserByEmail(email);
-        if (CommonUtils.NVL(user.getId()) <= 0 || CommonUtils.NVL(user.getActive()) != 1) {
-            log.info("Bỏ qua yêu cầu OTP: email không tồn tại hoặc tài khoản bị khoá");
-            return;
-        }
-
-        otpService.issue(email).ifPresentOrElse(
-                otp -> sendEmail(email, EmailContent.buildForgotPasswordEmail(user.getName(), otp)),
-                () -> log.info("Bỏ qua yêu cầu OTP cho userId {}: vừa gửi mã gần đây", user.getId()));
-    }
-
-    public void resetPassword(String email, String otp, String newPassword) {
-        if (StringUtils.isAnyBlank(email, otp, newPassword)) {
-            throw new AppException("Thông tin không hợp lệ", BAD_REQUEST.value());
-        }
-        // Kiểm tra mật khẩu trước để mật khẩu yếu không làm tốn lượt nhập OTP
-        PasswordPolicy.validate(newPassword);
-        otpService.verify(email, otp);
-
-        User user = userRepository.getUserByEmail(email);
-        if (CommonUtils.NVL(user.getId()) <= 0) {
-            throw new AppException(ErrorCode.OTP_INVALID);
-        }
-
-        userRepository.updatePass(user.getId(), BCrypt.hashpw(newPassword, BCrypt.gensalt()));
-        evictAuthUser(user.getId());
-        refreshTokenService.revokeAll(user.getId());
-    }
-
     /** Lấy thông tin user từ access token Google (chỉ dùng khi bật system.enabled-google-login). */
     public User authByGoogle(String token) {
         String httpHeaders = String.format("""
@@ -200,22 +152,6 @@ public class UserService {
         } catch (Exception e) {
             log.error("Lỗi khi gọi Google UserInfo API: {}", e.getMessage(), e);
             throw new AppException(ErrorCode.BAD_REQUEST, "Không thể xác thực với Google");
-        }
-    }
-
-    private void sendEmail(String email, String content) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setTo(email);
-            helper.setSubject("DownBeat - Khôi phục mật khẩu");
-            helper.setText(content, true);
-            mailSender.send(message);
-            // Không log nội dung: email chứa OTP
-            log.info("Đã gửi email khôi phục mật khẩu");
-        } catch (Exception e) {
-            log.error("Gửi email thất bại: {}", e.getMessage());
-            throw new AppException("Gửi email thất bại", BAD_REQUEST.value());
         }
     }
 

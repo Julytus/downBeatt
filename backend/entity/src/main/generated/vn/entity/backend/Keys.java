@@ -12,11 +12,13 @@ import org.jooq.impl.Internal;
 
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.Permission;
+import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.UserApp;
 import vn.entity.backend.tables.records.ModuleRecord;
 import vn.entity.backend.tables.records.PermissionRecord;
+import vn.entity.backend.tables.records.RefreshTokenRecord;
 import vn.entity.backend.tables.records.ResourceRecord;
 import vn.entity.backend.tables.records.RoleRecord;
 import vn.entity.backend.tables.records.UserAppRecord;
@@ -37,6 +39,8 @@ public class Keys {
     public static final UniqueKey<ModuleRecord> KEY_MODULE_PRIMARY = Internal.createUniqueKey(Module.MODULE, DSL.name("KEY_module_PRIMARY"), new TableField[] { Module.MODULE.ID }, true);
     public static final UniqueKey<PermissionRecord> KEY_PERMISSION_PERMISSION_ROLE_RESOURCE_UINDEX = Internal.createUniqueKey(Permission.PERMISSION, DSL.name("KEY_permission_permission_role_resource_uindex"), new TableField[] { Permission.PERMISSION.ROLE_ID, Permission.PERMISSION.RESOURCE_ID }, true);
     public static final UniqueKey<PermissionRecord> KEY_PERMISSION_PRIMARY = Internal.createUniqueKey(Permission.PERMISSION, DSL.name("KEY_permission_PRIMARY"), new TableField[] { Permission.PERMISSION.ID }, true);
+    public static final UniqueKey<RefreshTokenRecord> KEY_REFRESH_TOKEN_PRIMARY = Internal.createUniqueKey(RefreshToken.REFRESH_TOKEN, DSL.name("KEY_refresh_token_PRIMARY"), new TableField[] { RefreshToken.REFRESH_TOKEN.ID }, true);
+    public static final UniqueKey<RefreshTokenRecord> KEY_REFRESH_TOKEN_REFRESH_TOKEN_HASH_UINDEX = Internal.createUniqueKey(RefreshToken.REFRESH_TOKEN, DSL.name("KEY_refresh_token_refresh_token_hash_uindex"), new TableField[] { RefreshToken.REFRESH_TOKEN.TOKEN_HASH }, true);
     public static final UniqueKey<ResourceRecord> KEY_RESOURCE_PRIMARY = Internal.createUniqueKey(Resource.RESOURCE, DSL.name("KEY_resource_PRIMARY"), new TableField[] { Resource.RESOURCE.ID }, true);
     public static final UniqueKey<ResourceRecord> KEY_RESOURCE_RESOURCE_CODE_UINDEX = Internal.createUniqueKey(Resource.RESOURCE, DSL.name("KEY_resource_resource_code_uindex"), new TableField[] { Resource.RESOURCE.CODE }, true);
     public static final UniqueKey<RoleRecord> KEY_ROLE_PRIMARY = Internal.createUniqueKey(Role.ROLE, DSL.name("KEY_role_PRIMARY"), new TableField[] { Role.ROLE.ID }, true);
@@ -51,6 +55,7 @@ public class Keys {
 
     public static final ForeignKey<PermissionRecord, ResourceRecord> PERMISSION_RESOURCE_FK = Internal.createForeignKey(Permission.PERMISSION, DSL.name("permission_resource_fk"), new TableField[] { Permission.PERMISSION.RESOURCE_ID }, Keys.KEY_RESOURCE_PRIMARY, new TableField[] { Resource.RESOURCE.ID }, true);
     public static final ForeignKey<PermissionRecord, RoleRecord> PERMISSION_ROLE_FK = Internal.createForeignKey(Permission.PERMISSION, DSL.name("permission_role_fk"), new TableField[] { Permission.PERMISSION.ROLE_ID }, Keys.KEY_ROLE_PRIMARY, new TableField[] { Role.ROLE.ID }, true);
+    public static final ForeignKey<RefreshTokenRecord, UserAppRecord> REFRESH_TOKEN_USER_FK = Internal.createForeignKey(RefreshToken.REFRESH_TOKEN, DSL.name("refresh_token_user_fk"), new TableField[] { RefreshToken.REFRESH_TOKEN.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
     public static final ForeignKey<ResourceRecord, ModuleRecord> RESOURCE_MODULE_FK = Internal.createForeignKey(Resource.RESOURCE, DSL.name("resource_module_fk"), new TableField[] { Resource.RESOURCE.MODULE_ID }, Keys.KEY_MODULE_PRIMARY, new TableField[] { Module.MODULE.ID }, true);
     public static final ForeignKey<UserAppRecord, RoleRecord> USER_APP_ROLE_FK = Internal.createForeignKey(UserApp.USER_APP, DSL.name("user_app_role_fk"), new TableField[] { UserApp.USER_APP.ROLE_ID }, Keys.KEY_ROLE_PRIMARY, new TableField[] { Role.ROLE.ID }, true);
 }

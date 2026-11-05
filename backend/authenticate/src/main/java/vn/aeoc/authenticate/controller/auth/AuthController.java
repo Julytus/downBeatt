@@ -117,23 +117,4 @@ public class AuthController extends BaseController {
         return ResponseEntity.ok(ApiResponse.ok("Đăng xuất thành công"));
     }
 
-    @PostMapping("/auth/forgot-password")
-    public ResponseEntity<ApiResponse<String>> forgotPassword(
-            @RequestBody User request) {
-
-        userService.forgotPassword(request.getEmail());
-        return ResponseEntity.ok(ApiResponse.ok("Nếu email có trong hệ thống, mã OTP đã được gửi"));
-    }
-
-    @PostMapping("/auth/reset-password")
-    public ResponseEntity<ApiResponse<String>> resetPassword(
-            @RequestBody User request) {
-
-        userService.resetPassword(
-                request.getEmail(),
-                request.getOtp(),
-                request.getNewPassword()
-        );
-        return ResponseEntity.ok(ApiResponse.ok("Đặt lại mật khẩu thành công"));
-    }
 }

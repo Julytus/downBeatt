@@ -38,8 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * Refresh/logout: access token có thể đã hết hạn, xác thực bằng refresh token trong body.
      */
     private static final List<String> WHITE_LIST_POST_API = List.of(
-            "/auth/forgot-password",
-            "/auth/reset-password",
             "/auth/refresh",
             "/auth/logout"
     );

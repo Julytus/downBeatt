@@ -1,7 +1,7 @@
 ---
 title: Gỡ Redis và gửi mail (Mailpit) khỏi DownBeat
 slug: go-redis-mail
-status: approved          # draft → approved → in-progress → done | blocked
+status: done                 # draft → approved → in-progress → done | blocked
 dot: —                   # hạ tầng, không thuộc đợt chức năng nào (chưa có docs/plan/)
 module_be: authenticate  # không đụng business
 resource_code: —         # không thêm resource / quyền
@@ -214,12 +214,12 @@ Loại: `unit` = Codex viết JUnit · `api` / `e2e` = Claude viết trong `fron
 
 ## 10. Tiêu chí hoàn thành
 
-- [ ] Mọi TC ở §9 pass, trong lúc container `downBeat-redis` và `downBeat-mailpit` **đã dừng**
-- [ ] `mvn test`, `pnpm build`, `pnpm lint` xanh; `auth.spec.ts` + `shop-*.spec.ts` vẫn pass
-- [ ] Claude (sau khi BE pass): xoá service `downbeat-redis`, `downbeat-mailpit` + volume `downbeat-redis-data` và comment đầu file trong `docker-compose.local.yml`; xoá service `redis`, `REDIS_*`, `MAIL_*`, `depends_on.redis`, volume `redis-data` trong `docker-compose.yml`; xoá mục Redis / Mail trong `.env.example` gốc
-- [ ] Claude: sửa tài liệu còn nhắc Redis / Mailpit / OTP: `CLAUDE.md` (dòng lệnh docker compose), `backend/AGENTS.md` (dòng stack, mô tả `authenticate`, "không cần DB/Redis", mẫu `FakeRedis`), `.claude/skills/cook/SKILL.md` (preflight "mysql/redis...")
+- [x] Mọi TC ở §9 pass, trong lúc container `downBeat-redis` và `downBeat-mailpit` **đã dừng**
+- [x] `mvn test`, `pnpm build`, `pnpm lint` xanh; `auth.spec.ts` + `shop-*.spec.ts` vẫn pass
+- [x] Claude (sau khi BE pass): xoá service `downbeat-redis`, `downbeat-mailpit` + volume `downbeat-redis-data` và comment đầu file trong `docker-compose.local.yml`; xoá service `redis`, `REDIS_*`, `MAIL_*`, `depends_on.redis`, volume `redis-data` trong `docker-compose.yml`; xoá mục Redis / Mail trong `.env.example` gốc
+- [x] Claude: sửa tài liệu còn nhắc Redis / Mailpit / OTP: `CLAUDE.md` (dòng lệnh docker compose), `backend/AGENTS.md` (dòng stack, mô tả `authenticate`, "không cần DB/Redis", mẫu `FakeRedis`), `.claude/skills/cook/SKILL.md` (preflight "mysql/redis...")
 - [ ] Xoá hẳn container + volume cũ (`docker rm -f downBeat-redis downBeat-mailpit`, `docker volume rm downbeat_downbeat-redis-data`): **hỏi người dùng trước khi chạy**
-- [ ] Có `docs/chuc-nang/go-redis-mail.md`
+- [x] Có `docs/chuc-nang/go-redis-mail.md`
 
 ## 11. Rủi ro / câu hỏi mở
 
@@ -234,3 +234,19 @@ Loại: `unit` = Codex viết JUnit · `api` / `e2e` = Claude viết trong `fron
 |---|---|
 | 2026-11-05 | Lập plan (draft) |
 | 2026-11-05 | Người dùng duyệt → approved |
+| 2026-11-05 16:00 | Phiên A: status → in-progress. Preflight: Docker Desktop tắt → đã bật; mysql/redis/minio/mailpit up; backend restart 200, đăng nhập admin OK (rủi ro §11.4 đã hết). File bẩn có sẵn: `frontend/AGENTS.md`, `frontend/public/favicon.ico` |
+| 2026-11-05 16:02 | E2E `frontend/tests/e2e/go-redis-mail.spec.ts` (15 test: API TC-01→13 serial, Giao diện TC-16→19). Chạy thử nhóm API trên backend cũ: TC-01→10 pass, TC-11 đỏ đúng dự kiến (forgot-password hiện trả 500 → BE phải thêm 404 handler). Đã xoá test "quên mật khẩu" trong `auth.spec.ts` |
+| 2026-11-05 16:03 | Orca run `run_d9f4ba9d8194`, coordinator `term_e365d44f-aff4-44ba-816a-c3266f4b9ce6` (mọi lệnh kèm `--from`, `check` kèm `--terminal`; worktree `path:C:/Users/JulytusChu/Desktop/Code/DownBeat`) |
+| 2026-11-05 16:04 | Codex (BE, `plan/tasks/go-redis-mail-be.md`): dispatch `ctx_0496d370fb35`, terminal `term_23dd2dba-de62-4369-bcfd-b493709d17ed` — đang làm. agy (FE, `plan/tasks/go-redis-mail-fe.md`): dispatch `ctx_1cc8809ec6ba`, terminal `term_687b59fa-4312-4858-88c5-1262de9a3363` — đang làm |
+| 2026-11-05 16:04 | phiên A xong |
+| 2026-11-05 16:18 | Phiên B bắt đầu. agy worker_done (succeeded): xoá route/form forgot-password, bỏ link/nút, xoá API/type; build xanh, lint 0 error |
+| 2026-11-05 16:22 | Review FE (bước 6) sạch: diff chỉ frontend/src đúng §8, build xanh, lint 0 error (2 warning có sẵn), grep forgot/OTP rỗng. 0 vòng sửa FE |
+| 2026-11-05 16:23 | Codex worker_done (**failed**): unit TC-20→29 xanh, V2 + jOOQ xong, nhưng backend-restart.sh treo, chưa chạy API spec / TC-15 |
+| 2026-11-05 16:35 | Claude tự kiểm BE: `backend-restart.sh` chạy được (lên 4s, redis/mailpit đã dừng, log không lỗi Redis/Mail) → TC-14 pass; nhóm API 11/11 pass; TC-15 (refresh sau restart) 200; `mvn test` exit 0; grep §7.14 sạch. Lỗi: hỏng mã hoá tiếng Việt ở `application.yml`, `UserService`, `AuthGuardProperties` + javadoc tiếng Anh + ticker không dùng bean |
+| 2026-11-05 16:36 | Giao `plan/tasks/go-redis-mail-be-fix1.md` cho Codex trên terminal cũ: dispatch `ctx_c345d7a77c11` |
+| 2026-11-05 16:45 | Codex fix1 worker_done (succeeded). Claude kiểm lại: grep mã hoá rỗng, javadoc/comment tiếng Việt đúng, ticker dùng bean, mvn test exit 0. Review BE sạch sau 1 vòng sửa |
+| 2026-11-05 16:50 | Bước 7: E2E có giao diện `go-redis-mail.spec.ts` **15/15 pass** (16.1s), redis/mailpit đã dừng; ảnh tài liệu `docs/chuc-nang/img/go-redis-mail/` (01-dang-nhap-quan-tri, 02-forgot-password-404, 03-dang-nhap-cua-hang). Hồi quy `auth.spec.ts` + `shop-flows` + `shop-ui`: **66/66 pass**. Unit TC-20→29 (10) pass. TC-14, TC-15 chạy tay: pass. Tổng §9: 29/29 |
+| 2026-11-05 16:55 | Claude làm §10: gỡ redis/mailpit khỏi `docker-compose.local.yml`, redis + REDIS_*/MAIL_* khỏi `docker-compose.yml`, mục Redis/Mail khỏi `.env.example` gốc (cả hai compose `config -q` hợp lệ); sửa `CLAUDE.md`, `backend/AGENTS.md`, `.claude/skills/cook/SKILL.md`. Còn lại: `README.md` vẫn nhắc Redis/Mailpit/OTP (phiên C sửa); xoá container + volume cũ chờ người dùng đồng ý |
+| 2026-11-05 16:56 | Worker đã release (ctx_1cc8809ec6ba, ctx_0496d370fb35, ctx_c345d7a77c11), không còn reclaimable. Vòng sửa: BE 1 (fix1: hỏng mã hoá tiếng Việt + ticker), FE 0. Lệch plan: không lệch hợp đồng; Codex báo `failed` lần đầu chỉ vì restart treo trong shell của nó (Claude chạy lại bình thường) |
+| 2026-11-05 16:56 | phiên B xong |
+| 2026-11-05 17:10 | Phiên C: viết `docs/chuc-nang/go-redis-mail.md`, sửa `README.md` gốc (bỏ Redis/Mailpit/OTP), status → done. Mục xoá container + volume cũ vẫn chờ người dùng. File bẩn có sẵn để ngoài commit: `frontend/AGENTS.md`, `frontend/public/favicon.ico`, `frontend/src/routes/__root.tsx` |

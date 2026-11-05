@@ -18,7 +18,6 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as PlainPricingRouteImport } from './routes/_plain/pricing'
 import { Route as AuthLogoutRouteImport } from './routes/_auth/logout'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
-import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as ShopLutsIndexRouteImport } from './routes/_shop/luts/index'
 import { Route as ShopLutsSlugRouteImport } from './routes/_shop/luts/$slug'
 import { Route as ShopLutsDanhMucCategoryRouteImport } from './routes/_shop/luts/danh-muc/$category'
@@ -65,11 +64,6 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => AuthRoute,
-} as any)
 const ShopLutsIndexRoute = ShopLutsIndexRouteImport.update({
   id: '/luts/',
   path: '/luts/',
@@ -89,7 +83,6 @@ const ShopLutsDanhMucCategoryRoute = ShopLutsDanhMucCategoryRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
   '/pricing': typeof PlainPricingRoute
@@ -100,7 +93,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
   '/pricing': typeof PlainPricingRoute
@@ -116,7 +108,6 @@ export interface FileRoutesById {
   '/_plain': typeof PlainRouteWithChildren
   '/_shop': typeof ShopRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
-  '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/logout': typeof AuthLogoutRoute
   '/_plain/pricing': typeof PlainPricingRoute
@@ -130,7 +121,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/forgot-password'
     | '/login'
     | '/logout'
     | '/pricing'
@@ -141,7 +131,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/forgot-password'
     | '/login'
     | '/logout'
     | '/pricing'
@@ -156,7 +145,6 @@ export interface FileRouteTypes {
     | '/_plain'
     | '/_shop'
     | '/admin'
-    | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/logout'
     | '/_plain/pricing'
@@ -239,13 +227,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/forgot-password': {
-      id: '/_auth/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof AuthForgotPasswordRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/_shop/luts/': {
       id: '/_shop/luts/'
       path: '/luts'
@@ -271,13 +252,11 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteChildren {
-  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
-  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthLogoutRoute: AuthLogoutRoute,
 }

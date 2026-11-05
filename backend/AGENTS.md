@@ -2,12 +2,12 @@
 
 Đọc `../AGENTS.md` (giao thức worker chung) trước file này.
 
-Spring Boot 3.2 · Java 21 · MySQL 8 + jOOQ · Redis · MinIO · Maven multi-module, build ra **1 jar** (`app/target/aeoc-backend.jar`).
+Spring Boot 3.2 · Java 21 · MySQL 8 + jOOQ · Caffeine (cache trong bộ nhớ) · MinIO · Maven multi-module, build ra **1 jar** (`app/target/aeoc-backend.jar`).
 
 ```
 entity/        POJO entity (vn.aeoc.entity.data.mysql.*) + jOOQ codegen (vn.entity.backend.*, entity/src/main/generated — không sửa tay)
 base/          ApiResponse, AppException/ErrorCode, paging, AbsMysqlRepository, BaseService, utils
-authenticate/  đăng nhập (JWT + refresh token), quên mật khẩu (OTP), user_app, role, permission, resource, module, BaseController
+authenticate/  đăng nhập (JWT + refresh token lưu bảng `refresh_token`), user_app, role, permission, resource, module, BaseController
 business/      TOÀN BỘ nghiệp vụ ecom (vn.aeoc.business.<chức năng>: product, category, cart, order…) — hiện đang trống
 app/           main + application*.yml + db/migration + db/seed. Không chứa nghiệp vụ
 ```
@@ -20,7 +20,7 @@ Các lệnh chạy từ `backend/`, trừ dòng có `scripts/`, chạy từ gố
 ```bash
 mvn -q -DskipTests package                              # build; có backend/.env => sinh lại jOOQ từ DB local
 mvn -q -DskipTests "-Djooq.codegen.skip=true" package   # build khi DB chưa chạy / chưa có bảng
-mvn -q "-Djooq.codegen.skip=true" -pl <module> -am test # unit test (không cần DB/Redis)
+mvn -q "-Djooq.codegen.skip=true" -pl <module> -am test # unit test (không cần DB)
 sh scripts/ai/backend-restart.sh                        # (gốc repo) build + restart :9200 + in dòng Flyway
 ```
 Base URL `http://localhost:9200/api` · OpenAPI `/api/v3/api-docs`. Tài khoản local (seed `db/seed/V1_1__seed_auth.sql`, mật khẩu `Admin@123`): `admin@downbeat.local` (toàn quyền), `noaccess@downbeat.local` (không quyền). Lấy token: `POST /api/user/authenticate` với `{email, plainPassword}` → `result.token`.
@@ -89,7 +89,7 @@ public class ProductController extends BaseController {
    `uri` = hằng `URI` của controller; `code` = mã frontend dùng ở `CrmPermissionGuard` / sidebar (plan §2). Đặt ở migration, không đặt ở `db/seed` (seed chỉ chạy local, dùng cho dữ liệu mẫu).
 2. `sh scripts/ai/backend-restart.sh` (Flyway tạo bảng) → `mvn -q -DskipTests package` (sinh jOOQ) → POJO trong `entity/.../data/mysql/<feature>/`.
 3. Viết theo thứ tự: entity (thêm cột JOIN) → Repository → Service → Controller theo khung trên.
-4. Unit test service cùng package: JUnit 5 + AssertJ + Mockito, `new` service với mock (không dựng Spring). Phủ tối thiểu: quy tắc nghiệp vụ (trùng mã…), field server quản bị ghi đè khi tạo, bản ghi không tồn tại → 404 và không ghi. Cộng thêm mọi test case loại `unit` trong plan §9. Mẫu dùng mock Redis: `authenticate/src/test/.../support/FakeRedis.java`.
+4. Unit test service cùng package: JUnit 5 + AssertJ + Mockito, `new` service với mock (không dựng Spring). Phủ tối thiểu: quy tắc nghiệp vụ (trùng mã…), field server quản bị ghi đè khi tạo, bản ghi không tồn tại → 404 và không ghi. Cộng thêm mọi test case loại `unit` trong plan §9. Mẫu: `authenticate/src/test/.../service/auth/RefreshTokenServiceTest.java` (mock repository), `LoginAttemptServiceTest.java` (Caffeine thật + `Ticker` giả).
 5. Chạy unit test, restart, rồi tự gọi thử từng endpoint §5 bằng curl.
 
 ## Nghiệm thu chuẩn (task không ghi gì thêm thì dùng mục này)

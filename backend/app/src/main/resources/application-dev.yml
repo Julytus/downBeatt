@@ -12,9 +12,6 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/${MYSQL_DATABASE:downBeat}?useSSL=false&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&allowPublicKeyRetrieval=true}
     username: ${MYSQL_USER:root}
     password: ${MYSQL_ROOT_PASSWORD}
-  data:
-    redis:
-      host: ${REDIS_HOST:redis}
 
 logging:
   level:

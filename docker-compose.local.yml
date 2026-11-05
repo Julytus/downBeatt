@@ -1,5 +1,5 @@
 # =====================================================================
-# LOCAL DEV: chỉ hạ tầng (mysql, redis, minio, mailpit) — dự án DownBeat cho backend chạy trên máy (:9200)
+# LOCAL DEV: chỉ hạ tầng (mysql, minio) — dự án DownBeat cho backend chạy trên máy (:9200)
 # và frontend chạy bằng Vite (:4200). Dùng chung biến với backend/.env.
 #
 #   docker compose -f docker-compose.local.yml --env-file backend/.env up -d
@@ -11,14 +11,6 @@
 name: downbeat
 
 services:
-  downbeat-mailpit:
-    container_name: downBeat-mailpit
-    image: axllent/mailpit:v1.21
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:${MAILPIT_SMTP_PORT:-1026}:1025"
-      - "127.0.0.1:${MAILPIT_UI_PORT:-8026}:8025"
-
   downbeat-mysql:
     container_name: downBeat-mysql
     image: mysql:8.4
@@ -40,18 +32,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 30s
-
-  downbeat-redis:
-    container_name: downBeat-redis
-    image: redis:7-alpine
-    restart: unless-stopped
-    command: ["sh", "-c", "exec redis-server --appendonly yes $${REDIS_PASSWORD:+--requirepass $$REDIS_PASSWORD}"]
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
-    ports:
-      - "127.0.0.1:${REDIS_PORT:-6399}:6379"
-    volumes:
-      - downbeat-redis-data:/data
 
   downbeat-minio:
     container_name: downBeat-minio
@@ -82,5 +62,4 @@ services:
 
 volumes:
   downbeat-mysql-data:
-  downbeat-redis-data:
   downbeat-minio-data:
