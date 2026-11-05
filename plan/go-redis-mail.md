@@ -218,7 +218,7 @@ Loại: `unit` = Codex viết JUnit · `api` / `e2e` = Claude viết trong `fron
 - [x] `mvn test`, `pnpm build`, `pnpm lint` xanh; `auth.spec.ts` + `shop-*.spec.ts` vẫn pass
 - [x] Claude (sau khi BE pass): xoá service `downbeat-redis`, `downbeat-mailpit` + volume `downbeat-redis-data` và comment đầu file trong `docker-compose.local.yml`; xoá service `redis`, `REDIS_*`, `MAIL_*`, `depends_on.redis`, volume `redis-data` trong `docker-compose.yml`; xoá mục Redis / Mail trong `.env.example` gốc
 - [x] Claude: sửa tài liệu còn nhắc Redis / Mailpit / OTP: `CLAUDE.md` (dòng lệnh docker compose), `backend/AGENTS.md` (dòng stack, mô tả `authenticate`, "không cần DB/Redis", mẫu `FakeRedis`), `.claude/skills/cook/SKILL.md` (preflight "mysql/redis...")
-- [ ] Xoá hẳn container + volume cũ (`docker rm -f downBeat-redis downBeat-mailpit`, `docker volume rm downbeat_downbeat-redis-data`): **hỏi người dùng trước khi chạy**
+- [x] Xoá hẳn container + volume cũ (`docker rm -f downBeat-redis downBeat-mailpit`, `docker volume rm downbeat_downbeat-redis-data`): **hỏi người dùng trước khi chạy**
 - [x] Có `docs/chuc-nang/go-redis-mail.md`
 
 ## 11. Rủi ro / câu hỏi mở
@@ -249,4 +249,4 @@ Loại: `unit` = Codex viết JUnit · `api` / `e2e` = Claude viết trong `fron
 | 2026-11-05 16:55 | Claude làm §10: gỡ redis/mailpit khỏi `docker-compose.local.yml`, redis + REDIS_*/MAIL_* khỏi `docker-compose.yml`, mục Redis/Mail khỏi `.env.example` gốc (cả hai compose `config -q` hợp lệ); sửa `CLAUDE.md`, `backend/AGENTS.md`, `.claude/skills/cook/SKILL.md`. Còn lại: `README.md` vẫn nhắc Redis/Mailpit/OTP (phiên C sửa); xoá container + volume cũ chờ người dùng đồng ý |
 | 2026-11-05 16:56 | Worker đã release (ctx_1cc8809ec6ba, ctx_0496d370fb35, ctx_c345d7a77c11), không còn reclaimable. Vòng sửa: BE 1 (fix1: hỏng mã hoá tiếng Việt + ticker), FE 0. Lệch plan: không lệch hợp đồng; Codex báo `failed` lần đầu chỉ vì restart treo trong shell của nó (Claude chạy lại bình thường) |
 | 2026-11-05 16:56 | phiên B xong |
-| 2026-11-05 17:10 | Phiên C: viết `docs/chuc-nang/go-redis-mail.md`, sửa `README.md` gốc (bỏ Redis/Mailpit/OTP), status → done. Mục xoá container + volume cũ vẫn chờ người dùng. File bẩn có sẵn để ngoài commit: `frontend/AGENTS.md`, `frontend/public/favicon.ico`, `frontend/src/routes/__root.tsx` |
+| 2026-11-05 17:10 | Phiên C: viết `docs/chuc-nang/go-redis-mail.md`, sửa `README.md` gốc (bỏ Redis/Mailpit/OTP), status → done. Người dùng đồng ý → đã xoá container `downBeat-redis`, `downBeat-mailpit` và volume `downbeat_downbeat-redis-data`. File bẩn có sẵn để ngoài commit: `frontend/AGENTS.md`, `frontend/public/favicon.ico`, `frontend/src/routes/__root.tsx` |

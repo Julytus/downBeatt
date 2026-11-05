@@ -160,7 +160,7 @@ Chi tiết số liệu:
 - **Mất chức năng quên mật khẩu** (đã chốt với người dùng). Hiện chưa có màn hình quản trị người dùng, nên người quên mật khẩu phải nhờ quản trị đặt lại trực tiếp trong CSDL. Nếu cần, lập plan riêng.
 - Bộ đếm đăng nhập sai nằm trong bộ nhớ: khởi động lại backend là mở khoá, và chạy nhiều instance thì mỗi instance đếm riêng. Muốn bền hơn có thể chuyển sang bảng `login_attempt`.
 - `docker-compose.yml` (bản deploy) vẫn là bản AEOC cũ (tên project `aeoc`, còn Kafka); chức năng này chỉ gỡ Redis và Mail khỏi file đó.
-- Container và volume cũ (`downBeat-redis`, `downBeat-mailpit`, `downbeat_downbeat-redis-data`) chưa bị xoá, chờ người dùng đồng ý.
+- Container và volume cũ (`downBeat-redis`, `downBeat-mailpit`, `downbeat_downbeat-redis-data`) đã được xoá sau khi người dùng đồng ý.
 
 ## 9. Quy trình thực hiện
 
