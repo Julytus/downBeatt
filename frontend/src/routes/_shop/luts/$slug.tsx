@@ -3,8 +3,9 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { LutDetail } from "@/components/shop/luts/detail/lut-detail";
 import { LutDetailSkeleton } from "@/components/shop/luts/detail/lut-detail-skeleton";
+import { ShopError } from "@/components/shop/ui/shop-error";
 import { ShopNotFound } from "@/components/shop/ui/shop-not-found";
-import { NotFoundError } from "@/lib/mock/luts";
+import { isNotFoundError } from "@/lib/axios/luts";
 import { queryClient } from "@/lib/tanstack/query-client";
 import { createLutQueryOptions } from "@/lib/tanstack/options/luts";
 
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/_shop/luts/$slug")({
     try {
       await queryClient.ensureQueryData(createLutQueryOptions(params.slug));
     } catch (err) {
-      if (err instanceof NotFoundError) throw notFound();
+      if (isNotFoundError(err)) throw notFound();
       throw err;
     }
   },
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/_shop/luts/$slug")({
       description="LUT này không tồn tại hoặc đã bị gỡ. Hãy xem các LUT khác trong kho."
     />
   ),
+  errorComponent: ({ reset }) => <ShopError title="Không tải được LUT" onRetry={reset} />,
   component: LutDetailPage
 });
 

@@ -1,5 +1,5 @@
 import { SearchField } from "@/components/shop/ui/search-field";
-import { picsum } from "@/lib/mock/data/luts";
+import { picsum } from "@/lib/mock/data/images";
 import { BeforeAfter, useSplitPosition } from "./before-after";
 
 /** Ảnh hero mẫu; khi có ảnh thật thì đặt ở public/ hoặc lấy từ CMS. */
@@ -21,7 +21,8 @@ export function LutsHero({ q, onSearch }: LutsHeroProps) {
       className="relative overflow-hidden rounded-[12px] bg-[#1d5f70]"
     >
       <BeforeAfter
-        src={HERO_IMAGE}
+        beforeSrc={HERO_IMAGE}
+        afterSrc={HERO_IMAGE}
         grade={HERO_GRADE}
         alt="Ảnh minh hoạ trước và sau khi áp LUT"
         position={split.position}

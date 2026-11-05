@@ -11,6 +11,11 @@ import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
+import vn.entity.backend.tables.Creator;
+import vn.entity.backend.tables.Lut;
+import vn.entity.backend.tables.LutCategory;
+import vn.entity.backend.tables.LutCategoryMap;
+import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.Permission;
 import vn.entity.backend.tables.RefreshToken;
@@ -31,6 +36,31 @@ public class DefaultSchema extends SchemaImpl {
      * The reference instance of <code>DEFAULT_SCHEMA</code>
      */
     public static final DefaultSchema DEFAULT_SCHEMA = new DefaultSchema();
+
+    /**
+     * The table <code>creator</code>.
+     */
+    public final Creator CREATOR = Creator.CREATOR;
+
+    /**
+     * The table <code>lut</code>.
+     */
+    public final Lut LUT = Lut.LUT;
+
+    /**
+     * The table <code>lut_category</code>.
+     */
+    public final LutCategory LUT_CATEGORY = LutCategory.LUT_CATEGORY;
+
+    /**
+     * The table <code>lut_category_map</code>.
+     */
+    public final LutCategoryMap LUT_CATEGORY_MAP = LutCategoryMap.LUT_CATEGORY_MAP;
+
+    /**
+     * The table <code>lut_tag</code>.
+     */
+    public final LutTag LUT_TAG = LutTag.LUT_TAG;
 
     /**
      * The table <code>module</code>.
@@ -78,6 +108,11 @@ public class DefaultSchema extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
+            Creator.CREATOR,
+            Lut.LUT,
+            LutCategory.LUT_CATEGORY,
+            LutCategoryMap.LUT_CATEGORY_MAP,
+            LutTag.LUT_TAG,
             Module.MODULE,
             Permission.PERMISSION,
             RefreshToken.REFRESH_TOKEN,

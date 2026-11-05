@@ -12,3 +12,4 @@ Một plan chỉ được cook khi `status: approved`, nghĩa là người dùng
 |---|---|---|---|
 | [go-redis-mail](go-redis-mail.md) | Gỡ Redis + gửi mail (Mailpit): refresh token sang MySQL, bỏ quên mật khẩu OTP | — (hạ tầng) | done |
 | [trang-chu](trang-chu.md) | Trang chủ `/` (landing page cửa hàng, chỉ frontend, dữ liệu giả) theo video tham khảo | — (giao diện) | done |
+| [kho-lut](kho-lut.md) | Kho LUT: 6 API công khai, 36 LUT mẫu có file .cube + ảnh trước / sau / bìa thật trên MinIO, cửa hàng đổi từ dữ liệu giả sang API | thiết kế tổng quát §9 lát 1 | done |

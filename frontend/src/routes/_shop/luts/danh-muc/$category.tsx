@@ -4,8 +4,9 @@ import { Check, ChevronRight } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { LutBrowser } from "@/components/shop/luts/lut-browser";
 import { LutsDiscover } from "@/components/shop/luts/luts-discover";
+import { ShopError } from "@/components/shop/ui/shop-error";
 import { ShopNotFound } from "@/components/shop/ui/shop-not-found";
-import { NotFoundError } from "@/lib/mock/luts";
+import { isNotFoundError } from "@/lib/axios/luts";
 import { lutsSearchSchema, type LutsSearch } from "@/lib/search/luts";
 import { queryClient } from "@/lib/tanstack/query-client";
 import { createLutCategoryQueryOptions } from "@/lib/tanstack/options/luts";
@@ -16,13 +17,14 @@ export const Route = createFileRoute("/_shop/luts/danh-muc/$category")({
     try {
       await queryClient.ensureQueryData(createLutCategoryQueryOptions(params.category));
     } catch (err) {
-      if (err instanceof NotFoundError) throw notFound();
+      if (isNotFoundError(err)) throw notFound();
       throw err;
     }
   },
   notFoundComponent: () => (
     <ShopNotFound title="Không tìm thấy danh mục" description="Danh mục này không tồn tại. Hãy xem toàn bộ kho LUT." />
   ),
+  errorComponent: ({ reset }) => <ShopError title="Không tải được danh mục" onRetry={reset} />,
   component: CategoryPage
 });
 

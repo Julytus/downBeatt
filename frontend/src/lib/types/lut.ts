@@ -49,11 +49,31 @@ export const LUT_PREVIEW_TYPE_LABEL: Record<LutPreviewType, string> = {
   video: "Video"
 };
 
-/** Kiểu chữ in trên ảnh bìa (chỉ dùng cho dữ liệu mẫu, khi có ảnh thật sẽ bỏ). */
-export type LutCoverTextStyle = "bold" | "caption" | "serif" | "condensed" | "spaced" | "outline";
+/** Đối tượng LUT trả về từ API backend (§5) */
+export interface LutApiDTO {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  creatorId: number;
+  creatorName: string;
+  style: string;
+  isPremium: number;
+  previewType: "BEFORE_AFTER" | "VIDEO";
+  coverUrl: string;
+  beforeUrl?: string;
+  afterUrl?: string;
+  previewVideoUrl?: string;
+  fileSizeKb: number;
+  lutSize?: number;
+  downloadCount: number;
+  publishedTime: string;
+  categories: string[];
+  tags: string[];
+}
 
 export interface LutDTO {
-  id: string;
+  id: number;
   /** Định danh trên URL: /luts/<slug> */
   slug: string;
   title: string;
@@ -67,15 +87,13 @@ export interface LutDTO {
   premium: boolean;
   downloads: number;
   fileSizeKb: number;
+  lutSize?: number;
   coverUrl: string;
   previewType: LutPreviewType;
+  beforeUrl?: string;
+  afterUrl?: string;
   /** Có khi previewType = "video" */
   previewVideoUrl?: string;
-  /** Chữ in trên ảnh bìa */
-  coverText?: string;
-  coverTextStyle?: LutCoverTextStyle;
-  /** CSS filter mô phỏng màu sau khi áp LUT (dữ liệu mẫu) */
-  previewFilter: string;
   createdAt: string;
 }
 
@@ -100,6 +118,17 @@ export const LUT_CATEGORY_GROUP_LABEL: Record<LutCategoryGroup, string> = {
   dip: "Dịp & chủ đề",
   "phan-mem": "Phần mềm"
 };
+
+/** Đối tượng danh mục trả về từ API backend (§5.5) */
+export interface LutCategoryApiDTO {
+  id: number;
+  slug: string;
+  name: string;
+  groupCode: LutCategoryGroup;
+  description: string;
+  isPopular: number;
+  sortOrder: number;
+}
 
 export interface LutCategoryDTO {
   slug: string;

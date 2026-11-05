@@ -97,7 +97,9 @@ export function LutDetail({ lut }: { lut: LutDTO }) {
           <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-(--sh-border) pt-5 text-sm">
             <div>
               <dt className="text-(--sh-muted)">Định dạng</dt>
-              <dd className="font-semibold">.cube (3D LUT)</dd>
+              <dd className="font-semibold">
+                .cube (3D LUT{lut.lutSize ? `, ${lut.lutSize}×${lut.lutSize}×${lut.lutSize}` : ""})
+              </dd>
             </div>
             <div>
               <dt className="text-(--sh-muted)">Dung lượng</dt>

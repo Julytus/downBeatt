@@ -9,7 +9,6 @@ export function LutMiniCard({ lut }: { lut: LutDTO }) {
         src={lut.coverUrl}
         alt=""
         className="aspect-video w-20 shrink-0 rounded-[6px] object-cover"
-        style={{ filter: lut.previewFilter }}
       />
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold">{lut.title}</p>
