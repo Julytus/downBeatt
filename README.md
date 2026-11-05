@@ -4,12 +4,13 @@ Cửa hàng LUT chỉnh màu cho người làm video. Người dùng xem trướ
 
 Đồ án môn học: ứng dụng thương mại điện tử. Monorepo gồm `backend/` (Spring Boot) và `frontend/` (React).
 
-![Kho LUT](docs/img/readme/01-kho-lut.jpg)
+![Trang chủ](docs/img/readme/00-trang-chu.jpg)
 
 ## Trạng thái hiện tại
 
 | Phần | Trạng thái |
 |---|---|
+| Trang chủ `/`: hero, nhà sáng tạo, colorist, ghép ảnh LUT phổ biến, tìm màu bằng lời, băng tính năng, bảng giá rút gọn, FAQ | Xong, dữ liệu giả; tài liệu ở [docs/chuc-nang/trang-chu.md](docs/chuc-nang/trang-chu.md) |
 | Giao diện cửa hàng: kho LUT, chi tiết, danh mục, tìm kiếm, bảng giá, đăng ký/đăng nhập, nâng cấp, thanh toán | Xong, chạy bằng **dữ liệu giả** trong `frontend/src/lib/mock` (chưa gọi API) |
 | Đăng nhập trang quản trị `/login` → `/admin` | Xong, chạy với backend thật (JWT + refresh token, quên mật khẩu bằng OTP qua email) |
 | Trang quản trị (quản lý LUT, đơn hàng, gói) | Mới có khung, chức năng làm theo từng lát trong `plan/` |
@@ -17,6 +18,17 @@ Cửa hàng LUT chỉnh màu cho người làm video. Người dùng xem trướ
 | CSDL và API cho cửa hàng | Đã thiết kế ở [plan/thiet-ke-tong-quat.md](plan/thiet-ke-tong-quat.md), chưa làm |
 
 ## Giao diện
+
+### Trang chủ
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/img/readme/00-trang-chu-tinh-nang.jpg" alt="Băng tính năng trên trang chủ"><br><sub>Băng tính năng; header hiện menu khi đã cuộn qua hero</sub></td>
+    <td width="50%"><img src="docs/img/readme/01-kho-lut.jpg" alt="Kho LUT"><br><sub>Kho LUT, giao diện sáng</sub></td>
+  </tr>
+</table>
+
+Trang chủ có nút sáng / tối như các trang khác. Ở giao diện tối, các khối dùng xen kẽ hai tông nền.
 
 ### Cửa hàng
 
@@ -88,8 +100,8 @@ backend/            Spring Boot, nhiều module Maven
   business/         Nghiệp vụ cửa hàng (chưa có)
   app/              Điểm khởi chạy, cấu hình, migration Flyway (src/main/resources/db)
 frontend/
-  src/routes/       Trang theo file (TanStack Router): _shop/luts, _plain/pricing, _auth/login, admin
-  src/components/   shop/ (cửa hàng), admin/ (quản trị), ui/ (shadcn)
+  src/routes/       Trang theo file (TanStack Router): index (trang chủ), _shop/luts, _plain/pricing, _auth/login, admin
+  src/components/   shop/ (cửa hàng, trang chủ ở shop/home), admin/ (quản trị), ui/ (shadcn)
   src/lib/mock/     Dữ liệu và API giả của cửa hàng, cùng chữ ký với API thật sau này
 plan/               Thiết kế tổng quát + plan từng chức năng
 docs/               Tài liệu chức năng, ảnh chụp giao diện
@@ -116,7 +128,7 @@ cd backend && mvn -q -DskipTests package && java -jar app/target/aeoc-backend.ja
 cd frontend && pnpm install && pnpm dev
 ```
 
-Chỉ xem giao diện cửa hàng thì bước 4 là đủ, vì cửa hàng đang chạy bằng dữ liệu giả.
+Chỉ xem trang chủ và giao diện cửa hàng thì bước 4 là đủ, vì cửa hàng đang chạy bằng dữ liệu giả.
 
 Các địa chỉ khác khi chạy local:
 
@@ -156,4 +168,4 @@ Mã test (`frontend/tests/`, `backend/**/src/test/`) đang nằm trong `.gitigno
 - [plan/README.md](plan/README.md): danh sách plan.
 - `docs/chuc-nang/`: tài liệu từng chức năng khi làm xong (phục vụ báo cáo).
 
-Ảnh trong README chụp tự động bằng `node scripts/ai/chup-anh-readme.mjs` (cần frontend :4200; ảnh quản trị cần thêm backend :9200). Giao diện đổi thì chạy lại lệnh này.
+Ảnh trong README chụp tự động bằng `node scripts/ai/chup-anh-readme.mjs` (chỉ chụp lại ảnh trang chủ: `README_ONLY=trang-chu node scripts/ai/chup-anh-readme.mjs`) (cần frontend :4200; ảnh quản trị cần thêm backend :9200). Giao diện đổi thì chạy lại lệnh này.
