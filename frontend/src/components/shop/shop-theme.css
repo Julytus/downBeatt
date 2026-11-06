@@ -123,7 +123,27 @@
   animation: shop-float 7s ease-in-out infinite;
 }
 
+/* Con trỏ "|" nháy của tiêu đề gõ chữ (hero-section.tsx) */
+@keyframes shop-caret-blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  50.01%, 100% {
+    opacity: 0;
+  }
+}
+.shop-caret {
+  animation: shop-caret-blink 1s step-end infinite;
+}
+/* Đang gõ thì con trỏ sáng liên tục, gõ xong mới nháy */
+.shop-caret[data-typing="true"] {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .shop-caret {
+    animation: none !important;
+  }
   .shop-progress {
     animation: none !important;
     width: 100%;

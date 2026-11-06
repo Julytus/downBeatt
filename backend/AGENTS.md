@@ -21,9 +21,9 @@ Các lệnh chạy từ `backend/`, trừ dòng có `scripts/`, chạy từ gố
 mvn -q -DskipTests package                              # build; có backend/.env => sinh lại jOOQ từ DB local
 mvn -q -DskipTests "-Djooq.codegen.skip=true" package   # build khi DB chưa chạy / chưa có bảng
 mvn -q "-Djooq.codegen.skip=true" -pl <module> -am test # unit test (không cần DB)
-sh scripts/ai/backend-restart.sh                        # (gốc repo) build + restart :9200 + in dòng Flyway
+sh scripts/ai/backend-restart.sh                        # (gốc repo) build + restart :9500 + in dòng Flyway
 ```
-Base URL `http://localhost:9200/api` · OpenAPI `/api/v3/api-docs`. Tài khoản local (seed `db/seed/V1_1__seed_auth.sql`, mật khẩu `Admin@123`): `admin@downbeat.local` (toàn quyền), `noaccess@downbeat.local` (không quyền). Lấy token: `POST /api/user/authenticate` với `{email, plainPassword}` → `result.token`.
+Base URL `http://localhost:9500/api` · OpenAPI `/api/v3/api-docs`. Tài khoản local (seed `db/seed/V1_1__seed_auth.sql`, mật khẩu `Admin@123`): `admin@downbeat.local` (toàn quyền), `noaccess@downbeat.local` (không quyền). Lấy token: `POST /api/user/authenticate` với `{email, plainPassword}` → `result.token`.
 
 Flyway: `app/src/main/resources/db/migration/V<n+1>__<mo_ta>.sql`. **Không sửa migration đã chạy** (checksum sai → app không lên). Viết idempotent (`CREATE TABLE IF NOT EXISTS`, `INSERT … WHERE NOT EXISTS`). Flyway chỉ chạy khi app khởi động, còn codegen đọc DB lúc build, nên thêm bảng mới phải restart rồi build lại. DB trống (chưa từng chạy app) thì build với `-Djooq.codegen.skip=true`, nếu không codegen sẽ sinh ra schema rỗng.
 
@@ -42,11 +42,13 @@ Flyway: `app/src/main/resources/db/migration/V<n+1>__<mo_ta>.sql`. **Không sử
 - Bảng không có cột `id` (bảng nối như `lut_tag`, `lut_category_map`) **không có repository riêng** (`AbsMysqlRepository.init` bắt buộc cột `id`): truy vấn nó bằng tay trong repository của bảng chính.
 - Trong repository, `exists(…)` / `delete(…)` / `update(…)` là hàm kế thừa và **che** `import static org.jooq.impl.DSL.exists`: viết `DSL.exists(...)`.
 - Danh sách có phân trang: service gọi `pageQuery(pageable, () -> repository.list(…), () -> repository.count(…))` (list + count chạy song song trên `dbExecutor`), không tự `new Page<>` / `setTotal`.
-- Danh mục `module` / `resource` / `permission` chỉ đổi qua migration (chưa có màn hình quản trị). Không nới whitelist upload cho svg/html.
+- **Phân quyền**: đã có màn hình quản trị (`/admin/chuc-vu`, `/admin/phan-quyen`, `/admin/tai-nguyen`, `/admin/module`; API `role`, `permission`, `resource`, `module` ở `authenticate`). Chức năng mới vẫn **tạo dòng `resource` bằng migration** (vì `uri` phải khớp hằng `URI` của controller viết cùng lúc); việc cấp quyền cho từng chức vụ làm trên màn hình. Không sửa code / uri của 4 resource hệ thống `MODULE`, `RESOURCE`, `ROLE`, `PERMISSION` (`ResourceService.SYSTEM_CODES`).
+- Đổi quyền phải có hiệu lực ngay: ghi bảng `permission` thì `authCache.invalidateAll()` như `PermissionService.update`.
+- Không nới whitelist upload cho svg/html.
 
 ## Thêm 1 CRUD
 
-Khuôn chuẩn (ví dụ `product`). Code đã theo khuôn để tham khảo: `business/lut` (JOIN + `DSL.exists`, `pageQuery`, cache Caffeine), `authenticate/.../RefreshTokenRepository` (`getOne`, `delete(condition)`).
+Khuôn chuẩn (ví dụ `product`). Code đã theo khuôn để tham khảo: `authenticate/.../RoleController` + `RoleService` + `RoleRepository` (CRUD quản trị đầy đủ nhất: trùng tên, chặn xoá khi đang dùng, chỉ một bản ghi mặc định), `ModuleService` (xoá có dọn tham chiếu, endpoint body là mảng id), `PermissionService.update` (ghi theo lô, `@Transactional`), `business/lut` (JOIN + `DSL.exists`, `pageQuery`, cache Caffeine), `authenticate/.../RefreshTokenRepository` (`getOne`, `delete(condition)`). Unit test mẫu cho CRUD quản trị: `authenticate/src/test/.../service/auth/PhanQuyenServiceTest.java`.
 
 ```java
 // business/src/main/java/vn/aeoc/business/product/repository/ProductRepository.java

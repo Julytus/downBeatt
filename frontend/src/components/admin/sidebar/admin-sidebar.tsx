@@ -1,7 +1,5 @@
-"use client";
-
 import * as React from "react";
-import { Command, House } from "lucide-react";
+import { Boxes, Command, House, KeyRound, LayoutGrid, ShieldCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 import { AdminMain, type AdminNavItem } from "@/components/admin/sidebar/admin-main";
@@ -22,6 +20,14 @@ import { useCanView } from "@/hooks/use-can-view";
  */
 const FEATURE_ITEMS: (AdminNavItem & { code: string })[] = [];
 
+/** Nhóm "Hệ thống": các trang phân quyền (resource MODULE / RESOURCE / ROLE / PERMISSION, migration V4). */
+const SYSTEM_ITEMS: (AdminNavItem & { code: string })[] = [
+  { code: "ROLE", title: "Chức vụ", url: "/admin/chuc-vu", icon: ShieldCheck },
+  { code: "PERMISSION", title: "Phân quyền", url: "/admin/phan-quyen", icon: KeyRound },
+  { code: "RESOURCE", title: "Tài nguyên", url: "/admin/tai-nguyen", icon: Boxes },
+  { code: "MODULE", title: "Module", url: "/admin/module", icon: LayoutGrid }
+];
+
 export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { canView } = useCanView();
 
@@ -29,6 +35,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
     { title: "Trang chủ", url: "/admin", icon: House },
     ...FEATURE_ITEMS.filter((i) => canView(i.code))
   ];
+  const navSystem = SYSTEM_ITEMS.filter((i) => canView(i.code));
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -50,6 +57,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
       </SidebarHeader>
       <SidebarContent>
         <AdminMain label="Chức năng chính" items={navMain} />
+        {navSystem.length > 0 && <AdminMain label="Hệ thống" items={navSystem} />}
       </SidebarContent>
     </Sidebar>
   );

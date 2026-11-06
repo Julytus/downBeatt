@@ -214,7 +214,7 @@ flowchart LR
   subgraph Trinh_duyet[Trình duyệt]
     FE[React SPA: cửa hàng + /admin]
   end
-  subgraph Backend[Spring Boot :9200]
+  subgraph Backend[Spring Boot :9500]
     AUTH[authenticate: đăng nhập, JWT, refresh token]
     BIZ[business: lut, account, billing, download, collection, dashboard, recommend]
     CACHE[(Caffeine: cache trong bộ nhớ)]
@@ -320,7 +320,7 @@ Upload ở trang quản trị nhận `.cube`, ảnh (jpg, png, webp) và video (
 | Thành phần | Local |
 |---|---|
 | MySQL, MinIO | `docker compose -f docker-compose.local.yml --env-file backend/.env up -d` |
-| Backend | cổng 9200, khởi động lại bằng `sh scripts/ai/backend-restart.sh` |
+| Backend | cổng 9500, khởi động lại bằng `sh scripts/ai/backend-restart.sh` |
 | Frontend | Vite dev server |
 | payOS | Khoá thử nghiệm, hoặc endpoint `mock-pay` chỉ có ở profile local |
 | Dữ liệu đánh giá gợi ý | Schema riêng `downbeat_eval`, không lẫn với dữ liệu cửa hàng |

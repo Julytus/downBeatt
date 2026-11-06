@@ -14,10 +14,10 @@ export interface HeroCategory {
 
 export const HERO_CATEGORIES: HeroCategory[] = [
   { label: "Điện ảnh", href: "/luts/danh-muc/dien-anh", imageId: 799 },
-  { label: "Phim nhựa", href: "/luts/danh-muc/phim-nhua", imageId: 250 },
-  { label: "Cổ điển", href: "/luts/danh-muc/co-dien", imageId: 403 },
+  // { label: "Phim nhựa", href: "/luts/danh-muc/phim-nhua", imageId: 250 },
+  // { label: "Cổ điển", href: "/luts/danh-muc/co-dien", imageId: 403 },
   { label: "Đen trắng", href: "/luts/danh-muc/den-trang", imageId: 318, grayscale: true },
-  { label: "Du lịch", href: "/luts/danh-muc/du-lich", imageId: 655 }
+  // { label: "Du lịch", href: "/luts/danh-muc/du-lich", imageId: 655 }
 ];
 
 export const HERO_COMMITMENTS = [

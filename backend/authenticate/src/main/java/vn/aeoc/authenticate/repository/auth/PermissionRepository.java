@@ -1,6 +1,7 @@
 package vn.aeoc.authenticate.repository.auth;
 
 import org.jooq.DSLContext;
+import org.jooq.JSON;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,7 @@ import java.util.List;
 import static vn.entity.backend.tables.Permission.PERMISSION;
 import static vn.entity.backend.tables.Resource.RESOURCE;
 
-/** Đọc quyền của role. Quyền được cấp bằng migration / SQL (chưa có màn hình quản trị). */
+/** Quyền của role: đọc (menu, checkPermission) và ghi (màn hình /admin/phan-quyen qua PermissionService.update). */
 @Repository
 public class PermissionRepository extends AbsMysqlRepository<PermissionRecord, Permission, Integer> {
     public PermissionRepository(DSLContext dslContext) {
@@ -45,6 +46,18 @@ public class PermissionRepository extends AbsMysqlRepository<PermissionRecord, P
                 .where(PERMISSION.ROLE_ID.eq(roleId).and(RESOURCE.ACTIVE.eq(1)))
                 .orderBy(PERMISSION.RESOURCE_ID.asc())
                 .fetchInto(EBPermissionResource.class);
+    }
+
+    public List<Permission> listByRole(Integer roleId) {
+        return getListByCriteria(PERMISSION.ROLE_ID.eq(roleId));
+    }
+
+    public Permission getByRoleAndResource(Integer roleId, Integer resourceId) {
+        return getOne(PERMISSION.ROLE_ID.eq(roleId), PERMISSION.RESOURCE_ID.eq(resourceId));
+    }
+
+    public void updateActions(Integer id, String actions) {
+        updateFieldByCondition(PERMISSION.ID.eq(id), PERMISSION.ACTIONS, JSON.valueOf(actions));
     }
 
     /** Số permission khớp (role, uri, action); > 0 là có quyền. */

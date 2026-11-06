@@ -120,7 +120,7 @@ cp frontend/.env.example frontend/.env
 # 2. MySQL, MinIO
 docker compose -f docker-compose.local.yml --env-file backend/.env up -d
 
-# 3. Backend: http://localhost:9200/api (Flyway tự tạo bảng và tài khoản mẫu)
+# 3. Backend: http://localhost:9500/api (Flyway tự tạo bảng và tài khoản mẫu)
 cd backend && mvn -q -DskipTests package && java -jar app/target/aeoc-backend.jar
 #    hoặc trên Windows / Git Bash: sh scripts/ai/backend-restart.sh
 
@@ -134,7 +134,7 @@ Các địa chỉ khác khi chạy local:
 
 | | |
 |---|---|
-| Tài liệu API (Swagger) | http://localhost:9200/api/swagger-ui.html |
+| Tài liệu API (Swagger) | http://localhost:9500/api/swagger-ui.html |
 | phpMyAdmin | http://localhost:8092 |
 | MinIO console | http://localhost:9021 |
 
@@ -167,4 +167,4 @@ Mã test (`frontend/tests/`, `backend/**/src/test/`) đang nằm trong `.gitigno
 - [plan/README.md](plan/README.md): danh sách plan.
 - `docs/chuc-nang/`: tài liệu từng chức năng khi làm xong (phục vụ báo cáo).
 
-Ảnh trong README chụp tự động bằng `node scripts/ai/chup-anh-readme.mjs` (chỉ chụp lại ảnh trang chủ: `README_ONLY=trang-chu node scripts/ai/chup-anh-readme.mjs`) (cần frontend :4200; ảnh quản trị cần thêm backend :9200). Giao diện đổi thì chạy lại lệnh này.
+Ảnh trong README chụp tự động bằng `node scripts/ai/chup-anh-readme.mjs` (chỉ chụp lại ảnh trang chủ: `README_ONLY=trang-chu node scripts/ai/chup-anh-readme.mjs`) (cần frontend :4200; ảnh quản trị cần thêm backend :9500). Giao diện đổi thì chạy lại lệnh này.

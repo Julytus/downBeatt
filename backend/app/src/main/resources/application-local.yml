@@ -4,7 +4,7 @@
 # Secrets đọc từ backend/.env
 # =====================================================================
 server:
-  port: ${BACKEND_PORT:9200}
+  port: ${BACKEND_PORT:9500}
 
 spring:
   datasource:
