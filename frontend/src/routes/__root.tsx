@@ -13,7 +13,7 @@ const RootLayout = () => {
   return (
     <>
       <ThemeProvider defaultTheme="light" storageKey="downbeat-ui-theme">
-        <main className="bg-background text-foreground flex h-screen w-full flex-col overflow-y-scroll">
+        <main className="bg-background text-foreground relative flex h-screen w-full flex-col overflow-y-scroll">
           <Outlet />
           <Toaster />
         </main>

@@ -13,7 +13,9 @@ import vn.aeoc.authenticate.service.cache.CacheKeyFactory;
 import vn.aeoc.authenticate.util.PasswordPolicy;
 import vn.aeoc.base.constant.ErrorCode;
 import vn.aeoc.base.exception.AppException;
+import vn.aeoc.base.service.BaseService;
 import vn.aeoc.base.util.CommonUtils;
+import vn.aeoc.base.util.QueryExecutor;
 import vn.aeoc.entity.data.mysql.auth.Role;
 import vn.aeoc.entity.data.mysql.auth.User;
 import vn.aeoc.entity.data.response.TokenResponse;
@@ -24,21 +26,21 @@ import static vn.aeoc.authenticate.util.SecurityUtils.toSimpleSecurityUser;
 /** Đăng nhập, cấp / gia hạn token, đổi / khôi phục mật khẩu, kiểm quyền theo role. */
 @Slf4j(topic = "USER-SERVICE")
 @Service
-public class UserService {
-    private final UserRepository userRepository;
+public class UserService extends BaseService<UserRepository, User, Integer> {
     private final PermissionService permissionService;
     private final JWTService jwtService;
     private final RestService restService;
     private final Cache<String, Object> authCache;
     private final RefreshTokenService refreshTokenService;
 
-    public UserService(UserRepository userRepository,
+    public UserService(UserRepository repository,
                        PermissionService permissionService,
                        JWTService jwtService,
                        RestService restService,
                        @Qualifier("authCache") Cache<String, Object> authCache,
-                       RefreshTokenService refreshTokenService) {
-        this.userRepository = userRepository;
+                       RefreshTokenService refreshTokenService,
+                       QueryExecutor queryExecutor) {
+        super(repository, queryExecutor);
         this.permissionService = permissionService;
         this.jwtService = jwtService;
         this.restService = restService;
@@ -49,16 +51,16 @@ public class UserService {
     public User getUserById(Integer userId) {
         if (CommonUtils.NVL(userId) <= 0) throw new AppException(ErrorCode.LOGIN);
         User cached = (User) authCache.get(CacheKeyFactory.authUser(userId),
-                key -> userRepository.getUserById(userId));
+                key -> repository.getUserById(userId));
         return copyUser(cached);
     }
 
     public User getUserByPhone(String phone) {
-        return userRepository.getUserByPhone(phone);
+        return repository.getUserByPhone(phone);
     }
 
     public User getUserByEmail(String email) {
-        return userRepository.getUserByEmail(email);
+        return repository.getUserByEmail(email);
     }
 
     /**
@@ -125,7 +127,7 @@ public class UserService {
             throw new AppException("Mật khẩu mới phải khác mật khẩu cũ", BAD_REQUEST.value());
         }
 
-        String currentPassword = userRepository.getUserPasswordById(id);
+        String currentPassword = repository.getUserPasswordById(id);
         if (StringUtils.isBlank(currentPassword)) {
             throw new AppException("Không tìm thấy người dùng", BAD_REQUEST.value());
         }
@@ -133,7 +135,7 @@ public class UserService {
             throw new AppException("Mật khẩu cũ không chính xác", BAD_REQUEST.value());
         }
 
-        userRepository.updatePass(id, BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+        repository.updatePass(id, BCrypt.hashpw(newPassword, BCrypt.gensalt()));
         evictAuthUser(id);
         // Đổi mật khẩu => đăng xuất mọi thiết bị (access token còn lại tự hết hạn)
         refreshTokenService.revokeAll(id);

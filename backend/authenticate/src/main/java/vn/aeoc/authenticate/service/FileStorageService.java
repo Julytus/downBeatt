@@ -58,6 +58,9 @@ public class FileStorageService {
     @Value("${minio.bucket}")
     private String bucket;
 
+    @Value("${minio.private-bucket:downbeat-lut}")
+    private String privateBucket;
+
     @Value("${system.file-url}")
     private String fileUrl;
 
@@ -68,15 +71,19 @@ public class FileStorageService {
     @EventListener(ApplicationReadyEvent.class)
     public void ensureBucket() {
         try {
-            boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
-            if (!found) {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
-                setPublicReadPolicy();
-                log.info("Đã tạo bucket MinIO '{}'", bucket);
-            }
+            ensureBucket(bucket, true);
+            ensureBucket(privateBucket, false);
         } catch (Exception e) {
             // Không chặn app khởi động khi MinIO chưa sẵn sàng; upload sẽ báo lỗi riêng.
             log.warn("Không kiểm tra/tạo được bucket MinIO '{}': {}", bucket, e.getMessage());
+        }
+    }
+
+    private void ensureBucket(String name, boolean publicRead) throws Exception {
+        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(name).build())) {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(name).build());
+            if (publicRead) setPublicReadPolicy();
+            log.info("Đã tạo bucket MinIO '{}'", name);
         }
     }
 

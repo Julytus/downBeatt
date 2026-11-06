@@ -74,9 +74,7 @@ export function CollageSection() {
                       >
                         <LutCover
                           coverUrl={lut.coverUrl}
-                          previewFilter={lut.previewFilter}
-                          coverText={lut.coverText}
-                          coverTextStyle={lut.coverTextStyle}
+                          title={lut.title}
                           size={pos.size}
                         />
                       </Link>

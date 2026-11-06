@@ -1,14 +1,14 @@
 #!/usr/bin/env sh
-# Build + khởi động lại backend local :9200 (Windows / Git Bash) — dùng cho worker Orca và Claude.
+# Build + khởi động lại backend local :9500 (Windows / Git Bash) — dùng cho worker Orca và Claude.
 #   sh scripts/ai/backend-restart.sh [tham số mvn thêm]
-# Chỉ dừng đúng tiến trình java chạy aeoc-backend.jar đang nghe :9200; tiến trình khác giữ cổng -> từ chối (exit 3).
+# Chỉ dừng đúng tiến trình java chạy aeoc-backend.jar đang nghe :9500; tiến trình khác giữ cổng -> từ chối (exit 3).
 # Thứ tự dừng -> build -> chạy vì Windows khoá file jar đang chạy. Build lỗi thì backend nằm im (exit 1): sửa rồi chạy lại.
 set -eu
 
 # Gốc repo: lấy từ git; thư mục không phải git repo thì suy từ vị trí script (scripts/ai/ → ../..)
 ROOT=$(git -C "$(dirname "$0")" rev-parse --show-toplevel 2>/dev/null || (cd "$(dirname "$0")/../.." && pwd))
 BE="$ROOT/backend"
-PORT=${BACKEND_PORT:-9200}
+PORT=${BACKEND_PORT:-9500}
 HEALTH="http://localhost:$PORT/api/v3/api-docs"
 LOG="$BE/target/backend-run.log"
 WAIT_S=${BACKEND_WAIT_S:-180}

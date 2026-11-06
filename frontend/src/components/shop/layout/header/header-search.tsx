@@ -165,7 +165,6 @@ function HeaderSearchInner({ initial, className }: { initial: string; className?
                             alt=""
                             loading="lazy"
                             className="size-full object-cover transition-transform group-hover:scale-105"
-                            style={{ filter: lut.previewFilter }}
                           />
                           {lut.premium && (
                             <span className="absolute top-1.5 right-1.5 flex size-4 items-center justify-center rounded-full bg-(--sh-pink)">

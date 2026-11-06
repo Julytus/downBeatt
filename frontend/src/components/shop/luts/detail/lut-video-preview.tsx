@@ -15,7 +15,7 @@ export function LutVideoPreview({ lut }: { lut: LutDTO }) {
     <div className="relative aspect-video w-full overflow-hidden rounded-[12px] bg-black">
       <video
         src={lut.previewVideoUrl}
-        poster={lut.coverUrl.replace("/640/360", "/1280/720")}
+        poster={lut.coverUrl}
         aria-label={`${lut.title}: video xem trước sau khi áp LUT`}
         controls
         muted

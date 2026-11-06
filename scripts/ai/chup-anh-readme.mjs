@@ -1,6 +1,6 @@
 // Chụp ảnh giao diện cho README.md → docs/img/readme/*.png
 //   node scripts/ai/chup-anh-readme.mjs
-// Cần: frontend dev đang chạy :4200 (cd frontend && pnpm dev). Ảnh trang quản trị cần thêm backend :9200;
+// Cần: frontend dev đang chạy :4200 (cd frontend && pnpm dev). Ảnh trang quản trị cần thêm backend :9500;
 // backend tắt thì bỏ qua hai ảnh đó. Đổi địa chỉ: README_BASE_URL.
 import { createRequire } from "node:module";
 import { mkdirSync } from "node:fs";
@@ -166,8 +166,8 @@ page = await open("/luts/xanh-dien-anh", { viewport: MOBILE, theme: "dark" });
 await shot(page, "14-dien-thoai-chi-tiet");
 await done(page);
 
-// 12. Quản trị (cần backend :9200)
-const backendUp = await fetch("http://localhost:9200/api/v3/api-docs").then((r) => r.ok).catch(() => false);
+// 12. Quản trị (cần backend :9500)
+const backendUp = await fetch("http://localhost:9500/api/v3/api-docs").then((r) => r.ok).catch(() => false);
 if (backendUp) {
   page = await open("/login", { ready: "#identifier" });
   await shot(page, "15-admin-dang-nhap");
@@ -179,7 +179,7 @@ if (backendUp) {
   await shot(page, "16-admin");
   await done(page);
 } else {
-  console.log("backend :9200 chưa chạy — bỏ qua ảnh trang quản trị");
+  console.log("backend :9500 chưa chạy — bỏ qua ảnh trang quản trị");
 }
 
 await browser.close();

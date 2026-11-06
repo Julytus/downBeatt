@@ -1,6 +1,5 @@
 import { ChevronsLeftRight } from "lucide-react";
 import { useRef, useState } from "react";
-import { COVER_TEXT_CLASS } from "@/components/shop/luts/lut-card";
 import type { LutDTO } from "@/lib/types/lut";
 import { BeforeAfter } from "../before-after";
 
@@ -34,19 +33,13 @@ export function LutCompare({ lut }: { lut: LutDTO }) {
       onPointerCancel={() => (dragging.current = false)}
     >
       <BeforeAfter
-        src={lut.coverUrl.replace("/640/360", "/1280/720")}
-        grade={lut.previewFilter}
+        beforeSrc={lut.beforeUrl ?? ""}
+        afterSrc={lut.afterUrl ?? ""}
         alt={`${lut.title}: ảnh trước và sau khi áp LUT`}
         position={position}
         eager
         className="absolute inset-0"
-      >
-        {lut.coverText && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 text-center">
-            <span className={`${COVER_TEXT_CLASS[lut.coverTextStyle ?? "bold"]} md:scale-150`}>{lut.coverText}</span>
-          </div>
-        )}
-      </BeforeAfter>
+      />
 
       <span className="pointer-events-none absolute top-3 left-3 rounded-full bg-black/60 px-2.5 py-1 text-xs font-semibold text-white">
         Sau khi áp LUT

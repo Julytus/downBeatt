@@ -6,7 +6,7 @@ import {
   getLuts,
   getLutSuggestions,
   getRelatedLuts
-} from "@/lib/mock/luts";
+} from "@/lib/axios/luts";
 import type { LutListFilter, LutListResponseDTO } from "@/lib/types/lut";
 
 export const LUTS_PAGE_SIZE = 12;

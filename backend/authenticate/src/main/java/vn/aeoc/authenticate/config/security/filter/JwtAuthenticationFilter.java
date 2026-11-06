@@ -17,6 +17,7 @@ import vn.aeoc.authenticate.service.auth.JWTService;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
@@ -46,6 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final List<String> WHITE_LIST_GET_API = List.of(
             "/actuator/health" // healthcheck của docker/nginx
     );
+    private static final Pattern PUBLIC_FILE_PATH = Pattern.compile("^/[a-z0-9-]+/public/.*");
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -129,7 +131,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Sau chuẩn hóa: /swagger-ui/swagger-ui.css
         String path = requestUri.substring(contextPath.length());
 
-        if (path.startsWith("/public/")) return true;
+        if (path.startsWith("/public/") || PUBLIC_FILE_PATH.matcher(path).matches()) return true;
 
         return WHITE_LIST_API.contains(path)
                 || ("POST".equalsIgnoreCase(request.getMethod()) && WHITE_LIST_POST_API.contains(path))

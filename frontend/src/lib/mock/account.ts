@@ -1,5 +1,4 @@
 import { MOCK_PLANS } from "@/lib/mock/data/plans";
-import { delay } from "@/lib/mock/luts";
 import type {
   CheckoutRequest,
   LutDownloadDTO,
@@ -17,6 +16,9 @@ import type { LutDTO } from "@/lib/types/lut";
  * Tài khoản mẫu (mật khẩu Admin@123): free@downbeat.local (gói Miễn phí), pro@downbeat.local (gói Pro).
  */
 const DB_KEY = "downbeat-mock-users";
+
+const LATENCY_MS = 300;
+export const delay = (ms = LATENCY_MS) => new Promise((r) => setTimeout(r, ms));
 
 type StoredUser = ShopUserDTO & { password: string };
 

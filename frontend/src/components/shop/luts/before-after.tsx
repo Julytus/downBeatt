@@ -19,9 +19,8 @@ export function useSplitPosition(rest = 72) {
 }
 
 interface BeforeAfterProps {
-  src: string;
-  /** CSS filter cho phần "sau khi áp LUT" */
-  grade: string;
+  beforeSrc: string;
+  afterSrc: string;
   alt: string;
   /** Vị trí đường chia (% từ trái), thường lấy từ useSplitPosition */
   position: number;
@@ -29,24 +28,27 @@ interface BeforeAfterProps {
   eager?: boolean;
   className?: string;
   children?: React.ReactNode;
+  /** Filter tùy chọn nếu dùng cho ảnh tĩnh không có bản sau riêng như hero */
+  grade?: string;
 }
 
 /** Ảnh so sánh: trái đường chia = đã áp LUT, phải = ảnh gốc. */
 export function BeforeAfter({
-  src,
-  grade,
+  beforeSrc,
+  afterSrc,
   alt,
   position,
   eager = false,
   className,
-  children
+  children,
+  grade
 }: BeforeAfterProps) {
   const loading = eager ? "eager" : "lazy";
 
   return (
     <div className={cn("relative overflow-hidden select-none", className)}>
       <img
-        src={src}
+        src={beforeSrc}
         alt=""
         aria-hidden
         loading={loading}
@@ -55,7 +57,7 @@ export function BeforeAfter({
         className="absolute inset-0 h-full w-full object-cover"
       />
       <img
-        src={src}
+        src={afterSrc}
         alt={alt}
         loading={loading}
         decoding="async"
@@ -64,11 +66,13 @@ export function BeforeAfter({
         className="absolute inset-0 h-full w-full object-cover"
         style={{ filter: grade, clipPath: `inset(0 ${100 - position}% 0 0)` }}
       />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-[#f7789f]/80"
-        style={{ left: `${position}%` }}
-      />
+      {position < 100 && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-[#f7789f]/80"
+          style={{ left: `${position}%` }}
+        />
+      )}
       {children}
     </div>
   );

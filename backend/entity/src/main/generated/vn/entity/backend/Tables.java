@@ -4,6 +4,11 @@
 package vn.entity.backend;
 
 
+import vn.entity.backend.tables.Creator;
+import vn.entity.backend.tables.Lut;
+import vn.entity.backend.tables.LutCategory;
+import vn.entity.backend.tables.LutCategoryMap;
+import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.Permission;
 import vn.entity.backend.tables.RefreshToken;
@@ -17,6 +22,31 @@ import vn.entity.backend.tables.UserApp;
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
+
+    /**
+     * The table <code>creator</code>.
+     */
+    public static final Creator CREATOR = Creator.CREATOR;
+
+    /**
+     * The table <code>lut</code>.
+     */
+    public static final Lut LUT = Lut.LUT;
+
+    /**
+     * The table <code>lut_category</code>.
+     */
+    public static final LutCategory LUT_CATEGORY = LutCategory.LUT_CATEGORY;
+
+    /**
+     * The table <code>lut_category_map</code>.
+     */
+    public static final LutCategoryMap LUT_CATEGORY_MAP = LutCategoryMap.LUT_CATEGORY_MAP;
+
+    /**
+     * The table <code>lut_tag</code>.
+     */
+    public static final LutTag LUT_TAG = LutTag.LUT_TAG;
 
     /**
      * The table <code>module</code>.

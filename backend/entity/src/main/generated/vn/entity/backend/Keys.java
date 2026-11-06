@@ -10,12 +10,22 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
 
+import vn.entity.backend.tables.Creator;
+import vn.entity.backend.tables.Lut;
+import vn.entity.backend.tables.LutCategory;
+import vn.entity.backend.tables.LutCategoryMap;
+import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.Permission;
 import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.UserApp;
+import vn.entity.backend.tables.records.CreatorRecord;
+import vn.entity.backend.tables.records.LutCategoryMapRecord;
+import vn.entity.backend.tables.records.LutCategoryRecord;
+import vn.entity.backend.tables.records.LutRecord;
+import vn.entity.backend.tables.records.LutTagRecord;
 import vn.entity.backend.tables.records.ModuleRecord;
 import vn.entity.backend.tables.records.PermissionRecord;
 import vn.entity.backend.tables.records.RefreshTokenRecord;
@@ -35,6 +45,14 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<CreatorRecord> KEY_CREATOR_PRIMARY = Internal.createUniqueKey(Creator.CREATOR, DSL.name("KEY_creator_PRIMARY"), new TableField[] { Creator.CREATOR.ID }, true);
+    public static final UniqueKey<CreatorRecord> KEY_CREATOR_SLUG = Internal.createUniqueKey(Creator.CREATOR, DSL.name("KEY_creator_slug"), new TableField[] { Creator.CREATOR.SLUG }, true);
+    public static final UniqueKey<LutRecord> KEY_LUT_PRIMARY = Internal.createUniqueKey(Lut.LUT, DSL.name("KEY_lut_PRIMARY"), new TableField[] { Lut.LUT.ID }, true);
+    public static final UniqueKey<LutRecord> KEY_LUT_SLUG = Internal.createUniqueKey(Lut.LUT, DSL.name("KEY_lut_slug"), new TableField[] { Lut.LUT.SLUG }, true);
+    public static final UniqueKey<LutCategoryRecord> KEY_LUT_CATEGORY_PRIMARY = Internal.createUniqueKey(LutCategory.LUT_CATEGORY, DSL.name("KEY_lut_category_PRIMARY"), new TableField[] { LutCategory.LUT_CATEGORY.ID }, true);
+    public static final UniqueKey<LutCategoryRecord> KEY_LUT_CATEGORY_SLUG = Internal.createUniqueKey(LutCategory.LUT_CATEGORY, DSL.name("KEY_lut_category_slug"), new TableField[] { LutCategory.LUT_CATEGORY.SLUG }, true);
+    public static final UniqueKey<LutCategoryMapRecord> KEY_LUT_CATEGORY_MAP_PRIMARY = Internal.createUniqueKey(LutCategoryMap.LUT_CATEGORY_MAP, DSL.name("KEY_lut_category_map_PRIMARY"), new TableField[] { LutCategoryMap.LUT_CATEGORY_MAP.LUT_ID, LutCategoryMap.LUT_CATEGORY_MAP.CATEGORY_ID }, true);
+    public static final UniqueKey<LutTagRecord> KEY_LUT_TAG_PRIMARY = Internal.createUniqueKey(LutTag.LUT_TAG, DSL.name("KEY_lut_tag_PRIMARY"), new TableField[] { LutTag.LUT_TAG.LUT_ID, LutTag.LUT_TAG.TAG }, true);
     public static final UniqueKey<ModuleRecord> KEY_MODULE_MODULE_CODE_UINDEX = Internal.createUniqueKey(Module.MODULE, DSL.name("KEY_module_module_code_uindex"), new TableField[] { Module.MODULE.CODE }, true);
     public static final UniqueKey<ModuleRecord> KEY_MODULE_PRIMARY = Internal.createUniqueKey(Module.MODULE, DSL.name("KEY_module_PRIMARY"), new TableField[] { Module.MODULE.ID }, true);
     public static final UniqueKey<PermissionRecord> KEY_PERMISSION_PERMISSION_ROLE_RESOURCE_UINDEX = Internal.createUniqueKey(Permission.PERMISSION, DSL.name("KEY_permission_permission_role_resource_uindex"), new TableField[] { Permission.PERMISSION.ROLE_ID, Permission.PERMISSION.RESOURCE_ID }, true);
@@ -53,6 +71,11 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<LutRecord, UserAppRecord> FK_LUT_CREATED_BY = Internal.createForeignKey(Lut.LUT, DSL.name("fk_lut_created_by"), new TableField[] { Lut.LUT.CREATED_BY }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
+    public static final ForeignKey<LutRecord, CreatorRecord> FK_LUT_CREATOR = Internal.createForeignKey(Lut.LUT, DSL.name("fk_lut_creator"), new TableField[] { Lut.LUT.CREATOR_ID }, Keys.KEY_CREATOR_PRIMARY, new TableField[] { Creator.CREATOR.ID }, true);
+    public static final ForeignKey<LutCategoryMapRecord, LutCategoryRecord> FK_LCM_CATEGORY = Internal.createForeignKey(LutCategoryMap.LUT_CATEGORY_MAP, DSL.name("fk_lcm_category"), new TableField[] { LutCategoryMap.LUT_CATEGORY_MAP.CATEGORY_ID }, Keys.KEY_LUT_CATEGORY_PRIMARY, new TableField[] { LutCategory.LUT_CATEGORY.ID }, true);
+    public static final ForeignKey<LutCategoryMapRecord, LutRecord> FK_LCM_LUT = Internal.createForeignKey(LutCategoryMap.LUT_CATEGORY_MAP, DSL.name("fk_lcm_lut"), new TableField[] { LutCategoryMap.LUT_CATEGORY_MAP.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
+    public static final ForeignKey<LutTagRecord, LutRecord> FK_LUT_TAG_LUT = Internal.createForeignKey(LutTag.LUT_TAG, DSL.name("fk_lut_tag_lut"), new TableField[] { LutTag.LUT_TAG.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
     public static final ForeignKey<PermissionRecord, ResourceRecord> PERMISSION_RESOURCE_FK = Internal.createForeignKey(Permission.PERMISSION, DSL.name("permission_resource_fk"), new TableField[] { Permission.PERMISSION.RESOURCE_ID }, Keys.KEY_RESOURCE_PRIMARY, new TableField[] { Resource.RESOURCE.ID }, true);
     public static final ForeignKey<PermissionRecord, RoleRecord> PERMISSION_ROLE_FK = Internal.createForeignKey(Permission.PERMISSION, DSL.name("permission_role_fk"), new TableField[] { Permission.PERMISSION.ROLE_ID }, Keys.KEY_ROLE_PRIMARY, new TableField[] { Role.ROLE.ID }, true);
     public static final ForeignKey<RefreshTokenRecord, UserAppRecord> REFRESH_TOKEN_USER_FK = Internal.createForeignKey(RefreshToken.REFRESH_TOKEN, DSL.name("refresh_token_user_fk"), new TableField[] { RefreshToken.REFRESH_TOKEN.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
