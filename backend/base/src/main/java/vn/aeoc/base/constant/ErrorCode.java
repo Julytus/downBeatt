@@ -51,7 +51,11 @@ public enum ErrorCode {
     LUT_FILE_INVALID(400, "File .cube không hợp lệ"),
     PREVIEW_MISSING(400, "LUT chưa có đủ ảnh / video xem trước"),
     LUT_FILE_MISSING(400, "LUT chưa có file .cube đã đo đặc trưng màu"),
-    LUT_FEATURE_MISSING(400, "LUT cần ít nhất 3 thẻ và 1 danh mục");
+    LUT_FEATURE_MISSING(400, "LUT cần ít nhất 3 thẻ và 1 danh mục"),
+    PLAN_ACTIVE(400, "Bạn đang dùng gói này"),
+    ORDER_INVALID_STATUS(400, "Đơn hàng đã được xử lý"),
+    PAYMENT_GATEWAY_ERROR(502, "Không kết nối được cổng thanh toán, vui lòng thử lại"),
+    INVALID_SIGNATURE(400, "Chữ ký không hợp lệ");
 
     public final int code;
     public final String message;

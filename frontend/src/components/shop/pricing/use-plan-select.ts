@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useShopDialog } from "@/lib/stores/shop-dialog";
 import { useShopSession } from "@/lib/stores/shop-session";
 import type { BillingCycle, PlanDTO } from "@/lib/types/account";
+import { planAction } from "@/lib/utils/plan";
 
 export function usePlanSelect(cycle: BillingCycle) {
   const user = useShopSession((s) => s.user);
@@ -9,17 +10,22 @@ export function usePlanSelect(cycle: BillingCycle) {
   const navigate = useNavigate();
 
   const select = (plan: PlanDTO) => {
+    const action = planAction(user, plan);
+    if (action.disabled) return;
+
     if (plan.code === "free") {
       if (!user) openDialog({ type: "register" });
       else navigate({ to: "/luts" });
       return;
     }
-    if (!user) openDialog({ type: "register", plan: plan.code });
-    else openDialog({ type: "checkout", plan: plan.code, cycle });
+
+    if (!user) {
+      openDialog({ type: "register", plan: plan.code });
+      return;
+    }
+
+    openDialog({ type: "checkout", plan: plan.code, cycle });
   };
 
-  const ctaLabel = (plan: PlanDTO) =>
-    plan.code === "free" ? (user ? "Vào kho LUT" : "Bắt đầu miễn phí") : `Chọn gói ${plan.name}`;
-
-  return { select, ctaLabel, user };
+  return { select, user };
 }

@@ -4,11 +4,11 @@ import { ArrowRight } from "lucide-react";
 import { PlanCard } from "@/components/shop/pricing/plan-card";
 import { usePlanSelect } from "@/components/shop/pricing/use-plan-select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { plansQueryOptions } from "@/lib/tanstack/options/account";
+import { plansQueryOptions } from "@/lib/tanstack/options/billing";
 
 export function PlansSection() {
   const { data: plans, isPending } = useQuery(plansQueryOptions);
-  const { select, ctaLabel, user } = usePlanSelect("month");
+  const { select, user } = usePlanSelect("month");
 
   return (
     <section
@@ -38,8 +38,7 @@ export function PlansSection() {
                   key={p.code}
                   plan={p}
                   cycle="month"
-                  current={!!user && user.plan === p.code}
-                  ctaLabel={ctaLabel(p)}
+                  user={user}
                   onSelect={() => select(p)}
                   home
                 />

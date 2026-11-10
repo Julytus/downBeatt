@@ -116,6 +116,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/payment/payos/webhook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["webhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/order/mock-pay/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["mockPay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/order/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/order/cancel/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/module/update": {
         parameters: {
             query?: never;
@@ -164,6 +228,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/lut/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lut/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["update_4"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lut/publish/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lut/hide/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hide"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/lut/feature/recompute": {
         parameters: {
             query?: never;
@@ -174,6 +302,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["recompute"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lut/delete/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["delete_3"];
         delete?: never;
         options?: never;
         head?: never;
@@ -308,6 +452,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/plan/public/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/permission/role": {
         parameters: {
             query?: never;
@@ -340,6 +500,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/order/get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/module/list": {
         parameters: {
             query?: never;
@@ -347,7 +523,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_2"];
+        get: operations["list_3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -363,7 +539,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_2"];
+        get: operations["get_3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -411,7 +587,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_3"];
+        get: operations["list_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -427,7 +603,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_3"];
+        get: operations["get_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -436,23 +612,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/lut/feature/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["list_4"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/lut-category/public/list": {
+    "/lut/list": {
         parameters: {
             query?: never;
             header?: never;
@@ -468,6 +628,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/lut/get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_5"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lut/feature/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_6"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lut/creators": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["creators"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lut-category/public/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_7"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/lut-category/public/get": {
         parameters: {
             query?: never;
@@ -475,7 +699,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_4"];
+        get: operations["get_6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -539,7 +763,7 @@ export interface components {
             gender?: number;
             token?: string;
             plan?: string;
-            /** Format: date-time */
+            /** Format: date */
             planExpiresAt?: string;
         };
         ApiResponseTokenResponse: {
@@ -609,6 +833,54 @@ export interface components {
             roleId?: number;
             actions?: string;
         };
+        JsonNode: Record<string, never>;
+        ApiResponseVoid: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: Record<string, never>;
+            errors?: Record<string, never>;
+        };
+        ApiResponsePaymentOrder: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["PaymentOrder"];
+            errors?: Record<string, never>;
+        };
+        PaymentOrder: {
+            /** Format: int32 */
+            id?: number;
+            code?: string;
+            /** Format: int64 */
+            payosOrderCode?: number;
+            /** Format: int32 */
+            userId?: number;
+            /** Format: int32 */
+            planId?: number;
+            cycle?: string;
+            /** Format: int64 */
+            amount?: number;
+            status?: string;
+            checkoutUrl?: string;
+            payosPaymentLinkId?: string;
+            payosReference?: string;
+            webhookPayload?: Record<string, never>;
+            /** Format: int32 */
+            sourceLutId?: number;
+            /** Format: date-time */
+            paidTime?: string;
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: date-time */
+            updatedTime?: string;
+            planCode?: string;
+            planName?: string;
+            sourceLutSlug?: string;
+            sourceLutTitle?: string;
+            /** Format: date */
+            planExpiresAt?: string;
+        };
         Module: {
             /** Format: int32 */
             id?: number;
@@ -625,11 +897,11 @@ export interface components {
             result?: components["schemas"]["Module"];
             errors?: Record<string, never>;
         };
-        ApiResponseListLut: {
+        ApiResponseLut: {
             /** Format: int32 */
             code?: number;
             message?: string;
-            result?: components["schemas"]["Lut"][];
+            result?: components["schemas"]["Lut"];
             errors?: Record<string, never>;
         };
         Lut: {
@@ -696,6 +968,13 @@ export interface components {
             /** Format: date-time */
             computedTime?: string;
         };
+        ApiResponseListLut: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["Lut"][];
+            errors?: Record<string, never>;
+        };
         RefreshTokenRequest: {
             refreshToken?: string;
         };
@@ -733,6 +1012,39 @@ export interface components {
             /** Format: int32 */
             page?: number;
             items?: components["schemas"]["Resource"][];
+        };
+        ApiResponseListPlan: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["Plan"][];
+            errors?: Record<string, never>;
+        };
+        Plan: {
+            /** Format: int32 */
+            id?: number;
+            code?: string;
+            name?: string;
+            audience?: string;
+            /** Format: int64 */
+            monthlyPrice?: number;
+            /** Format: int64 */
+            yearlyMonthlyPrice?: number;
+            /** Format: int32 */
+            canDownloadPremium?: number;
+            /** Format: int32 */
+            maxMembers?: number;
+            license?: string[];
+            features?: string[];
+            /** Format: int32 */
+            isHighlight?: number;
+            /** Format: int32 */
+            sortOrder?: number;
+            active?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: date-time */
+            updatedTime?: string;
         };
         ApiResponseListResource: {
             /** Format: int32 */
@@ -780,12 +1092,26 @@ export interface components {
             page?: number;
             items?: components["schemas"]["Lut"][];
         };
-        ApiResponseLut: {
+        ApiResponseListCreator: {
             /** Format: int32 */
             code?: number;
             message?: string;
-            result?: components["schemas"]["Lut"];
+            result?: components["schemas"]["Creator"][];
             errors?: Record<string, never>;
+        };
+        Creator: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            slug?: string;
+            bio?: string;
+            avatarUrl?: string;
+            /** Format: int32 */
+            status?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: date-time */
+            updatedTime?: string;
         };
         ApiResponseListLutCategory: {
             /** Format: int32 */
@@ -985,6 +1311,98 @@ export interface operations {
             };
         };
     };
+    webhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JsonNode"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    mockPay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePaymentOrder"];
+                };
+            };
+        };
+    };
+    create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentOrder"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePaymentOrder"];
+                };
+            };
+        };
+    };
+    cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePaymentOrder"];
+                };
+            };
+        };
+    };
     update_3: {
         parameters: {
             query?: never;
@@ -1057,6 +1475,104 @@ export interface operations {
             };
         };
     };
+    upload: {
+        parameters: {
+            query: {
+                id: number;
+                kind: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLut"];
+                };
+            };
+        };
+    };
+    update_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Lut"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLut"];
+                };
+            };
+        };
+    };
+    publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLut"];
+                };
+            };
+        };
+    };
+    hide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLut"];
+                };
+            };
+        };
+    };
     recompute: {
         parameters: {
             query?: never;
@@ -1077,6 +1593,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseListLut"];
+                };
+            };
+        };
+    };
+    delete_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseInteger"];
                 };
             };
         };
@@ -1271,6 +1809,26 @@ export interface operations {
             };
         };
     };
+    list_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListPlan"];
+                };
+            };
+        };
+    };
     listForRole: {
         parameters: {
             query: {
@@ -1313,7 +1871,29 @@ export interface operations {
             };
         };
     };
-    list_2: {
+    get_2: {
+        parameters: {
+            query: {
+                code: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePaymentOrder"];
+                };
+            };
+        };
+    };
+    list_3: {
         parameters: {
             query?: {
                 keyword?: string;
@@ -1339,7 +1919,7 @@ export interface operations {
             };
         };
     };
-    get_2: {
+    get_3: {
         parameters: {
             query: {
                 id: number;
@@ -1408,7 +1988,7 @@ export interface operations {
             };
         };
     };
-    list_3: {
+    list_4: {
         parameters: {
             query?: {
                 q?: string;
@@ -1436,7 +2016,7 @@ export interface operations {
             };
         };
     };
-    get_3: {
+    get_4: {
         parameters: {
             query: {
                 slug: string;
@@ -1458,7 +2038,55 @@ export interface operations {
             };
         };
     };
-    list_4: {
+    list_5: {
+        parameters: {
+            query?: {
+                keyword?: string;
+                status?: string;
+                style?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePageLut"];
+                };
+            };
+        };
+    };
+    get_5: {
+        parameters: {
+            query: {
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLut"];
+                };
+            };
+        };
+    };
+    list_6: {
         parameters: {
             query?: {
                 keyword?: string;
@@ -1485,7 +2113,27 @@ export interface operations {
             };
         };
     };
-    list_5: {
+    creators: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListCreator"];
+                };
+            };
+        };
+    };
+    list_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -1505,7 +2153,7 @@ export interface operations {
             };
         };
     };
-    get_4: {
+    get_6: {
         parameters: {
             query: {
                 slug: string;

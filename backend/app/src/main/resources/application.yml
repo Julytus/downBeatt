@@ -103,6 +103,13 @@ system:
   enabled-google-login: false
   # URL công khai tới MinIO qua nginx (location /s3/). URL file = {file-url}/{bucket}/{yyyy/MM/dd/uuid.ext}
   file-url: ${SYSTEM_FILE_URL:http://localhost/s3}
+  frontend-url: ${FRONTEND_URL:http://localhost:4200}
+
+payos:
+  base-url: ${PAYOS_BASE_URL:https://api-merchant.payos.vn}
+  client-id: ${PAYOS_CLIENT_ID:}
+  api-key: ${PAYOS_API_KEY:}
+  checksum-key: ${PAYOS_CHECKSUM_KEY:}
 
 lut:
   feature:

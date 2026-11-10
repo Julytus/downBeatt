@@ -18,10 +18,13 @@ import vn.entity.backend.tables.LutCategoryMap;
 import vn.entity.backend.tables.LutColorFeature;
 import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.Module;
+import vn.entity.backend.tables.PaymentOrder;
 import vn.entity.backend.tables.Permission;
+import vn.entity.backend.tables.Plan;
 import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
+import vn.entity.backend.tables.Subscription;
 import vn.entity.backend.tables.UserApp;
 
 
@@ -74,9 +77,19 @@ public class DefaultSchema extends SchemaImpl {
     public final Module MODULE = Module.MODULE;
 
     /**
+     * The table <code>payment_order</code>.
+     */
+    public final PaymentOrder PAYMENT_ORDER = PaymentOrder.PAYMENT_ORDER;
+
+    /**
      * The table <code>permission</code>.
      */
     public final Permission PERMISSION = Permission.PERMISSION;
+
+    /**
+     * The table <code>plan</code>.
+     */
+    public final Plan PLAN = Plan.PLAN;
 
     /**
      * The table <code>refresh_token</code>.
@@ -92,6 +105,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>role</code>.
      */
     public final Role ROLE = Role.ROLE;
+
+    /**
+     * The table <code>subscription</code>.
+     */
+    public final Subscription SUBSCRIPTION = Subscription.SUBSCRIPTION;
 
     /**
      * The table <code>user_app</code>.
@@ -121,10 +139,13 @@ public class DefaultSchema extends SchemaImpl {
             LutColorFeature.LUT_COLOR_FEATURE,
             LutTag.LUT_TAG,
             Module.MODULE,
+            PaymentOrder.PAYMENT_ORDER,
             Permission.PERMISSION,
+            Plan.PLAN,
             RefreshToken.REFRESH_TOKEN,
             Resource.RESOURCE,
             Role.ROLE,
+            Subscription.SUBSCRIPTION,
             UserApp.USER_APP
         );
     }

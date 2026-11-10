@@ -6,9 +6,10 @@ import { ShopButton } from "@/components/shop/ui/shop-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PLAN_COMPARISON } from "@/lib/mock/data/plans";
 import { useShopDialog } from "@/lib/stores/shop-dialog";
-import { plansQueryOptions } from "@/lib/tanstack/options/account";
+import { plansQueryOptions } from "@/lib/tanstack/options/billing";
 import type { BillingCycle } from "@/lib/types/account";
 import { cn } from "@/lib/utils";
+import { daysLeft, formatPlanDate } from "@/lib/utils/plan";
 import { PlanCard } from "./plan-card";
 import { usePlanSelect } from "./use-plan-select";
 
@@ -27,7 +28,7 @@ const PRICING_FAQ = [
   },
   {
     q: "Có được đổi gói giữa chừng không?",
-    a: "Được. Nâng cấp có hiệu lực ngay, phần tiền còn lại của gói cũ được trừ vào gói mới."
+    a: "Được. Nâng cấp có hiệu lực ngay, thời gian còn lại của gói cũ được quy đổi thành ngày dùng thêm ở gói mới. Gia hạn được bất cứ lúc nào, thời gian cộng nối tiếp."
   },
   {
     q: "Có xuất hoá đơn VAT không?",
@@ -37,12 +38,28 @@ const PRICING_FAQ = [
 
 export function PricingPage() {
   const [cycle, setCycle] = useState<BillingCycle>("year");
-  const { data: plans, isPending } = useQuery(plansQueryOptions);
+  const { data: plans, isPending, isError, refetch } = useQuery(plansQueryOptions);
   const openDialog = useShopDialog((s) => s.open);
-  const { select, ctaLabel, user } = usePlanSelect(cycle);
+  const { select, user } = usePlanSelect(cycle);
+
+  const days = user?.planExpiresAt ? daysLeft(user.planExpiresAt) : undefined;
+  const isExpiringSoon = user && user.plan !== "free" && user.planExpiresAt && days !== undefined && days <= 3;
+  const currentPlan = plans?.find((p) => p.code === user?.plan);
+  const currentPlanName = currentPlan?.name ?? (user?.plan === "studio" ? "Studio" : "Pro");
 
   return (
     <div className="mx-auto max-w-[1080px]">
+      {isExpiringSoon && (
+        <div
+          role="status"
+          className="mb-8 flex items-center justify-between rounded-[8px] border border-amber-500/30 bg-amber-500/10 p-4 text-sm font-medium text-(--sh-fg)"
+        >
+          <p>
+            Gói {currentPlanName} của bạn hết hạn ngày {formatPlanDate(user.planExpiresAt)}. Gia hạn để không gián đoạn việc tải LUT Premium.
+          </p>
+        </div>
+      )}
+
       <header className="text-center">
         <h1 className="font-display text-3xl font-bold tracking-[-1px] md:text-5xl">
           Gói đơn giản, đủ để bạn sáng tạo
@@ -75,22 +92,30 @@ export function PricingPage() {
         </div>
       </header>
 
-      <div className="mt-10 grid gap-5 md:grid-cols-3">
-        {isPending || !plans
-          ? Array.from({ length: 3 }, (_, i) => (
-              <Skeleton key={i} className="h-[520px] rounded-[12px] bg-(--sh-surface)" />
-            ))
-          : plans.map((p) => (
-              <PlanCard
-                key={p.code}
-                plan={p}
-                cycle={cycle}
-                current={!!user && user.plan === p.code}
-                ctaLabel={ctaLabel(p)}
-                onSelect={() => select(p)}
-              />
-            ))}
-      </div>
+      {isError ? (
+        <div className="mt-10 flex flex-col items-center justify-center gap-3 rounded-[12px] border border-destructive/30 bg-destructive/5 p-8 text-center">
+          <p className="font-semibold text-destructive">Không tải được bảng giá</p>
+          <ShopButton variant="secondary" onClick={() => void refetch()}>
+            Thử lại
+          </ShopButton>
+        </div>
+      ) : (
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {isPending || !plans
+            ? Array.from({ length: 3 }, (_, i) => (
+                <Skeleton key={i} className="h-[520px] rounded-[12px] bg-(--sh-surface)" />
+              ))
+            : plans.map((p) => (
+                <PlanCard
+                  key={p.code}
+                  plan={p}
+                  cycle={cycle}
+                  user={user}
+                  onSelect={() => select(p)}
+                />
+              ))}
+        </div>
+      )}
 
       {!user && (
         <div className="mt-8 flex flex-col gap-3 rounded-[12px] border border-(--sh-border) p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -151,7 +176,7 @@ export function PricingPage() {
                   <span className="sr-only">Quyền lợi</span>
                 </th>
                 {(plans ?? []).map((p) => (
-                  <th key={p.code} scope="col" className={cn("py-3 text-center", p.highlight && "bg-(--sh-surface)/60")}>
+                  <th key={p.code} scope="col" className={cn("py-3 text-center", Boolean(p.isHighlight) && "bg-(--sh-surface)/60")}>
                     <span className="block font-semibold">{p.name}</span>
                     <span className="block text-xs font-normal text-(--sh-muted)">
                       {p.monthlyPrice === 0 ? "0đ" : `${(cycle === "year" ? p.yearlyMonthlyPrice : p.monthlyPrice).toLocaleString("vi-VN")}đ/tháng`}
@@ -173,7 +198,7 @@ export function PricingPage() {
                       {row.label}
                     </th>
                     {row.values.map((v, i) => (
-                      <td key={i} className={cn("py-2.5 text-center", plans?.[i]?.highlight && "bg-(--sh-surface)/60")}>
+                      <td key={i} className={cn("py-2.5 text-center", Boolean(plans?.[i]?.isHighlight) && "bg-(--sh-surface)/60")}>
                         {v === true ? (
                           <>
                             <Check className="mx-auto size-4 text-(--sh-success)" aria-hidden />
