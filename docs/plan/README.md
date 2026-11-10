@@ -21,7 +21,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 1.2 | 1. Cửa hàng | `dac-trung-mau` | 0.3 | done (10/11/2026) |
 | 1.3 | 1. Cửa hàng | `quan-ly-lut` | 0.3, 0.4, 1.2 | done (10/11/2026) |
 | 1.4 | 1. Cửa hàng | `goi-thanh-toan` | 1.1 | done (10/11/2026) |
-| 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | chưa làm |
+| 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | done (10/11/2026) |
 | 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | chưa làm |
 | 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | chưa làm |
 | 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | chưa làm |
@@ -138,16 +138,17 @@ Thiết kế: §2.2, §4.5, §5.4 (order, subscription), §6.4, §6.5, §6.8 (t�
 - [x] E2E (có webhook lặp, sai chữ ký, sai số tiền) + review + tài liệu
   - E2E + review: xong (27/27); tài liệu: `docs/chuc-nang/goi-thanh-toan.md`
 
-### 1.5 `tai-lut` — chưa làm
+### 1.5 `tai-lut` — done (10/11/2026) ([plan/tai-lut.md](../../plan/tai-lut.md))
 
 Thiết kế: §4.6, §6.3. Bảng: `download_log`.
 
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] Migration `download_log`
-  - [ ] `POST /lut/download`: 401, 404 khi chưa xuất bản, 403 `PLAN_REQUIRED`; ghi log + tăng `download_count` bằng một câu UPDATE; link ký sẵn 5 phút
-- [ ] Frontend: nút "Tải LUT" dùng API, 403 mở hộp thoại nâng cấp, tải xong hiện "LUT tương tự"
-- [ ] E2E + review + tài liệu
+- [x] Plan → duyệt (10/11/2026)
+- [x] Backend
+  - [x] Migration `download_log`
+  - [x] `POST /lut/download`: 401, 404 khi chưa xuất bản, 403 `PLAN_REQUIRED`; ghi log + tăng `download_count` bằng một câu UPDATE; link ký sẵn 5 phút
+- [x] Frontend: nút "Tải LUT" dùng API, 403 mở hộp thoại nâng cấp, tải xong hiện "LUT tương tự"
+- [x] E2E + review + tài liệu
+  - E2E (21/21) + review xong; tài liệu: `docs/chuc-nang/tai-lut.md`
 
 ### 1.6 `bo-suu-tap` — chưa làm
 

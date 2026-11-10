@@ -55,7 +55,9 @@ public enum ErrorCode {
     PLAN_ACTIVE(400, "Bạn đang dùng gói này"),
     ORDER_INVALID_STATUS(400, "Đơn hàng đã được xử lý"),
     PAYMENT_GATEWAY_ERROR(502, "Không kết nối được cổng thanh toán, vui lòng thử lại"),
-    INVALID_SIGNATURE(400, "Chữ ký không hợp lệ");
+    INVALID_SIGNATURE(400, "Chữ ký không hợp lệ"),
+    PLAN_REQUIRED(403, "LUT Premium cần gói Pro hoặc Studio"),
+    LUT_FILE_UNAVAILABLE(503, "File LUT đang không sẵn sàng, vui lòng thử lại sau");
 
     public final int code;
     public final String message;

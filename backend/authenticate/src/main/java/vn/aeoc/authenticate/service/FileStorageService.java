@@ -1,6 +1,8 @@
 package vn.aeoc.authenticate.service;
 
 import io.minio.*;
+import io.minio.errors.ErrorResponseException;
+import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -16,12 +18,14 @@ import vn.aeoc.base.exception.AppException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Lưu file lên MinIO, trả về URL công khai (qua nginx: {system.file-url}/{bucket}/{key}).
@@ -127,6 +131,49 @@ public class FileStorageService {
         } catch (Exception e) {
             log.error("Upload file riêng tư lên MinIO thất bại, key={}", key, e);
             throw new AppException(ErrorCode.UPLOAD_FILE_FAILED);
+        }
+    }
+
+    public boolean existsPrivate(String key) {
+        try {
+            minioClient.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(privateBucket)
+                            .object(key)
+                            .build()
+            );
+            return true;
+        } catch (ErrorResponseException e) {
+            if ("NoSuchKey".equals(e.errorResponse().code())) {
+                return false;
+            }
+            log.error("MinIO statObject thất bại cho key='{}' trong bucket='{}': {}", key, privateBucket, e.getMessage());
+            throw new AppException(ErrorCode.LUT_FILE_UNAVAILABLE);
+        } catch (Exception e) {
+            log.error("MinIO statObject thất bại cho key='{}' trong bucket='{}': {}", key, privateBucket, e.getMessage());
+            throw new AppException(ErrorCode.LUT_FILE_UNAVAILABLE);
+        }
+    }
+
+    public String presignPrivateGet(String key, Duration ttl, String downloadName, String contentType) {
+        try {
+            int expirySeconds = ttl != null ? (int) ttl.toSeconds() : 300;
+            Map<String, String> queryParams = Map.of(
+                    "response-content-disposition", "attachment; filename=\"" + downloadName + "\"",
+                    "response-content-type", contentType
+            );
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(privateBucket)
+                            .object(key)
+                            .expiry(expirySeconds, TimeUnit.SECONDS)
+                            .extraQueryParams(queryParams)
+                            .build()
+            );
+        } catch (Exception e) {
+            log.error("MinIO presignPrivateGet thất bại cho key='{}' trong bucket='{}': {}", key, privateBucket, e.getMessage(), e);
+            throw new AppException(ErrorCode.LUT_FILE_UNAVAILABLE);
         }
     }
 

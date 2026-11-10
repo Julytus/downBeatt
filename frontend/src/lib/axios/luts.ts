@@ -1,5 +1,6 @@
 import { isAxiosError } from "axios";
 import axiosInstance from "@/lib/axios/instance";
+import type { LutDownloadDTO } from "@/lib/types/account";
 import type { ApiResponse, PagedResult } from "@/lib/types/common";
 import type {
   LutApiDTO,
@@ -118,4 +119,10 @@ export async function getLutCategory(slug: string): Promise<LutCategoryDTO> {
     params: { slug }
   });
   return toLutCategoryDTO(res.data.result);
+}
+
+/** POST /lut/download (plan §5.1) — xin URL ký sẵn để tải LUT. */
+export async function requestLutDownload(lutId: number): Promise<LutDownloadDTO> {
+  const res = await axiosInstance.post<ApiResponse<LutDownloadDTO>>("/lut/download", { lutId });
+  return res.data.result;
 }

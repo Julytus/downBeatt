@@ -14,7 +14,8 @@ export type ShopDialog =
   | { type: "login"; lut?: LutDTO; plan?: Exclude<PlanCode, "free">; email?: string }
   | { type: "register"; lut?: LutDTO; plan?: Exclude<PlanCode, "free"> }
   | { type: "upgrade"; lut: LutDTO }
-  | { type: "checkout"; plan: Exclude<PlanCode, "free">; cycle: BillingCycle; sourceLutId?: number };
+  | { type: "checkout"; plan: Exclude<PlanCode, "free">; cycle: BillingCycle; sourceLutId?: number }
+  | { type: "downloaded"; lut: LutDTO; fileName: string };
 
 interface ShopDialogState {
   dialog: ShopDialog | null;

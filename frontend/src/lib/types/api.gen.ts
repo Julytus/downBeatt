@@ -308,6 +308,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/lut/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["download"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/lut/delete/{id}": {
         parameters: {
             query?: never;
@@ -975,6 +991,27 @@ export interface components {
             result?: components["schemas"]["Lut"][];
             errors?: Record<string, never>;
         };
+        DownloadLog: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            /** Format: int32 */
+            lutId?: number;
+            planCode?: string;
+            ip?: string;
+            /** Format: date-time */
+            createdTime?: string;
+            fileName?: string;
+            url?: string;
+        };
+        ApiResponseDownloadLog: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["DownloadLog"];
+            errors?: Record<string, never>;
+        };
         RefreshTokenRequest: {
             refreshToken?: string;
         };
@@ -1593,6 +1630,30 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseListLut"];
+                };
+            };
+        };
+    };
+    download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DownloadLog"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseDownloadLog"];
                 };
             };
         };

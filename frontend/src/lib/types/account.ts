@@ -79,7 +79,11 @@ export interface CreateOrderResult {
   checkoutUrl: string;
 }
 
-/** Kết quả xin tải: file .cube (bản giả tạo ngay ở client; bản thật là URL ký sẵn từ MinIO) */
+export interface LutDownloadRequest {
+  lutId: number;
+}
+
+/** Kết quả xin tải: URL ký sẵn từ MinIO kèm tên file (plan §5.1) */
 export interface LutDownloadDTO {
   fileName: string;
   url: string;

@@ -9,3 +9,4 @@
 | dac-trung-mau | Đặc trưng màu: đọc file .cube, đo 10 đặc trưng (CIELAB), bảng `lut_color_feature`, tính lúc khởi động, trang `/admin/dac-trung-mau` | [dac-trung-mau.md](dac-trung-mau.md) |
 | quan-ly-lut | Quản lý LUT: thêm nháp, sửa, tải .cube / ảnh / video, xuất bản có kiểm điều kiện, ẩn, xoá ở `/admin/luts` | [quan-ly-lut.md](quan-ly-lut.md) |
 | goi-thanh-toan | Gói và thanh toán payOS: bảng giá từ API, tạo đơn, webhook có chữ ký, kích hoạt / gia hạn / nâng cấp gói, trang kết quả, nhắc gia hạn | [goi-thanh-toan.md](goi-thanh-toan.md) |
+| tai-lut | Tải LUT: `POST /lut/download` kiểm gói, đóng gói `.zip`, link MinIO ký sẵn 5 phút, bảng `download_log`, hộp thoại "Đã tải xong" + "LUT tương tự" | [tai-lut.md](tai-lut.md) |

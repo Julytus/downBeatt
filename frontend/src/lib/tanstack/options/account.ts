@@ -1,11 +1,11 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { getAccountMe, loginShop, register } from "@/lib/axios/account";
 import { logoutRemote } from "@/lib/axios/auth";
-import { requestLutDownload } from "@/lib/mock/account";
+import { requestLutDownload } from "@/lib/axios/luts";
 import { useAuthStore } from "@/lib/stores/auth";
 import { useShopSession } from "@/lib/stores/shop-session";
 import { queryClient } from "@/lib/tanstack/query-client";
-import type { LutDownloadDTO, ShopLoginRequest, ShopRegisterRequest, ShopUserDTO } from "@/lib/types/account";
+import type { ShopLoginRequest, ShopRegisterRequest, ShopUserDTO } from "@/lib/types/account";
 import type { LutDTO } from "@/lib/types/lut";
 
 /** GET /account/me — query lấy thông tin tài khoản hiện tại khi có token (plan §8). */
@@ -73,9 +73,8 @@ export const logoutMutationOptions = mutationOptions({
 });
 
 export const lutDownloadMutationOptions = mutationOptions({
-  mutationFn: ({ lut, user }: { lut: LutDTO; user: ShopUserDTO | null }) => requestLutDownload(lut, user),
+  mutationFn: ({ lut }: { lut: LutDTO; user?: ShopUserDTO | null }) => requestLutDownload(lut.id),
   meta: {
-    successMessage: (d) => `Đã tải ${(d as LutDownloadDTO).fileName}`,
-    errorMessage: "Không tải được LUT, vui lòng thử lại"
+    silentError: true
   }
 });
