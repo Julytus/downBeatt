@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import vn.aeoc.authenticate.service.FileStorageService;
 import vn.aeoc.business.lut.repository.LutColorFeatureRepository;
@@ -40,6 +41,7 @@ public class LutColorFeatureBootstrap {
         this.computeOnStartup = computeOnStartup;
     }
 
+    @Order(0)
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady(ApplicationReadyEvent event) {
         runBootstrap();

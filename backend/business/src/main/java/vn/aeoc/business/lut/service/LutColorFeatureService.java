@@ -1,5 +1,6 @@
 package vn.aeoc.business.lut.service;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import vn.aeoc.authenticate.service.FileStorageService;
 import vn.aeoc.base.config.extention.paging.Page;
@@ -9,6 +10,7 @@ import vn.aeoc.base.exception.AppException;
 import vn.aeoc.base.service.BaseService;
 import vn.aeoc.base.util.QueryExecutor;
 import vn.aeoc.base.util.Tuple2;
+import vn.aeoc.business.lut.event.LutCatalogChangedEvent;
 import vn.aeoc.business.lut.feature.ColorFeatureExtractor;
 import vn.aeoc.business.lut.feature.CubeLut;
 import vn.aeoc.business.lut.feature.CubeParser;
@@ -28,14 +30,17 @@ public class LutColorFeatureService extends BaseService<LutColorFeatureRepositor
 
     private final LutRepository lutRepository;
     private final FileStorageService fileStorageService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public LutColorFeatureService(LutColorFeatureRepository repository,
                                   LutRepository lutRepository,
                                   FileStorageService fileStorageService,
-                                  QueryExecutor queryExecutor) {
+                                  QueryExecutor queryExecutor,
+                                  ApplicationEventPublisher eventPublisher) {
         super(repository, queryExecutor);
         this.lutRepository = lutRepository;
         this.fileStorageService = fileStorageService;
+        this.eventPublisher = eventPublisher;
     }
 
     public Page<Lut> list(String keyword, String style, String status, Integer hasFeature,
@@ -85,6 +90,7 @@ public class LutColorFeatureService extends BaseService<LutColorFeatureRepositor
         Map<Integer, LutColorFeature> existingFeatures = repository.getByLutIds(allIds).stream()
                 .collect(Collectors.toMap(LutColorFeature::getLutId, f -> f, (f1, f2) -> f1));
 
+        int successCount = 0;
         for (Lut lut : luts) {
             if (lut.getFileKey() == null || lut.getFileKey().isBlank()) {
                 lut.setColorFeature(existingFeatures.get(lut.getId()));
@@ -105,6 +111,7 @@ public class LutColorFeatureService extends BaseService<LutColorFeatureRepositor
                 LutColorFeature feature = computeAndSave(lut.getId(), cubeBytes);
                 lut.setColorFeature(feature);
                 lut.setFeatureError(null);
+                successCount++;
             } catch (AppException e) {
                 lut.setColorFeature(existingFeatures.get(lut.getId()));
                 lut.setFeatureError(e.getMessage());
@@ -112,6 +119,10 @@ public class LutColorFeatureService extends BaseService<LutColorFeatureRepositor
                 lut.setColorFeature(existingFeatures.get(lut.getId()));
                 lut.setFeatureError(e.getMessage());
             }
+        }
+
+        if (successCount > 0) {
+            eventPublisher.publishEvent(new LutCatalogChangedEvent(null, "tính lại đặc trưng màu"));
         }
 
         return luts;

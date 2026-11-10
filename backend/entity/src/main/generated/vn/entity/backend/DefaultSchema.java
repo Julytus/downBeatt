@@ -19,6 +19,7 @@ import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategory;
 import vn.entity.backend.tables.LutCategoryMap;
 import vn.entity.backend.tables.LutColorFeature;
+import vn.entity.backend.tables.LutSimilarity;
 import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.PaymentOrder;
@@ -83,6 +84,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>lut_color_feature</code>.
      */
     public final LutColorFeature LUT_COLOR_FEATURE = LutColorFeature.LUT_COLOR_FEATURE;
+
+    /**
+     * The table <code>lut_similarity</code>.
+     */
+    public final LutSimilarity LUT_SIMILARITY = LutSimilarity.LUT_SIMILARITY;
 
     /**
      * The table <code>lut_tag</code>.
@@ -158,6 +164,7 @@ public class DefaultSchema extends SchemaImpl {
             LutCategory.LUT_CATEGORY,
             LutCategoryMap.LUT_CATEGORY_MAP,
             LutColorFeature.LUT_COLOR_FEATURE,
+            LutSimilarity.LUT_SIMILARITY,
             LutTag.LUT_TAG,
             Module.MODULE,
             PaymentOrder.PAYMENT_ORDER,

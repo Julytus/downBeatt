@@ -12,6 +12,7 @@ import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategory;
 import vn.entity.backend.tables.LutCategoryMap;
 import vn.entity.backend.tables.LutColorFeature;
+import vn.entity.backend.tables.LutSimilarity;
 import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.PaymentOrder;
@@ -69,6 +70,11 @@ public class Tables {
      * The table <code>lut_color_feature</code>.
      */
     public static final LutColorFeature LUT_COLOR_FEATURE = LutColorFeature.LUT_COLOR_FEATURE;
+
+    /**
+     * The table <code>lut_similarity</code>.
+     */
+    public static final LutSimilarity LUT_SIMILARITY = LutSimilarity.LUT_SIMILARITY;
 
     /**
      * The table <code>lut_tag</code>.
