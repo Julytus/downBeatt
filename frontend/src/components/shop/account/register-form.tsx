@@ -1,14 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import { ShopCheckbox, ShopField } from "@/components/shop/ui/shop-field";
+import { apiErrorOf } from "@/lib/axios/error";
 import { useShopSession } from "@/lib/stores/shop-session";
 import { registerMutationOptions } from "@/lib/tanstack/options/account";
 import type { ShopUserDTO } from "@/lib/types/account";
-import { ErrorResponseWarper, type ErrorResponse } from "@/lib/types/common";
+import { ErrorResponseWarper } from "@/lib/types/common";
 
 const registerSchema = z.object({
   name: z.string().trim().min(1, "Vui lòng nhập họ tên").max(100, "Họ tên tối đa 100 ký tự"),
@@ -28,16 +28,6 @@ type Errors = Partial<Record<Field, string>>;
 interface RegisterFormProps {
   onSuccess: (user: ShopUserDTO) => void;
   onSwitchToLogin: (email?: string) => void;
-}
-
-function getErrorCode(err: unknown): string | undefined {
-  if (err instanceof AxiosError && err.response?.data) {
-    return (err.response.data as Partial<ErrorResponse>).errorCode;
-  }
-  if (err && typeof err === "object" && "errorCode" in err) {
-    return (err as { errorCode?: string }).errorCode;
-  }
-  return undefined;
 }
 
 export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) {
@@ -111,7 +101,7 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
           className="flex flex-col gap-2 rounded-[8px] bg-(--sh-active-bg) px-3 py-2 text-sm font-medium text-(--sh-active-fg)"
         >
           <span>{ErrorResponseWarper(mutation.error)}</span>
-          {getErrorCode(mutation.error) === "EMAIL_EXISTS" && (
+          {apiErrorOf(mutation.error).errorCode === "EMAIL_EXISTS" && (
             <button
               type="button"
               onClick={() => onSwitchToLogin(submittedEmail)}

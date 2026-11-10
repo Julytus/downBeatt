@@ -40,6 +40,13 @@ export const createInfiniteRelatedLutsQueryOptions = (slug: string) =>
     getNextPageParam: nextPage
   });
 
+export const createRelatedLutsQueryOptions = (slug: string, limit = 4) =>
+  queryOptions({
+    queryKey: ["luts", "related", slug, limit],
+    queryFn: () => getRelatedLuts(slug, { page: 1, limit }),
+    staleTime: 60_000
+  });
+
 export const createLutSuggestionsQueryOptions = (q: string) =>
   queryOptions({
     queryKey: ["luts", "suggest", q],

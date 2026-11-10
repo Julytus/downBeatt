@@ -114,4 +114,6 @@ payos:
 lut:
   feature:
     compute-on-startup: ${LUT_FEATURE_COMPUTE_ON_STARTUP:true}
+  download:
+    url-ttl: ${LUT_DOWNLOAD_URL_TTL:5m}
 

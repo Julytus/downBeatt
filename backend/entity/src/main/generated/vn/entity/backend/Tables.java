@@ -5,6 +5,7 @@ package vn.entity.backend;
 
 
 import vn.entity.backend.tables.Creator;
+import vn.entity.backend.tables.DownloadLog;
 import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategory;
 import vn.entity.backend.tables.LutCategoryMap;
@@ -31,6 +32,11 @@ public class Tables {
      * The table <code>creator</code>.
      */
     public static final Creator CREATOR = Creator.CREATOR;
+
+    /**
+     * The table <code>download_log</code>.
+     */
+    public static final DownloadLog DOWNLOAD_LOG = DownloadLog.DOWNLOAD_LOG;
 
     /**
      * The table <code>lut</code>.

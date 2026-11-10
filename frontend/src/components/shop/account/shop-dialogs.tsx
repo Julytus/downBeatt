@@ -6,6 +6,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } fr
 import { useShopDialog, type ShopDialog } from "@/lib/stores/shop-dialog";
 import { plansQueryOptions } from "@/lib/tanstack/options/billing";
 import { CheckoutPanel } from "./checkout-panel";
+import { DownloadDonePanel } from "./download-done-panel";
 import { LoginForm } from "./login-form";
 import { LutMiniCard } from "./lut-mini-card";
 import { RegisterForm } from "./register-form";
@@ -15,7 +16,7 @@ import { UpgradePanel } from "./upgrade-panel";
 function headingOf(
   dialog: ShopDialog,
   getPlanName: (code: string) => string
-): { title: string; description: string } {
+): { title: string; description: React.ReactNode } {
   switch (dialog.type) {
     case "login":
       return {
@@ -43,6 +44,15 @@ function headingOf(
       return {
         title: `Mua gói ${getPlanName(dialog.plan)}`,
         description: "Kiểm tra lại đơn hàng trước khi thanh toán."
+      };
+    case "downloaded":
+      return {
+        title: "Đã tải xong",
+        description: (
+          <>
+            <strong className="font-semibold text-(--sh-fg)">{dialog.fileName}</strong> đã được lưu vào thư mục Tải xuống.
+          </>
+        )
       };
   }
 }
@@ -116,6 +126,13 @@ export function ShopDialogs() {
               cycle={dialog.cycle}
               sourceLutId={dialog.sourceLutId}
               onDone={close}
+            />
+          )}
+          {dialog.type === "downloaded" && (
+            <DownloadDonePanel
+              lut={dialog.lut}
+              fileName={dialog.fileName}
+              onClose={close}
             />
           )}
         </DialogContent>

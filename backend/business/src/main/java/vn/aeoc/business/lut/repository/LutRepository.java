@@ -418,4 +418,25 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
                 dslContext.selectOne().from(CREATOR).where(CREATOR.ID.eq(id))
         );
     }
+
+    public Lut getPublishedById(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        return dslContext.select(LUT.ID, LUT.TITLE, LUT.IS_PREMIUM, LUT.FILE_KEY, LUT.SLUG)
+                .from(LUT)
+                .where(LUT.ID.eq(id).and(published()))
+                .fetchOptionalInto(pojoClass)
+                .orElse(null);
+    }
+
+    public int increaseDownloadCount(Integer id) {
+        if (id == null) {
+            return 0;
+        }
+        return dslContext.update(LUT)
+                .set(LUT.DOWNLOAD_COUNT, LUT.DOWNLOAD_COUNT.plus(1))
+                .where(LUT.ID.eq(id))
+                .execute();
+    }
 }

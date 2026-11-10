@@ -12,6 +12,7 @@ import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
 import vn.entity.backend.tables.Creator;
+import vn.entity.backend.tables.DownloadLog;
 import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategory;
 import vn.entity.backend.tables.LutCategoryMap;
@@ -45,6 +46,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>creator</code>.
      */
     public final Creator CREATOR = Creator.CREATOR;
+
+    /**
+     * The table <code>download_log</code>.
+     */
+    public final DownloadLog DOWNLOAD_LOG = DownloadLog.DOWNLOAD_LOG;
 
     /**
      * The table <code>lut</code>.
@@ -133,6 +139,7 @@ public class DefaultSchema extends SchemaImpl {
     public final List<Table<?>> getTables() {
         return Arrays.asList(
             Creator.CREATOR,
+            DownloadLog.DOWNLOAD_LOG,
             Lut.LUT,
             LutCategory.LUT_CATEGORY,
             LutCategoryMap.LUT_CATEGORY_MAP,

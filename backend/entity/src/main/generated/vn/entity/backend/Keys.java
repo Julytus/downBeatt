@@ -11,6 +11,7 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
 
 import vn.entity.backend.tables.Creator;
+import vn.entity.backend.tables.DownloadLog;
 import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategory;
 import vn.entity.backend.tables.LutCategoryMap;
@@ -26,6 +27,7 @@ import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.Subscription;
 import vn.entity.backend.tables.UserApp;
 import vn.entity.backend.tables.records.CreatorRecord;
+import vn.entity.backend.tables.records.DownloadLogRecord;
 import vn.entity.backend.tables.records.LutCategoryMapRecord;
 import vn.entity.backend.tables.records.LutCategoryRecord;
 import vn.entity.backend.tables.records.LutColorFeatureRecord;
@@ -55,6 +57,7 @@ public class Keys {
 
     public static final UniqueKey<CreatorRecord> KEY_CREATOR_PRIMARY = Internal.createUniqueKey(Creator.CREATOR, DSL.name("KEY_creator_PRIMARY"), new TableField[] { Creator.CREATOR.ID }, true);
     public static final UniqueKey<CreatorRecord> KEY_CREATOR_SLUG = Internal.createUniqueKey(Creator.CREATOR, DSL.name("KEY_creator_slug"), new TableField[] { Creator.CREATOR.SLUG }, true);
+    public static final UniqueKey<DownloadLogRecord> KEY_DOWNLOAD_LOG_PRIMARY = Internal.createUniqueKey(DownloadLog.DOWNLOAD_LOG, DSL.name("KEY_download_log_PRIMARY"), new TableField[] { DownloadLog.DOWNLOAD_LOG.ID }, true);
     public static final UniqueKey<LutRecord> KEY_LUT_PRIMARY = Internal.createUniqueKey(Lut.LUT, DSL.name("KEY_lut_PRIMARY"), new TableField[] { Lut.LUT.ID }, true);
     public static final UniqueKey<LutRecord> KEY_LUT_SLUG = Internal.createUniqueKey(Lut.LUT, DSL.name("KEY_lut_slug"), new TableField[] { Lut.LUT.SLUG }, true);
     public static final UniqueKey<LutCategoryRecord> KEY_LUT_CATEGORY_PRIMARY = Internal.createUniqueKey(LutCategory.LUT_CATEGORY, DSL.name("KEY_lut_category_PRIMARY"), new TableField[] { LutCategory.LUT_CATEGORY.ID }, true);
@@ -88,6 +91,8 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<DownloadLogRecord, LutRecord> FK_DOWNLOAD_LOG_LUT = Internal.createForeignKey(DownloadLog.DOWNLOAD_LOG, DSL.name("fk_download_log_lut"), new TableField[] { DownloadLog.DOWNLOAD_LOG.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
+    public static final ForeignKey<DownloadLogRecord, UserAppRecord> FK_DOWNLOAD_LOG_USER = Internal.createForeignKey(DownloadLog.DOWNLOAD_LOG, DSL.name("fk_download_log_user"), new TableField[] { DownloadLog.DOWNLOAD_LOG.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
     public static final ForeignKey<LutRecord, UserAppRecord> FK_LUT_CREATED_BY = Internal.createForeignKey(Lut.LUT, DSL.name("fk_lut_created_by"), new TableField[] { Lut.LUT.CREATED_BY }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
     public static final ForeignKey<LutRecord, CreatorRecord> FK_LUT_CREATOR = Internal.createForeignKey(Lut.LUT, DSL.name("fk_lut_creator"), new TableField[] { Lut.LUT.CREATOR_ID }, Keys.KEY_CREATOR_PRIMARY, new TableField[] { Creator.CREATOR.ID }, true);
     public static final ForeignKey<LutCategoryMapRecord, LutCategoryRecord> FK_LCM_CATEGORY = Internal.createForeignKey(LutCategoryMap.LUT_CATEGORY_MAP, DSL.name("fk_lcm_category"), new TableField[] { LutCategoryMap.LUT_CATEGORY_MAP.CATEGORY_ID }, Keys.KEY_LUT_CATEGORY_PRIMARY, new TableField[] { LutCategory.LUT_CATEGORY.ID }, true);

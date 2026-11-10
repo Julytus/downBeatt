@@ -1,6 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { ApiError } from "@/lib/mock/account";
+import { toast } from "sonner";
+import { apiErrorOf } from "@/lib/axios/error";
 import { useShopDialog } from "@/lib/stores/shop-dialog";
 import { canDownloadPremium, useShopSession } from "@/lib/stores/shop-session";
 import { lutDownloadMutationOptions } from "@/lib/tanstack/options/account";
@@ -20,18 +21,32 @@ function saveFile(url: string, fileName: string) {
 /**
  * Luồng bấm "Tải":
  * 1. Chưa đăng nhập → hộp thoại đăng ký (kèm thẻ LUT)
- * 2. LUT Premium + gói Miễn phí → hộp thoại nâng cấp
- * 3. Còn lại → xin link tải rồi lưu file .cube (toast nằm ở meta của mutation)
+ * 2. LUT Premium + phiên ghi gói Miễn phí → hộp thoại nâng cấp (không gọi API)
+ * 3. Còn lại → POST /lut/download
  */
 export function useLutDownload() {
   const openDialog = useShopDialog((s) => s.open);
+  const queryClient = useQueryClient();
 
   const { mutate, isPending, variables } = useMutation({
     ...lutDownloadMutationOptions,
-    onSuccess: ({ url, fileName }) => saveFile(url, fileName),
+    onSuccess: ({ url, fileName }, { lut }) => {
+      saveFile(url, fileName);
+      openDialog({ type: "downloaded", lut, fileName });
+      void queryClient.invalidateQueries({ queryKey: ["luts", "detail", lut.slug] });
+      void queryClient.invalidateQueries({ queryKey: ["luts", "list"] });
+    },
     onError: (err, { lut }) => {
-      // Gói trong phiên đã cũ (vd hết hạn) mà server từ chối → mời nâng cấp
-      if (err instanceof ApiError && err.errorCode === "PLAN_REQUIRED") openDialog({ type: "upgrade", lut });
+      const { status, errorCode, message } = apiErrorOf(err);
+      if (errorCode === "PLAN_REQUIRED") {
+        openDialog({ type: "upgrade", lut });
+        return;
+      }
+      if (status === 401 || errorCode === "LOGIN" || errorCode === "UNAUTHORIZED") {
+        openDialog({ type: "login", lut });
+        return;
+      }
+      toast.error(message || "Không tải được LUT, vui lòng thử lại");
     }
   });
 
