@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
@@ -7,6 +8,7 @@ import { ShopCheckbox, ShopField } from "@/components/shop/ui/shop-field";
 import { useShopSession } from "@/lib/stores/shop-session";
 import { registerMutationOptions } from "@/lib/tanstack/options/account";
 import type { ShopUserDTO } from "@/lib/types/account";
+import { ErrorResponseWarper, type ErrorResponse } from "@/lib/types/common";
 
 const registerSchema = z.object({
   name: z.string().trim().min(1, "Vui lòng nhập họ tên").max(100, "Họ tên tối đa 100 ký tự"),
@@ -14,6 +16,7 @@ const registerSchema = z.object({
   password: z
     .string()
     .min(8, "Mật khẩu tối thiểu 8 ký tự")
+    .max(72, "Mật khẩu tối đa 72 ký tự")
     .regex(/[A-Za-z]/, "Mật khẩu cần có chữ cái")
     .regex(/[0-9]/, "Mật khẩu cần có chữ số"),
   terms: z.literal("on", { error: "Bạn cần đồng ý điều khoản để tiếp tục" })
@@ -24,13 +27,24 @@ type Errors = Partial<Record<Field, string>>;
 
 interface RegisterFormProps {
   onSuccess: (user: ShopUserDTO) => void;
-  onSwitchToLogin: () => void;
+  onSwitchToLogin: (email?: string) => void;
+}
+
+function getErrorCode(err: unknown): string | undefined {
+  if (err instanceof AxiosError && err.response?.data) {
+    return (err.response.data as Partial<ErrorResponse>).errorCode;
+  }
+  if (err && typeof err === "object" && "errorCode" in err) {
+    return (err as { errorCode?: string }).errorCode;
+  }
+  return undefined;
 }
 
 export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) {
   const setUser = useShopSession((s) => s.setUser);
   const [errors, setErrors] = useState<Errors>({});
   const [showPassword, setShowPassword] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
 
   const mutation = useMutation({
     ...registerMutationOptions,
@@ -59,6 +73,7 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
         }
         setErrors({});
         const { name, email, password } = parsed.data;
+        setSubmittedEmail(email);
         mutation.mutate({ name, email, password });
       }}
     >
@@ -91,9 +106,21 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
       />
 
       {mutation.isError && (
-        <p role="alert" className="rounded-[8px] bg-(--sh-active-bg) px-3 py-2 text-sm font-medium text-(--sh-active-fg)">
-          {mutation.error.message}
-        </p>
+        <div
+          role="alert"
+          className="flex flex-col gap-2 rounded-[8px] bg-(--sh-active-bg) px-3 py-2 text-sm font-medium text-(--sh-active-fg)"
+        >
+          <span>{ErrorResponseWarper(mutation.error)}</span>
+          {getErrorCode(mutation.error) === "EMAIL_EXISTS" && (
+            <button
+              type="button"
+              onClick={() => onSwitchToLogin(submittedEmail)}
+              className="self-start text-xs font-semibold text-(--sh-primary) underline underline-offset-4 hover:opacity-90"
+            >
+              Đăng nhập bằng email này
+            </button>
+          )}
+        </div>
       )}
 
       <ShopButton type="submit" variant="primary" className="mt-1 w-full" disabled={mutation.isPending}>
@@ -103,7 +130,11 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
 
       <p className="text-sm text-(--sh-muted)">
         Đã có tài khoản?{" "}
-        <button type="button" onClick={onSwitchToLogin} className="font-semibold text-(--sh-fg) underline underline-offset-4">
+        <button
+          type="button"
+          onClick={() => onSwitchToLogin()}
+          className="font-semibold text-(--sh-fg) underline underline-offset-4"
+        >
           Đăng nhập
         </button>
       </p>

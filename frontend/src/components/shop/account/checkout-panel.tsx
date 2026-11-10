@@ -68,13 +68,13 @@ export function CheckoutPanel({ plan, cycle, onDone }: CheckoutPanelProps) {
         variant="primary"
         className="w-full"
         disabled={!user || mutation.isPending}
-        onClick={() => user && mutation.mutate({ userId: user.id, plan, cycle })}
+        onClick={() => user && mutation.mutate({ user, plan, cycle })}
       >
         {mutation.isPending && <Loader2 className="size-4 animate-spin" />}
         {mutation.isPending ? "Đang xử lý…" : `Thanh toán ${formatVnd(total)}`}
       </ShopButton>
       <p className="text-center text-xs text-(--sh-muted)">
-        Bản demo: thanh toán giả lập, chưa nối payOS, không trừ tiền thật.
+        Bản demo: thanh toán giả lập, chưa nối payOS, không trừ tiền thật. Gói chỉ giữ đến khi tải lại trang.
       </p>
     </div>
   );

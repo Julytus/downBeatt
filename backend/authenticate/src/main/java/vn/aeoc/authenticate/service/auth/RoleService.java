@@ -29,6 +29,10 @@ public class RoleService extends BaseService<RoleRepository, Role, Integer> {
         return require(id);
     }
 
+    public Role getDefaultCustomerRole() {
+        return repository.getDefaultCustomerRole();
+    }
+
     @Transactional
     public Role upsert(Role request) {
         boolean creating = request.getId() == null || request.getId() <= 0;

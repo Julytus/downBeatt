@@ -1,6 +1,6 @@
 # Plan thực thi
 
-Mỗi file `<slug>.md` là một lát chức năng (backend + frontend + test), được lập bằng `/plan-feature <slug>` và thực hiện bằng `/cook <slug>`. Mẫu: [_template.md](_template.md). Kế hoạch tổng của đồ án nằm ở [../docs/plan/README.md](../docs/plan/README.md).
+Mỗi file `<slug>.md` là một lát chức năng (backend + frontend + test), được lập bằng `/plan-feature <slug>` và thực hiện bằng `/cook <slug>`. Mẫu: [_template.md](_template.md). Kế hoạch tổng của đồ án (giai đoạn → lát → việc con, có đánh dấu done) nằm ở [../docs/plan/README.md](../docs/plan/README.md).
 
 Một plan chỉ được cook khi `status: approved`, nghĩa là người dùng đã đọc và duyệt.
 
@@ -13,3 +13,4 @@ Một plan chỉ được cook khi `status: approved`, nghĩa là người dùng
 | [go-redis-mail](go-redis-mail.md) | Gỡ Redis + gửi mail (Mailpit): refresh token sang MySQL, bỏ quên mật khẩu OTP | — (hạ tầng) | done |
 | [trang-chu](trang-chu.md) | Trang chủ `/` (landing page cửa hàng, chỉ frontend, dữ liệu giả) theo video tham khảo | — (giao diện) | done |
 | [kho-lut](kho-lut.md) | Kho LUT: 6 API công khai, 36 LUT mẫu có file .cube + ảnh trước / sau / bìa thật trên MinIO, cửa hàng đổi từ dữ liệu giả sang API | thiết kế tổng quát §9 lát 1 | done |
+| [tai-khoan-khach](tai-khoan-khach.md) | Tài khoản khách hàng: role Khách hàng, `account/register`, `account/me`, hộp thoại đăng nhập / đăng ký và menu tài khoản ở cửa hàng dùng API thật | kế hoạch tổng 1.1 | done |

@@ -3,29 +3,16 @@ import type {
   CheckoutRequest,
   LutDownloadDTO,
   PlanDTO,
-  ShopLoginRequest,
-  ShopRegisterRequest,
   ShopUserDTO
 } from "@/lib/types/account";
 import type { LutDTO } from "@/lib/types/lut";
 
 /**
- * API giả cho tài khoản khách hàng (đăng ký, đăng nhập, nâng cấp gói, tải LUT).
- * "Database" là localStorage của trình duyệt. Khi backend sẵn sàng, thay bằng `lib/axios/account.ts`.
- *
- * Tài khoản mẫu (mật khẩu Admin@123): free@downbeat.local (gói Miễn phí), pro@downbeat.local (gói Pro).
+ * API giả cho các chức năng cửa hàng chưa nối backend (gói dịch vụ, thanh toán giả lập, tải LUT).
+ * Đăng ký, đăng nhập và lấy thông tin tài khoản đã dùng API thật tại `lib/axios/account.ts`.
  */
-const DB_KEY = "downbeat-mock-users";
-
 const LATENCY_MS = 300;
 export const delay = (ms = LATENCY_MS) => new Promise((r) => setTimeout(r, ms));
-
-type StoredUser = ShopUserDTO & { password: string };
-
-const SEED_USERS: StoredUser[] = [
-  { id: "u-free", name: "Khách Miễn Phí", email: "free@downbeat.local", password: "Admin@123", plan: "free", planExpiresAt: null },
-  { id: "u-pro", name: "Khách Pro", email: "pro@downbeat.local", password: "Admin@123", plan: "pro", planExpiresAt: "2027-11-05" }
-];
 
 /** Lỗi nghiệp vụ giả, message giống backend trả về */
 export class ApiError extends Error {
@@ -36,81 +23,21 @@ export class ApiError extends Error {
   }
 }
 
-function readDb(): StoredUser[] {
-  try {
-    const raw = localStorage.getItem(DB_KEY);
-    if (raw) return JSON.parse(raw) as StoredUser[];
-  } catch {
-    // storage bị chặn: dùng dữ liệu mẫu
-  }
-  return [...SEED_USERS];
-}
-
-function writeDb(users: StoredUser[]) {
-  try {
-    localStorage.setItem(DB_KEY, JSON.stringify(users));
-  } catch {
-    // bỏ qua
-  }
-}
-
-const toDto = (u: StoredUser): ShopUserDTO => ({
-  id: u.id,
-  name: u.name,
-  email: u.email,
-  plan: u.plan,
-  planExpiresAt: u.planExpiresAt
-});
-
-export async function login({ email, password }: ShopLoginRequest): Promise<ShopUserDTO> {
-  await delay(500);
-  const user = readDb().find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
-  if (!user || user.password !== password) {
-    throw new ApiError("Email hoặc mật khẩu không đúng", "INVALID_CREDENTIALS");
-  }
-  return toDto(user);
-}
-
-export async function register({ name, email, password }: ShopRegisterRequest): Promise<ShopUserDTO> {
-  await delay(600);
-  const users = readDb();
-  if (users.some((u) => u.email.toLowerCase() === email.trim().toLowerCase())) {
-    throw new ApiError("Email đã được đăng ký", "EMAIL_EXISTS");
-  }
-  const user: StoredUser = {
-    id: `u-${Date.now()}`,
-    name: name.trim(),
-    email: email.trim().toLowerCase(),
-    password,
-    plan: "free",
-    planExpiresAt: null
-  };
-  writeDb([...users, user]);
-  return toDto(user);
-}
-
-/** Bản thật: POST /auth/logout (thu hồi refresh token) */
-export async function logout(): Promise<void> {
-  await delay(150);
-}
-
 export async function getPlans(): Promise<PlanDTO[]> {
   await delay(150);
   return MOCK_PLANS;
 }
 
-/** Thanh toán giả: đổi gói ngay. Bản thật sẽ tạo đơn + chuyển sang cổng thanh toán (VNPay/MoMo). */
-export async function checkout(userId: string, { plan, cycle }: CheckoutRequest): Promise<ShopUserDTO> {
+/** Thanh toán giả lập: đổi gói ngay trong phiên (plan §11 câu 1, TC-29). Gói chỉ giữ đến khi tải lại trang. */
+export async function checkout(user: ShopUserDTO, { plan, cycle }: CheckoutRequest): Promise<ShopUserDTO> {
   await delay(900);
-  const users = readDb();
-  const user = users.find((u) => u.id === userId);
-  if (!user) throw new ApiError("Phiên đăng nhập đã hết, vui lòng đăng nhập lại", "UNAUTHORIZED");
   const expires = new Date();
   expires.setMonth(expires.getMonth() + (cycle === "year" ? 12 : 1));
-  user.plan = plan;
-  user.planExpiresAt = expires.toISOString().slice(0, 10);
-  writeDb(users);
-  return toDto(user);
+  return {
+    ...user,
+    plan,
+    planExpiresAt: expires.toISOString().slice(0, 10)
+  };
 }
 
 /** File .cube hợp lệ (LUT đồng nhất 2×2×2) để nút tải hoạt động thật với dữ liệu mẫu. */

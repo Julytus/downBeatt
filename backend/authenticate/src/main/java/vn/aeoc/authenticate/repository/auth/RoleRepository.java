@@ -63,4 +63,8 @@ public class RoleRepository extends AbsMysqlRepository<RoleRecord, Role, Integer
     public int countUsers(Integer roleId) {
         return dslContext.fetchCount(USER_APP, USER_APP.ROLE_ID.eq(roleId));
     }
+
+    public Role getDefaultCustomerRole() {
+        return getOne(ROLE.IS_DEFAULT.eq(1).and(ROLE.IS_OPERATOR.eq(0)));
+    }
 }

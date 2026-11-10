@@ -18,12 +18,21 @@ export interface PlanDTO {
 }
 
 export interface ShopUserDTO {
-  id: string;
+  id: number;
   name: string;
   email: string;
   plan: PlanCode;
   /** Ngày gói trả phí hết hạn (ISO), null với gói miễn phí */
   planExpiresAt: string | null;
+}
+
+/** Response từ GET /api/account/me (plan §5.2). */
+export interface AccountMeApiDTO {
+  id: number;
+  name: string;
+  email: string;
+  plan: PlanCode;
+  planExpiresAt?: string | null;
 }
 
 export interface ShopLoginRequest {
