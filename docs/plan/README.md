@@ -22,7 +22,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 1.3 | 1. Cửa hàng | `quan-ly-lut` | 0.3, 0.4, 1.2 | done (10/11/2026) |
 | 1.4 | 1. Cửa hàng | `goi-thanh-toan` | 1.1 | done (10/11/2026) |
 | 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | done (10/11/2026) |
-| 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | chưa làm |
+| 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | done (10/11/2026) |
 | 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | chưa làm |
 | 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | chưa làm |
 | 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | chưa làm |
@@ -58,7 +58,7 @@ Làm song song được (khác bảng, khác màn hình): **1.1 ∥ 1.2**, **1.6
 - [x] **0.4 Phân quyền theo role**: V4, trang `/admin/chuc-vu`, `/admin/phan-quyen`, `/admin/tai-nguyen`, `/admin/module`. Làm ngoài luồng plan (commit `5339c1a`), chưa có `docs/chuc-nang/`.
   - [ ] Bổ sung tài liệu chức năng phân quyền (ảnh đã có ở `docs/chuc-nang/img/phan-quyen/`)
 
-## Giai đoạn 1. Cửa hàng hoàn chỉnh
+## Giai đoạn 1. Cửa hàng hoàn chỉnh — done
 
 ### 1.1 `tai-khoan-khach` — done (10/11/2026) ([plan/tai-khoan-khach.md](../../plan/tai-khoan-khach.md))
 
@@ -150,14 +150,15 @@ Thiết kế: §4.6, §6.3. Bảng: `download_log`.
 - [x] E2E + review + tài liệu
   - E2E (21/21) + review xong; tài liệu: `docs/chuc-nang/tai-lut.md`
 
-### 1.6 `bo-suu-tap` — chưa làm
+### 1.6 `bo-suu-tap` — done (10/11/2026) ([plan/bo-suu-tap.md](../../plan/bo-suu-tap.md))
 
 Thiết kế: §4.6, §5.4 (collection), §6.7.
 
-- [ ] Plan → duyệt
-- [ ] Backend: migration `collection`, `collection_item`; 5 API; gói Miễn phí tối đa 3 bộ
-- [ ] Frontend: nút "Lưu vào bộ sưu tập" ở thẻ / trang chi tiết, trang bộ sưu tập của tôi
-- [ ] E2E + review + tài liệu
+- [x] Plan → duyệt (10/11/2026)
+- [x] Backend: migration `collection`, `collection_item`; 6 API (plan chốt 6, không phải 5: thêm `item/remove`); gói Miễn phí tối đa 3 bộ
+- [x] Frontend: nút "Lưu vào bộ sưu tập" ở thẻ / trang chi tiết, trang bộ sưu tập của tôi
+- [x] E2E + review + tài liệu
+  - E2E (31/31) + review xong; tài liệu: `docs/chuc-nang/bo-suu-tap.md`
 
 ## Giai đoạn 2. Hệ gợi ý theo nội dung
 

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useLutDownload } from "@/hooks/use-lut-download";
+import { SaveToCollectionPanel } from "@/components/shop/collection/save-to-collection-panel";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useShopDialog, type ShopDialog } from "@/lib/stores/shop-dialog";
@@ -21,9 +22,19 @@ function headingOf(
     case "login":
       return {
         title: "Đăng nhập",
-        description: dialog.lut ? "Đăng nhập để tải LUT này." : "Chào mừng bạn quay lại DownBeat."
+        description:
+          dialog.then === "collection"
+            ? "Đăng nhập để lưu LUT vào bộ sưu tập."
+            : dialog.lut
+              ? "Đăng nhập để tải LUT này."
+              : "Chào mừng bạn quay lại DownBeat."
       };
     case "register":
+      if (dialog.then === "collection")
+        return {
+          title: "Tạo tài khoản để lưu bộ sưu tập",
+          description: "Miễn phí, lưu được 3 bộ sưu tập. Nâng cấp Pro để lưu không giới hạn."
+        };
       if (dialog.lut)
         return {
           title: "Tạo tài khoản miễn phí để tải",
@@ -35,6 +46,11 @@ function headingOf(
           description: "Chỉ mất vài giây, sau đó bạn chuyển thẳng sang bước thanh toán."
         };
       return { title: "Tạo tài khoản DownBeat", description: "Tải LUT miễn phí và lưu bộ sưu tập của bạn." };
+    case "collection":
+      return {
+        title: "Lưu vào bộ sưu tập",
+        description: null
+      };
     case "upgrade":
       return {
         title: "Nâng cấp để tải LUT Premium",
@@ -74,6 +90,10 @@ export function ShopDialogs() {
       open({ type: "checkout", plan: dialog.plan, cycle: "year" });
       return;
     }
+    if ((dialog.type === "login" || dialog.type === "register") && dialog.then === "collection" && dialog.lut) {
+      open({ type: "collection", lut: dialog.lut });
+      return;
+    }
     close();
     if ((dialog.type === "login" || dialog.type === "register") && dialog.lut) {
       // Tiếp tục tải LUT người dùng vừa bấm (LUT Premium + gói Miễn phí sẽ mở hộp thoại nâng cấp)
@@ -104,21 +124,30 @@ export function ShopDialogs() {
             </div>
           )}
           <DialogTitle className="font-display pr-8 text-2xl leading-tight font-bold">{heading.title}</DialogTitle>
-          <DialogDescription className="mt-2 mb-6 text-sm text-(--sh-muted)">{heading.description}</DialogDescription>
+          {heading.description && (
+            <DialogDescription className="mt-2 mb-6 text-sm text-(--sh-muted)">
+              {heading.description}
+            </DialogDescription>
+          )}
 
           {dialog.type === "login" && (
             <LoginForm
               defaultEmail={dialog.email}
               onSuccess={afterAuth}
-              onSwitchToRegister={() => open({ type: "register", lut: dialog.lut, plan: dialog.plan })}
+              onSwitchToRegister={() =>
+                open({ type: "register", lut: dialog.lut, plan: dialog.plan, then: dialog.then })
+              }
             />
           )}
           {dialog.type === "register" && (
             <RegisterForm
               onSuccess={afterAuth}
-              onSwitchToLogin={(email) => open({ type: "login", lut: dialog.lut, plan: dialog.plan, email })}
+              onSwitchToLogin={(email) =>
+                open({ type: "login", lut: dialog.lut, plan: dialog.plan, email, then: dialog.then })
+              }
             />
           )}
+          {dialog.type === "collection" && <SaveToCollectionPanel lut={dialog.lut} onClose={close} />}
           {dialog.type === "upgrade" && <UpgradePanel lut={dialog.lut} onClose={close} />}
           {dialog.type === "checkout" && (
             <CheckoutPanel

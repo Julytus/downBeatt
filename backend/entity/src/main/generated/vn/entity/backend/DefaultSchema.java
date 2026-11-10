@@ -11,6 +11,8 @@ import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
+import vn.entity.backend.tables.Collection;
+import vn.entity.backend.tables.CollectionItem;
 import vn.entity.backend.tables.Creator;
 import vn.entity.backend.tables.DownloadLog;
 import vn.entity.backend.tables.Lut;
@@ -41,6 +43,16 @@ public class DefaultSchema extends SchemaImpl {
      * The reference instance of <code>DEFAULT_SCHEMA</code>
      */
     public static final DefaultSchema DEFAULT_SCHEMA = new DefaultSchema();
+
+    /**
+     * The table <code>collection</code>.
+     */
+    public final Collection COLLECTION = Collection.COLLECTION;
+
+    /**
+     * The table <code>collection_item</code>.
+     */
+    public final CollectionItem COLLECTION_ITEM = CollectionItem.COLLECTION_ITEM;
 
     /**
      * The table <code>creator</code>.
@@ -138,6 +150,8 @@ public class DefaultSchema extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
+            Collection.COLLECTION,
+            CollectionItem.COLLECTION_ITEM,
             Creator.CREATOR,
             DownloadLog.DOWNLOAD_LOG,
             Lut.LUT,

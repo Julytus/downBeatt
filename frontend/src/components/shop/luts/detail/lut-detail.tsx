@@ -1,13 +1,13 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ChevronRight, CirclePlus, Download, ExternalLink, Loader2, Star } from "lucide-react";
+import { BookmarkCheck, ChevronRight, CirclePlus, Download, ExternalLink, Loader2, Star } from "lucide-react";
 import { useCallback, useMemo } from "react";
-import { toast } from "sonner";
 import { useLutDownload } from "@/hooks/use-lut-download";
+import { useSaveToCollection } from "@/hooks/use-save-to-collection";
 import { LutGrid } from "@/components/shop/luts/lut-grid";
 import { ShopButton } from "@/components/shop/ui/shop-button";
-import { useShopDialog } from "@/lib/stores/shop-dialog";
 import { canDownloadPremium, useShopSession } from "@/lib/stores/shop-session";
+import { myCollectionsQueryOptions } from "@/lib/tanstack/options/collection";
 import { createInfiniteRelatedLutsQueryOptions, lutCategoriesQueryOptions } from "@/lib/tanstack/options/luts";
 import { LUT_SOFTWARE, LUT_STYLE_LABEL, type LutDTO } from "@/lib/types/lut";
 import { formatCompact } from "@/lib/utils/money";
@@ -16,8 +16,13 @@ import { LutVideoPreview } from "./lut-video-preview";
 
 export function LutDetail({ lut }: { lut: LutDTO }) {
   const user = useShopSession((s) => s.user);
-  const openDialog = useShopDialog((s) => s.open);
+  const { open: openSaveToCollection } = useSaveToCollection();
   const { download, pendingId } = useLutDownload();
+  const { data: myCollections } = useQuery({
+    ...myCollectionsQueryOptions(lut.id),
+    enabled: !!user
+  });
+  const isSaved = !!user && !!myCollections?.some((c) => c.containsLut);
   const { data: categories = [] } = useQuery(lutCategoriesQueryOptions);
   const lutCategories = categories.filter((c) => lut.categories.includes(c.slug));
   const locked = lut.premium && !canDownloadPremium(user);
@@ -76,12 +81,19 @@ export function LutDetail({ lut }: { lut: LutDTO }) {
             </ShopButton>
             <ShopButton
               variant="secondary"
-              onClick={() =>
-                user ? /* chỗ giữ chỗ tới lát `bo-suu-tap` */ toast.info("Bộ sưu tập sẽ có ở bản sau") : openDialog({ type: "register", lut })
-              }
+              onClick={() => openSaveToCollection(lut)}
             >
-              <CirclePlus className="size-4" />
-              Lưu vào bộ sưu tập
+              {isSaved ? (
+                <>
+                  <BookmarkCheck className="size-4 text-(--sh-accent)" />
+                  Đã lưu
+                </>
+              ) : (
+                <>
+                  <CirclePlus className="size-4" />
+                  Lưu vào bộ sưu tập
+                </>
+              )}
             </ShopButton>
           </div>
 

@@ -4,6 +4,8 @@
 package vn.entity.backend;
 
 
+import vn.entity.backend.tables.Collection;
+import vn.entity.backend.tables.CollectionItem;
 import vn.entity.backend.tables.Creator;
 import vn.entity.backend.tables.DownloadLog;
 import vn.entity.backend.tables.Lut;
@@ -27,6 +29,16 @@ import vn.entity.backend.tables.UserApp;
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
+
+    /**
+     * The table <code>collection</code>.
+     */
+    public static final Collection COLLECTION = Collection.COLLECTION;
+
+    /**
+     * The table <code>collection_item</code>.
+     */
+    public static final CollectionItem COLLECTION_ITEM = CollectionItem.COLLECTION_ITEM;
 
     /**
      * The table <code>creator</code>.

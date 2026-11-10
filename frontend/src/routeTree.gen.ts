@@ -25,8 +25,10 @@ import { Route as AuthLogoutRouteImport } from './routes/_auth/logout'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AdminLutsIndexRouteImport } from './routes/admin/luts/index'
 import { Route as ShopLutsIndexRouteImport } from './routes/_shop/luts/index'
+import { Route as ShopBoSuuTapIndexRouteImport } from './routes/_shop/bo-suu-tap/index'
 import { Route as AdminLutsIdRouteImport } from './routes/admin/luts/$id'
 import { Route as ShopLutsSlugRouteImport } from './routes/_shop/luts/$slug'
+import { Route as ShopBoSuuTapIdRouteImport } from './routes/_shop/bo-suu-tap/$id'
 import { Route as ShopLutsDanhMucCategoryRouteImport } from './routes/_shop/luts/danh-muc/$category'
 import { Route as PlainThanhToanKetQuaCodeRouteImport } from './routes/_plain/thanh-toan/ket-qua.$code'
 
@@ -107,6 +109,11 @@ const ShopLutsIndexRoute = ShopLutsIndexRouteImport.update({
   path: '/luts/',
   getParentRoute: () => ShopRoute,
 } as any)
+const ShopBoSuuTapIndexRoute = ShopBoSuuTapIndexRouteImport.update({
+  id: '/bo-suu-tap/',
+  path: '/bo-suu-tap/',
+  getParentRoute: () => ShopRoute,
+} as any)
 const AdminLutsIdRoute = AdminLutsIdRouteImport.update({
   id: '/luts/$id',
   path: '/luts/$id',
@@ -115,6 +122,11 @@ const AdminLutsIdRoute = AdminLutsIdRouteImport.update({
 const ShopLutsSlugRoute = ShopLutsSlugRouteImport.update({
   id: '/luts/$slug',
   path: '/luts/$slug',
+  getParentRoute: () => ShopRoute,
+} as any)
+const ShopBoSuuTapIdRoute = ShopBoSuuTapIdRouteImport.update({
+  id: '/bo-suu-tap/$id',
+  path: '/bo-suu-tap/$id',
   getParentRoute: () => ShopRoute,
 } as any)
 const ShopLutsDanhMucCategoryRoute = ShopLutsDanhMucCategoryRouteImport.update({
@@ -141,8 +153,10 @@ export interface FileRoutesByFullPath {
   '/admin/phan-quyen': typeof AdminPhanQuyenRoute
   '/admin/tai-nguyen': typeof AdminTaiNguyenRoute
   '/admin/': typeof AdminIndexRoute
+  '/bo-suu-tap/$id': typeof ShopBoSuuTapIdRoute
   '/luts/$slug': typeof ShopLutsSlugRoute
   '/admin/luts/$id': typeof AdminLutsIdRoute
+  '/bo-suu-tap': typeof ShopBoSuuTapIndexRoute
   '/luts': typeof ShopLutsIndexRoute
   '/admin/luts': typeof AdminLutsIndexRoute
   '/thanh-toan/ket-qua/$code': typeof PlainThanhToanKetQuaCodeRoute
@@ -159,8 +173,10 @@ export interface FileRoutesByTo {
   '/admin/phan-quyen': typeof AdminPhanQuyenRoute
   '/admin/tai-nguyen': typeof AdminTaiNguyenRoute
   '/admin': typeof AdminIndexRoute
+  '/bo-suu-tap/$id': typeof ShopBoSuuTapIdRoute
   '/luts/$slug': typeof ShopLutsSlugRoute
   '/admin/luts/$id': typeof AdminLutsIdRoute
+  '/bo-suu-tap': typeof ShopBoSuuTapIndexRoute
   '/luts': typeof ShopLutsIndexRoute
   '/admin/luts': typeof AdminLutsIndexRoute
   '/thanh-toan/ket-qua/$code': typeof PlainThanhToanKetQuaCodeRoute
@@ -182,8 +198,10 @@ export interface FileRoutesById {
   '/admin/phan-quyen': typeof AdminPhanQuyenRoute
   '/admin/tai-nguyen': typeof AdminTaiNguyenRoute
   '/admin/': typeof AdminIndexRoute
+  '/_shop/bo-suu-tap/$id': typeof ShopBoSuuTapIdRoute
   '/_shop/luts/$slug': typeof ShopLutsSlugRoute
   '/admin/luts/$id': typeof AdminLutsIdRoute
+  '/_shop/bo-suu-tap/': typeof ShopBoSuuTapIndexRoute
   '/_shop/luts/': typeof ShopLutsIndexRoute
   '/admin/luts/': typeof AdminLutsIndexRoute
   '/_plain/thanh-toan/ket-qua/$code': typeof PlainThanhToanKetQuaCodeRoute
@@ -203,8 +221,10 @@ export interface FileRouteTypes {
     | '/admin/phan-quyen'
     | '/admin/tai-nguyen'
     | '/admin/'
+    | '/bo-suu-tap/$id'
     | '/luts/$slug'
     | '/admin/luts/$id'
+    | '/bo-suu-tap'
     | '/luts'
     | '/admin/luts'
     | '/thanh-toan/ket-qua/$code'
@@ -221,8 +241,10 @@ export interface FileRouteTypes {
     | '/admin/phan-quyen'
     | '/admin/tai-nguyen'
     | '/admin'
+    | '/bo-suu-tap/$id'
     | '/luts/$slug'
     | '/admin/luts/$id'
+    | '/bo-suu-tap'
     | '/luts'
     | '/admin/luts'
     | '/thanh-toan/ket-qua/$code'
@@ -243,8 +265,10 @@ export interface FileRouteTypes {
     | '/admin/phan-quyen'
     | '/admin/tai-nguyen'
     | '/admin/'
+    | '/_shop/bo-suu-tap/$id'
     | '/_shop/luts/$slug'
     | '/admin/luts/$id'
+    | '/_shop/bo-suu-tap/'
     | '/_shop/luts/'
     | '/admin/luts/'
     | '/_plain/thanh-toan/ket-qua/$code'
@@ -373,6 +397,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopLutsIndexRouteImport
       parentRoute: typeof ShopRoute
     }
+    '/_shop/bo-suu-tap/': {
+      id: '/_shop/bo-suu-tap/'
+      path: '/bo-suu-tap'
+      fullPath: '/bo-suu-tap'
+      preLoaderRoute: typeof ShopBoSuuTapIndexRouteImport
+      parentRoute: typeof ShopRoute
+    }
     '/admin/luts/$id': {
       id: '/admin/luts/$id'
       path: '/luts/$id'
@@ -385,6 +416,13 @@ declare module '@tanstack/react-router' {
       path: '/luts/$slug'
       fullPath: '/luts/$slug'
       preLoaderRoute: typeof ShopLutsSlugRouteImport
+      parentRoute: typeof ShopRoute
+    }
+    '/_shop/bo-suu-tap/$id': {
+      id: '/_shop/bo-suu-tap/$id'
+      path: '/bo-suu-tap/$id'
+      fullPath: '/bo-suu-tap/$id'
+      preLoaderRoute: typeof ShopBoSuuTapIdRouteImport
       parentRoute: typeof ShopRoute
     }
     '/_shop/luts/danh-muc/$category': {
@@ -429,13 +467,17 @@ const PlainRouteChildren: PlainRouteChildren = {
 const PlainRouteWithChildren = PlainRoute._addFileChildren(PlainRouteChildren)
 
 interface ShopRouteChildren {
+  ShopBoSuuTapIdRoute: typeof ShopBoSuuTapIdRoute
   ShopLutsSlugRoute: typeof ShopLutsSlugRoute
+  ShopBoSuuTapIndexRoute: typeof ShopBoSuuTapIndexRoute
   ShopLutsIndexRoute: typeof ShopLutsIndexRoute
   ShopLutsDanhMucCategoryRoute: typeof ShopLutsDanhMucCategoryRoute
 }
 
 const ShopRouteChildren: ShopRouteChildren = {
+  ShopBoSuuTapIdRoute: ShopBoSuuTapIdRoute,
   ShopLutsSlugRoute: ShopLutsSlugRoute,
+  ShopBoSuuTapIndexRoute: ShopBoSuuTapIndexRoute,
   ShopLutsIndexRoute: ShopLutsIndexRoute,
   ShopLutsDanhMucCategoryRoute: ShopLutsDanhMucCategoryRoute,
 }

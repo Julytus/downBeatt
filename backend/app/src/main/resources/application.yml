@@ -117,3 +117,6 @@ lut:
   download:
     url-ttl: ${LUT_DOWNLOAD_URL_TTL:5m}
 
+collection:
+  free-limit: ${COLLECTION_FREE_LIMIT:3}
+

@@ -20,8 +20,11 @@ import vn.aeoc.entity.data.mysql.lut.LutTag;
 import vn.entity.backend.tables.records.LutRecord;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 import static org.jooq.impl.DSL.inline;
@@ -139,6 +142,34 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
 
     public Lut getPublishedBySlug(String slug) {
         return getOneByCriteriaWithJoin(publicFields(), joined(), published().and(LUT.SLUG.eq(slug)));
+    }
+
+    public List<Lut> listPublishedByIds(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        List<Lut> list = getListByCriteriaWithJoin(
+                publicFields(),
+                joined(),
+                published().and(LUT.ID.in(ids)),
+                (OrderField<?>) null);
+        Map<Integer, Lut> byId = list.stream()
+                .collect(Collectors.toMap(Lut::getId, l -> l, (a, b) -> a));
+        List<Lut> ordered = new ArrayList<>(ids.size());
+        for (Integer id : ids) {
+            Lut item = byId.get(id);
+            if (item != null) {
+                ordered.add(item);
+            }
+        }
+        return ordered;
+    }
+
+    public boolean isPublished(Integer id) {
+        if (id == null) {
+            return false;
+        }
+        return exists(published().and(LUT.ID.eq(id)));
     }
 
     /** Điểm = 10·[cùng style] + số danh mục đang hiện mà hai LUT cùng thuộc. */

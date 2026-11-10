@@ -69,6 +69,22 @@ public class LutService extends BaseService<LutRepository, Lut, Integer> {
         return enrich(repository.searchPublished(terms, null, null, sort, pageable(1, size)));
     }
 
+    public List<Lut> listPublishedByIds(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        List<Lut> list = repository.listPublishedByIds(ids);
+        enrich(list);
+        return list;
+    }
+
+    public boolean isPublished(Integer id) {
+        if (id == null) {
+            return false;
+        }
+        return repository.isPublished(id);
+    }
+
     private Lut requirePublished(String slug) {
         Lut lut = repository.getPublishedBySlug(slug);
         if (lut == null) {

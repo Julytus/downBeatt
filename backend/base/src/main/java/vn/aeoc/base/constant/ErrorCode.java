@@ -57,7 +57,9 @@ public enum ErrorCode {
     PAYMENT_GATEWAY_ERROR(502, "Không kết nối được cổng thanh toán, vui lòng thử lại"),
     INVALID_SIGNATURE(400, "Chữ ký không hợp lệ"),
     PLAN_REQUIRED(403, "LUT Premium cần gói Pro hoặc Studio"),
-    LUT_FILE_UNAVAILABLE(503, "File LUT đang không sẵn sàng, vui lòng thử lại sau");
+    LUT_FILE_UNAVAILABLE(503, "File LUT đang không sẵn sàng, vui lòng thử lại sau"),
+    COLLECTION_LIMIT(403, "Gói Miễn phí lưu được tối đa 3 bộ sưu tập"),
+    COLLECTION_NAME_EXISTS(400, "Bạn đã có bộ sưu tập tên này");
 
     public final int code;
     public final String message;

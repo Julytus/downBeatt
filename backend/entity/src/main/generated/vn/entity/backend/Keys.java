@@ -10,6 +10,8 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
 
+import vn.entity.backend.tables.Collection;
+import vn.entity.backend.tables.CollectionItem;
 import vn.entity.backend.tables.Creator;
 import vn.entity.backend.tables.DownloadLog;
 import vn.entity.backend.tables.Lut;
@@ -26,6 +28,8 @@ import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.Subscription;
 import vn.entity.backend.tables.UserApp;
+import vn.entity.backend.tables.records.CollectionItemRecord;
+import vn.entity.backend.tables.records.CollectionRecord;
 import vn.entity.backend.tables.records.CreatorRecord;
 import vn.entity.backend.tables.records.DownloadLogRecord;
 import vn.entity.backend.tables.records.LutCategoryMapRecord;
@@ -55,6 +59,9 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<CollectionRecord> KEY_COLLECTION_PRIMARY = Internal.createUniqueKey(Collection.COLLECTION, DSL.name("KEY_collection_PRIMARY"), new TableField[] { Collection.COLLECTION.ID }, true);
+    public static final UniqueKey<CollectionRecord> KEY_COLLECTION_UQ_COLLECTION_USER_NAME = Internal.createUniqueKey(Collection.COLLECTION, DSL.name("KEY_collection_uq_collection_user_name"), new TableField[] { Collection.COLLECTION.USER_ID, Collection.COLLECTION.NAME }, true);
+    public static final UniqueKey<CollectionItemRecord> KEY_COLLECTION_ITEM_PRIMARY = Internal.createUniqueKey(CollectionItem.COLLECTION_ITEM, DSL.name("KEY_collection_item_PRIMARY"), new TableField[] { CollectionItem.COLLECTION_ITEM.COLLECTION_ID, CollectionItem.COLLECTION_ITEM.LUT_ID }, true);
     public static final UniqueKey<CreatorRecord> KEY_CREATOR_PRIMARY = Internal.createUniqueKey(Creator.CREATOR, DSL.name("KEY_creator_PRIMARY"), new TableField[] { Creator.CREATOR.ID }, true);
     public static final UniqueKey<CreatorRecord> KEY_CREATOR_SLUG = Internal.createUniqueKey(Creator.CREATOR, DSL.name("KEY_creator_slug"), new TableField[] { Creator.CREATOR.SLUG }, true);
     public static final UniqueKey<DownloadLogRecord> KEY_DOWNLOAD_LOG_PRIMARY = Internal.createUniqueKey(DownloadLog.DOWNLOAD_LOG, DSL.name("KEY_download_log_PRIMARY"), new TableField[] { DownloadLog.DOWNLOAD_LOG.ID }, true);
@@ -91,6 +98,9 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<CollectionRecord, UserAppRecord> FK_COLLECTION_USER = Internal.createForeignKey(Collection.COLLECTION, DSL.name("fk_collection_user"), new TableField[] { Collection.COLLECTION.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
+    public static final ForeignKey<CollectionItemRecord, CollectionRecord> FK_COLLECTION_ITEM_COLLECTION = Internal.createForeignKey(CollectionItem.COLLECTION_ITEM, DSL.name("fk_collection_item_collection"), new TableField[] { CollectionItem.COLLECTION_ITEM.COLLECTION_ID }, Keys.KEY_COLLECTION_PRIMARY, new TableField[] { Collection.COLLECTION.ID }, true);
+    public static final ForeignKey<CollectionItemRecord, LutRecord> FK_COLLECTION_ITEM_LUT = Internal.createForeignKey(CollectionItem.COLLECTION_ITEM, DSL.name("fk_collection_item_lut"), new TableField[] { CollectionItem.COLLECTION_ITEM.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
     public static final ForeignKey<DownloadLogRecord, LutRecord> FK_DOWNLOAD_LOG_LUT = Internal.createForeignKey(DownloadLog.DOWNLOAD_LOG, DSL.name("fk_download_log_lut"), new TableField[] { DownloadLog.DOWNLOAD_LOG.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
     public static final ForeignKey<DownloadLogRecord, UserAppRecord> FK_DOWNLOAD_LOG_USER = Internal.createForeignKey(DownloadLog.DOWNLOAD_LOG, DSL.name("fk_download_log_user"), new TableField[] { DownloadLog.DOWNLOAD_LOG.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
     public static final ForeignKey<LutRecord, UserAppRecord> FK_LUT_CREATED_BY = Internal.createForeignKey(Lut.LUT, DSL.name("fk_lut_created_by"), new TableField[] { Lut.LUT.CREATED_BY }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
