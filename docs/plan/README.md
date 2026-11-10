@@ -19,7 +19,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 0.4 | 0. Nền tảng | phân quyền theo role (V4, không qua plan) | | done (07/11/2026) |
 | 1.1 | 1. Cửa hàng | `tai-khoan-khach` | | done (10/11/2026) |
 | 1.2 | 1. Cửa hàng | `dac-trung-mau` | 0.3 | done (10/11/2026) |
-| 1.3 | 1. Cửa hàng | `quan-ly-lut` | 0.3, 0.4, 1.2 | đang lập plan |
+| 1.3 | 1. Cửa hàng | `quan-ly-lut` | 0.3, 0.4, 1.2 | done (10/11/2026) |
 | 1.4 | 1. Cửa hàng | `goi-thanh-toan` | 1.1 | chưa làm |
 | 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | chưa làm |
 | 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | chưa làm |
@@ -90,21 +90,25 @@ Thiết kế: §7.2.4, Phụ lục A, UT-01 đến UT-05. Bảng: `lut_color_fea
 - [x] Frontend: thành phần "Đặc trưng màu" (9 thanh + cờ đen trắng, `lut-color-feature-card.tsx`) dùng lại được ở `/admin/luts`; trang `/admin/dac-trung-mau`
 - [x] E2E + review + tài liệu (`/cook`, `/doc-chuc-nang`). Tài liệu: [docs/chuc-nang/dac-trung-mau.md](../chuc-nang/dac-trung-mau.md)
 
-### 1.3 `quan-ly-lut` — đang lập plan ([plan/quan-ly-lut.md](../../plan/quan-ly-lut.md), phần LUT; danh mục / tác giả đề xuất tách lát)
+### 1.3 `quan-ly-lut` — done (10/11/2026) ([plan/quan-ly-lut.md](../../plan/quan-ly-lut.md), phần LUT; danh mục / tác giả đề xuất tách lát)
 
 Thiết kế: §5.6 (lut, lut-category, creator), §6.6, §9.4. Resource: `LUT`, `LUT_CATEGORY`, `CREATOR`.
 
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] Migration resource + permission cho role quản trị
+- [x] Plan → duyệt (10/11/2026)
+- [x] Backend
+  - [x] Migration resource + permission cho role quản trị (resource `LUT` có sẵn từ `dac-trung-mau`, lát này không thêm migration)
   - [ ] CRUD `lut`, `lut-category`, `creator` theo khuôn `list/get/update/delete`
-  - [ ] `upload` multipart: .cube (bucket riêng tư, gọi `ColorFeatureExtractor`), ảnh jpg/png/webp, video mp4/webm ≤ 50 MB; từ chối svg/html
-  - [ ] `publish/{id}`: kiểm `PREVIEW_MISSING`, đặc trưng màu, `LUT_FEATURE_MISSING` (≥ 3 thẻ, ≥ 1 danh mục); `hide/{id}`
-  - [ ] Slug sinh từ tiêu đề, trùng thêm `-2`, `-3`
-- [ ] Frontend
-  - [ ] `/admin/luts`: bảng lọc trạng thái, form thêm / sửa, chọn kiểu xem trước, upload, thẻ "Đặc trưng màu", nút xuất bản / ẩn
+    > Xong phần `lut` (+ `GET /lut/creators` cho ô chọn). CRUD `lut-category`, `creator` (resource `LUT_CATEGORY`, `CREATOR`) dời sang lát riêng theo plan §1.
+  - [x] `upload` multipart: .cube (bucket riêng tư, gọi `ColorFeatureExtractor`), ảnh jpg/png/webp, video mp4/webm ≤ 50 MB; từ chối svg/html
+  - [x] `publish/{id}`: kiểm `PREVIEW_MISSING`, đặc trưng màu, `LUT_FEATURE_MISSING` (≥ 3 thẻ, ≥ 1 danh mục); `hide/{id}`
+  - [x] Slug sinh từ tiêu đề, trùng thêm `-2`, `-3`
+- [x] Frontend
+  - [x] `/admin/luts`: bảng lọc trạng thái, form thêm / sửa, chọn kiểu xem trước, upload, thẻ "Đặc trưng màu", nút xuất bản / ẩn
   - [ ] `/admin/danh-muc`, `/admin/tac-gia`
-- [ ] E2E + review + tài liệu
+    > Dời sang lát riêng cùng CRUD danh mục / tác giả.
+- [x] E2E + review + tài liệu (`/cook`, `/doc-chuc-nang`). Tài liệu: [docs/chuc-nang/quan-ly-lut.md](../chuc-nang/quan-ly-lut.md)
+
+> Đề xuất lát nhỏ riêng **`seed-minio`** (người dùng chọn 10/11/2026, làm sau 1.3): máy mới chạy Flyway có 36 LUT trong DB nhưng MinIO trống (ảnh hỏng, không đo được đặc trưng màu) cho tới khi chạy tay `tools/seed/kho-lut/build.py` (Python + mạng). Cần cách nạp sẵn file ảnh / .cube / video lên MinIO sau khi seed.
 
 ### 1.4 `goi-thanh-toan` — chưa làm
 

@@ -13,10 +13,14 @@ import vn.aeoc.base.repo.AbsMysqlRepository;
 import vn.aeoc.business.lut.constant.LutSort;
 import vn.aeoc.business.lut.constant.LutStatus;
 import vn.aeoc.business.lut.service.LutQuerySupport;
+import vn.aeoc.entity.data.mysql.lut.Creator;
 import vn.aeoc.entity.data.mysql.lut.Lut;
+import vn.aeoc.entity.data.mysql.lut.LutCategory;
 import vn.aeoc.entity.data.mysql.lut.LutTag;
 import vn.entity.backend.tables.records.LutRecord;
 
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -247,5 +251,171 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
                 joined(),
                 LUT.FILE_KEY.isNotNull().and(LUT.FILE_KEY.ne("")),
                 List.of(LUT.ID.asc()));
+    }
+
+    private List<Field<?>> adminListFields() {
+        return List.of(
+                LUT.ID,
+                LUT.SLUG,
+                LUT.TITLE,
+                CREATOR.NAME.as("creator_name"),
+                LUT.STYLE,
+                LUT.IS_PREMIUM,
+                LUT.STATUS,
+                LUT.DOWNLOAD_COUNT,
+                LUT.PUBLISHED_TIME,
+                LUT.UPDATED_TIME,
+                LUT.COVER_URL
+        );
+    }
+
+    private List<Field<?>> adminDetailFields() {
+        return List.of(
+                LUT.ID, LUT.SLUG, LUT.TITLE, LUT.DESCRIPTION, LUT.CREATOR_ID,
+                CREATOR.NAME.as("creator_name"),
+                LUT.STYLE, LUT.IS_PREMIUM, LUT.STATUS, LUT.PREVIEW_TYPE,
+                LUT.COVER_URL, LUT.BEFORE_URL, LUT.AFTER_URL, LUT.PREVIEW_VIDEO_URL,
+                LUT.FILE_KEY, LUT.FILE_SIZE_KB, LUT.LUT_SIZE,
+                LUT.DOWNLOAD_COUNT, LUT.PUBLISHED_TIME,
+                LUT.CREATED_BY, LUT.CREATED_TIME, LUT.UPDATED_TIME
+        );
+    }
+
+    public List<Lut> adminList(String keyword, String style, String status, List<OrderField<?>> order, Pageable pageable) {
+        return getListByCriteriaWithJoin(
+                adminListFields(),
+                joined(),
+                getAdminCondition(keyword, style, status, null),
+                order != null && !order.isEmpty() ? order : List.of(LUT.UPDATED_TIME.desc(), LUT.ID.desc()),
+                pageable);
+    }
+
+    public List<Lut> adminList(String keyword, String style, String status, Pageable pageable) {
+        return adminList(keyword, style, status, (List<OrderField<?>>) null, pageable);
+    }
+
+    public Long adminCount(String keyword, String style, String status) {
+        return getCountWithCriteria(getAdminCondition(keyword, style, status, null));
+    }
+
+    public Lut getAdminById(Integer id) {
+        return getByIdWithJoin(adminDetailFields(), joined(), id);
+    }
+
+    public boolean existsBySlug(String slug) {
+        return exists(LUT.SLUG.eq(slug));
+    }
+
+    public void updateInfo(Lut lut) {
+        updateByCondition(LUT.ID.eq(lut.getId()), lut,
+                LUT.TITLE, LUT.DESCRIPTION, LUT.CREATOR_ID,
+                LUT.STYLE, LUT.IS_PREMIUM, LUT.PREVIEW_TYPE);
+    }
+
+    public void updateFile(Integer id, String fileKey, Integer fileSizeKb, Integer lutSize) {
+        Lut p = new Lut();
+        p.setFileKey(fileKey);
+        p.setFileSizeKb(fileSizeKb);
+        p.setLutSize(lutSize);
+        updateByCondition(LUT.ID.eq(id), p, LUT.FILE_KEY, LUT.FILE_SIZE_KB, LUT.LUT_SIZE);
+    }
+
+    public void updateStatus(Integer id, String status, LocalDateTime publishedTime) {
+        if (publishedTime != null) {
+            Lut p = new Lut();
+            p.setStatus(status);
+            p.setPublishedTime(publishedTime);
+            updateByCondition(LUT.ID.eq(id), p, LUT.STATUS, LUT.PUBLISHED_TIME);
+        } else {
+            updateFieldByCondition(LUT.ID.eq(id), LUT.STATUS, status);
+        }
+    }
+
+    public void updateCoverUrl(Integer id, String url) {
+        updateFieldByCondition(LUT.ID.eq(id), LUT.COVER_URL, url);
+    }
+
+    public void updateBeforeUrl(Integer id, String url) {
+        updateFieldByCondition(LUT.ID.eq(id), LUT.BEFORE_URL, url);
+    }
+
+    public void updateAfterUrl(Integer id, String url) {
+        updateFieldByCondition(LUT.ID.eq(id), LUT.AFTER_URL, url);
+    }
+
+    public void updateVideoUrl(Integer id, String url) {
+        updateFieldByCondition(LUT.ID.eq(id), LUT.PREVIEW_VIDEO_URL, url);
+    }
+
+    public void replaceTags(Integer lutId, List<String> tags) {
+        dslContext.deleteFrom(LUT_TAG).where(LUT_TAG.LUT_ID.eq(lutId)).execute();
+        if (tags != null && !tags.isEmpty()) {
+            var insert = dslContext.insertInto(LUT_TAG, LUT_TAG.LUT_ID, LUT_TAG.TAG);
+            for (String tag : tags) {
+                insert = insert.values(lutId, tag);
+            }
+            insert.execute();
+        }
+    }
+
+    public void replaceCategories(Integer lutId, List<Integer> categoryIds) {
+        dslContext.deleteFrom(LUT_CATEGORY_MAP).where(LUT_CATEGORY_MAP.LUT_ID.eq(lutId)).execute();
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            var insert = dslContext.insertInto(LUT_CATEGORY_MAP, LUT_CATEGORY_MAP.LUT_ID, LUT_CATEGORY_MAP.CATEGORY_ID);
+            for (Integer categoryId : categoryIds) {
+                insert = insert.values(lutId, categoryId);
+            }
+            insert.execute();
+        }
+    }
+
+    public List<String> getTags(Integer lutId) {
+        return dslContext.select(LUT_TAG.TAG)
+                .from(LUT_TAG)
+                .where(LUT_TAG.LUT_ID.eq(lutId))
+                .orderBy(LUT_TAG.TAG.asc())
+                .fetch(LUT_TAG.TAG);
+    }
+
+    public List<String> getCategorySlugs(Integer lutId) {
+        return dslContext.select(LUT_CATEGORY.SLUG)
+                .from(LUT_CATEGORY_MAP)
+                .join(LUT_CATEGORY).on(LUT_CATEGORY.ID.eq(LUT_CATEGORY_MAP.CATEGORY_ID))
+                .where(LUT_CATEGORY_MAP.LUT_ID.eq(lutId))
+                .orderBy(LUT_CATEGORY.SORT_ORDER.asc(), LUT_CATEGORY.ID.asc())
+                .fetch(LUT_CATEGORY.SLUG);
+    }
+
+    public int countNonSoftwareCategories(Integer lutId) {
+        Integer count = dslContext.selectCount()
+                .from(LUT_CATEGORY_MAP)
+                .join(LUT_CATEGORY).on(LUT_CATEGORY.ID.eq(LUT_CATEGORY_MAP.CATEGORY_ID))
+                .where(LUT_CATEGORY_MAP.LUT_ID.eq(lutId))
+                .and(LUT_CATEGORY.GROUP_CODE.ne("phan-mem"))
+                .fetchOne(0, Integer.class);
+        return count == null ? 0 : count;
+    }
+
+    public List<LutCategory> getCategoriesBySlugs(Collection<String> slugs) {
+        if (slugs == null || slugs.isEmpty()) {
+            return List.of();
+        }
+        return dslContext.selectFrom(LUT_CATEGORY)
+                .where(LUT_CATEGORY.SLUG.in(slugs))
+                .fetchInto(LutCategory.class);
+    }
+
+    public List<Creator> listCreators() {
+        return dslContext.select(CREATOR.ID, CREATOR.NAME, CREATOR.SLUG, CREATOR.STATUS)
+                .from(CREATOR)
+                .orderBy(CREATOR.NAME.asc())
+                .fetchInto(Creator.class);
+    }
+
+    public boolean existsCreator(Integer id) {
+        if (id == null) return false;
+        return dslContext.fetchExists(
+                dslContext.selectOne().from(CREATOR).where(CREATOR.ID.eq(id))
+        );
     }
 }

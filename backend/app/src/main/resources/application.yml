@@ -41,8 +41,8 @@ spring:
     clean-disabled: true
   servlet:
     multipart:
-      max-file-size: ${upload.max-size}
-      max-request-size: 50MB
+      max-file-size: 50MB
+      max-request-size: 52MB
       # File > 1MB ghi tạm ra đĩa thay vì giữ trong heap
       file-size-threshold: 1MB
 
