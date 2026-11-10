@@ -164,6 +164,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/lut/feature/recompute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["recompute"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/refresh": {
         parameters: {
             query?: never;
@@ -420,7 +436,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/lut-category/public/list": {
+    "/lut/feature/list": {
         parameters: {
             query?: never;
             header?: never;
@@ -428,6 +444,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["list_4"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lut-category/public/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_5"];
         put?: never;
         post?: never;
         delete?: never;
@@ -593,6 +625,77 @@ export interface components {
             result?: components["schemas"]["Module"];
             errors?: Record<string, never>;
         };
+        ApiResponseListLut: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["Lut"][];
+            errors?: Record<string, never>;
+        };
+        Lut: {
+            /** Format: int32 */
+            id?: number;
+            slug?: string;
+            title?: string;
+            description?: string;
+            /** Format: int32 */
+            creatorId?: number;
+            creatorName?: string;
+            style?: string;
+            /** Format: int32 */
+            isPremium?: number;
+            status?: string;
+            coverUrl?: string;
+            previewType?: string;
+            beforeUrl?: string;
+            afterUrl?: string;
+            previewVideoUrl?: string;
+            fileKey?: string;
+            /** Format: int32 */
+            fileSizeKb?: number;
+            /** Format: int32 */
+            lutSize?: number;
+            /** Format: int32 */
+            downloadCount?: number;
+            /** Format: date-time */
+            publishedTime?: string;
+            /** Format: int32 */
+            createdBy?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: date-time */
+            updatedTime?: string;
+            categories?: string[];
+            tags?: string[];
+            colorFeature?: components["schemas"]["LutColorFeature"];
+            featureError?: string;
+        };
+        LutColorFeature: {
+            /** Format: int32 */
+            lutId?: number;
+            /** Format: double */
+            brightness?: number;
+            /** Format: double */
+            contrast?: number;
+            /** Format: double */
+            saturation?: number;
+            /** Format: double */
+            warmth?: number;
+            /** Format: double */
+            tint?: number;
+            /** Format: double */
+            shadowA?: number;
+            /** Format: double */
+            shadowB?: number;
+            /** Format: double */
+            highlightA?: number;
+            /** Format: double */
+            highlightB?: number;
+            /** Format: int32 */
+            isMono?: number;
+            /** Format: date-time */
+            computedTime?: string;
+        };
         RefreshTokenRequest: {
             refreshToken?: string;
         };
@@ -662,49 +765,6 @@ export interface components {
             /** Format: int32 */
             page?: number;
             items?: components["schemas"]["Module"][];
-        };
-        ApiResponseListLut: {
-            /** Format: int32 */
-            code?: number;
-            message?: string;
-            result?: components["schemas"]["Lut"][];
-            errors?: Record<string, never>;
-        };
-        Lut: {
-            /** Format: int32 */
-            id?: number;
-            slug?: string;
-            title?: string;
-            description?: string;
-            /** Format: int32 */
-            creatorId?: number;
-            creatorName?: string;
-            style?: string;
-            /** Format: int32 */
-            isPremium?: number;
-            status?: string;
-            coverUrl?: string;
-            previewType?: string;
-            beforeUrl?: string;
-            afterUrl?: string;
-            previewVideoUrl?: string;
-            fileKey?: string;
-            /** Format: int32 */
-            fileSizeKb?: number;
-            /** Format: int32 */
-            lutSize?: number;
-            /** Format: int32 */
-            downloadCount?: number;
-            /** Format: date-time */
-            publishedTime?: string;
-            /** Format: int32 */
-            createdBy?: number;
-            /** Format: date-time */
-            createdTime?: string;
-            /** Format: date-time */
-            updatedTime?: string;
-            categories?: string[];
-            tags?: string[];
         };
         ApiResponsePageLut: {
             /** Format: int32 */
@@ -993,6 +1053,30 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseInteger"];
+                };
+            };
+        };
+    };
+    recompute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": number[];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListLut"];
                 };
             };
         };
@@ -1375,6 +1459,33 @@ export interface operations {
         };
     };
     list_4: {
+        parameters: {
+            query?: {
+                keyword?: string;
+                style?: string;
+                status?: string;
+                hasFeature?: number;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePageLut"];
+                };
+            };
+        };
+    };
+    list_5: {
         parameters: {
             query?: never;
             header?: never;

@@ -87,6 +87,19 @@ public class FileStorageService {
         }
     }
 
+    public byte[] readPrivate(String key) {
+        try (InputStream stream = minioClient.getObject(
+                GetObjectArgs.builder()
+                        .bucket(privateBucket)
+                        .object(key)
+                        .build())) {
+            return stream.readAllBytes();
+        } catch (Exception e) {
+            log.error("Không đọc được object '{}' từ bucket '{}': {}", key, privateBucket, e.getMessage());
+            throw new AppException(ErrorCode.UPLOAD_FILE_FAILED, "Không đọc được file .cube");
+        }
+    }
+
     public String upload(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new AppException(ErrorCode.FILE_EMPTY);

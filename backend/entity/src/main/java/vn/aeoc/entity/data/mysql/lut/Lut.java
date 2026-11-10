@@ -34,4 +34,7 @@ public class Lut {
     private LocalDateTime updatedTime;
     private List<String> categories;
     private List<String> tags;
+    // Chỉ trả ở /lut/feature/**
+    private LutColorFeature colorFeature;
+    private String featureError;
 }

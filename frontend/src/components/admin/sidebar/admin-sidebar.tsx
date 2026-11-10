@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Boxes, Command, House, KeyRound, LayoutGrid, ShieldCheck } from "lucide-react";
+import { Boxes, Command, House, KeyRound, LayoutGrid, Palette, ShieldCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 import { AdminMain, type AdminNavItem } from "@/components/admin/sidebar/admin-main";
@@ -18,7 +18,9 @@ import { useCanView } from "@/hooks/use-can-view";
  * Chức năng mới: thêm `{ code, title, url, icon }` vào đây (hoặc `items` để gom nhóm).
  * Backend vẫn chặn ở API nên đây chỉ là ẩn/hiện UI, không phải lớp bảo vệ.
  */
-const FEATURE_ITEMS: (AdminNavItem & { code: string })[] = [];
+const FEATURE_ITEMS: (AdminNavItem & { code: string })[] = [
+  { code: "LUT", title: "Đặc trưng màu", url: "/admin/dac-trung-mau", icon: Palette }
+];
 
 /** Nhóm "Hệ thống": các trang phân quyền (resource MODULE / RESOURCE / ROLE / PERMISSION, migration V4). */
 const SYSTEM_ITEMS: (AdminNavItem & { code: string })[] = [

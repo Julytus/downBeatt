@@ -104,3 +104,7 @@ system:
   # URL công khai tới MinIO qua nginx (location /s3/). URL file = {file-url}/{bucket}/{yyyy/MM/dd/uuid.ext}
   file-url: ${SYSTEM_FILE_URL:http://localhost/s3}
 
+lut:
+  feature:
+    compute-on-startup: ${LUT_FEATURE_COMPUTE_ON_STARTUP:true}
+
