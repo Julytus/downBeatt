@@ -1,4 +1,4 @@
-# DownBeat Backend — quy tắc cho worker Codex
+# DownBeat Backend — quy tắc cho worker backend (agy)
 
 Đọc `../AGENTS.md` (giao thức worker chung) trước file này.
 
@@ -45,6 +45,7 @@ Flyway: `app/src/main/resources/db/migration/V<n+1>__<mo_ta>.sql`. **Không sử
 - **Phân quyền**: đã có màn hình quản trị (`/admin/chuc-vu`, `/admin/phan-quyen`, `/admin/tai-nguyen`, `/admin/module`; API `role`, `permission`, `resource`, `module` ở `authenticate`). Chức năng mới vẫn **tạo dòng `resource` bằng migration** (vì `uri` phải khớp hằng `URI` của controller viết cùng lúc); việc cấp quyền cho từng chức vụ làm trên màn hình. Không sửa code / uri của 4 resource hệ thống `MODULE`, `RESOURCE`, `ROLE`, `PERMISSION` (`ResourceService.SYSTEM_CODES`).
 - Đổi quyền phải có hiệu lực ngay: ghi bảng `permission` thì `authCache.invalidateAll()` như `PermissionService.update`.
 - Không nới whitelist upload cho svg/html.
+- **Mẫu upload** (xem `LutAdminService.upload`): kiểm theo thứ tự tồn tại → loại → rỗng → đuôi → dung lượng → nội dung (magic bytes) rồi mới ghi; ghi file bằng `FileStorageService.putPublic` (bucket công khai, trả URL) hoặc `putPrivate` (bucket riêng tư); khoá object có UUID; content-type do server quyết định.
 
 ## Thêm 1 CRUD
 
@@ -249,5 +250,4 @@ Khác code mẫu của dự án AEOC cũ (`StoreService`, `InvoiceRepository`): 
 
 ## Code cũ chưa theo chuẩn (đừng chép)
 
-- `controller/FileController` nằm ở package phẳng; code mới đặt theo feature.
 - `UserService` dùng `new AppException(msg, 400)`; code mới dùng `ErrorCode`.

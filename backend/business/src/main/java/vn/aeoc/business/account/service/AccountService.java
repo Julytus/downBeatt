@@ -5,15 +5,27 @@ import vn.aeoc.authenticate.service.auth.UserService;
 import vn.aeoc.base.constant.ErrorCode;
 import vn.aeoc.base.exception.AppException;
 import vn.aeoc.base.util.CommonUtils;
+import vn.aeoc.business.billing.service.PlanService;
+import vn.aeoc.business.billing.service.SubscriptionService;
 import vn.aeoc.entity.data.mysql.auth.User;
+import vn.aeoc.entity.data.mysql.billing.Plan;
+import vn.aeoc.entity.data.mysql.billing.Subscription;
 import vn.aeoc.entity.data.response.TokenResponse;
+
+import java.time.LocalDate;
 
 @Service
 public class AccountService {
     private final UserService userService;
+    private final SubscriptionService subscriptionService;
+    private final PlanService planService;
 
-    public AccountService(UserService userService) {
+    public AccountService(UserService userService,
+                          SubscriptionService subscriptionService,
+                          PlanService planService) {
         this.userService = userService;
+        this.subscriptionService = subscriptionService;
+        this.planService = planService;
     }
 
     public TokenResponse register(User request) {
@@ -35,8 +47,19 @@ public class AccountService {
         result.setId(user.getId());
         result.setName(user.getName());
         result.setEmail(user.getEmail());
+
+        Subscription activeSub = subscriptionService.findActiveByUserId(userId, LocalDate.now());
+        if (activeSub != null) {
+            Plan plan = planService.getById(activeSub.getPlanId());
+            if (plan != null) {
+                result.setPlan(plan.getCode());
+                result.setPlanExpiresAt(activeSub.getEndDate());
+                return result;
+            }
+        }
+
         result.setPlan("free");
-        // lát goi-thanh-toan đọc subscription ACTIVE để điền plan, planExpiresAt
+        result.setPlanExpiresAt(null);
         return result;
     }
 }

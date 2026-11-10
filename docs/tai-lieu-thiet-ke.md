@@ -573,7 +573,7 @@ Bảng `rec_eval_run`: kết quả mỗi lần chạy đánh giá offline.
 | Migration | Lát | Nội dung |
 |---|---|---|
 | V3 | kho-lut | creator, lut, lut_category, lut_category_map, lut_tag |
-| V4 | quan-ly-lut | resource LUT, LUT_CATEGORY, CREATOR và quyền cho role quản trị |
+| V4 | quan-ly-lut | (thực tế V4 dùng cho phân quyền; resource LUT nằm ở V6, lát `quan-ly-lut` không có migration) |
 | V5 | tai-khoan-khach | role Khách hàng, đổi `is_default` |
 | V6 | dac-trung-mau | lut_color_feature, module Kho LUT (CATALOG), resource LUT (đã làm) |
 | V7 | goi-thanh-toan | plan (kèm dữ liệu 3 gói), payment_order, subscription, resource PLAN, ORDER, CUSTOMER |
@@ -677,7 +677,7 @@ Quy tắc của `event`:
 
 | Nhóm | Endpoint |
 |---|---|
-| lut | `list`, `get`, `update`, `delete/{id}`, `upload` (multipart), `publish/{id}`, `hide/{id}` |
+| lut | `list`, `get`, `update`, `delete/{id}`, `upload` (multipart), `publish/{id}`, `hide/{id}`, `creators` (8 endpoint) |
 | lut-category, creator | `list`, `get`, `update`, `delete/{id}` |
 | plan | `list`, `update` |
 | order | `list` (lọc trạng thái, khoảng ngày), `get` |
@@ -701,6 +701,7 @@ Quy tắc của `event`:
 | Không tạo được link payOS | 502 | `PAYMENT_GATEWAY_ERROR` | Không kết nối được cổng thanh toán, vui lòng thử lại |
 | Webhook sai chữ ký | 400 | `INVALID_SIGNATURE` | Chỉ ghi log |
 | Xuất bản thiếu file xem trước | 400 | `PREVIEW_MISSING` | LUT chưa có đủ ảnh / video xem trước |
+| Xuất bản thiếu file .cube hoặc đặc trưng màu | 400 | `LUT_FILE_MISSING` | LUT chưa có file .cube đã đo đặc trưng màu |
 | File .cube không đọc được | 400 | `LUT_FILE_INVALID` | File .cube không hợp lệ |
 | Xuất bản thiếu thẻ hoặc danh mục | 400 | `LUT_FEATURE_MISSING` | LUT cần ít nhất 3 thẻ và 1 danh mục |
 | Sở thích không hợp lệ | 400 | `PREFERENCE_INVALID` | Lựa chọn không hợp lệ |

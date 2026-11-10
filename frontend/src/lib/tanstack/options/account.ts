@@ -1,19 +1,12 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { getAccountMe, loginShop, register } from "@/lib/axios/account";
 import { logoutRemote } from "@/lib/axios/auth";
-import { checkout, getPlans, requestLutDownload } from "@/lib/mock/account";
-import { MOCK_PLANS } from "@/lib/mock/data/plans";
+import { requestLutDownload } from "@/lib/mock/account";
 import { useAuthStore } from "@/lib/stores/auth";
 import { useShopSession } from "@/lib/stores/shop-session";
 import { queryClient } from "@/lib/tanstack/query-client";
-import type { CheckoutRequest, LutDownloadDTO, ShopLoginRequest, ShopRegisterRequest, ShopUserDTO } from "@/lib/types/account";
+import type { LutDownloadDTO, ShopLoginRequest, ShopRegisterRequest, ShopUserDTO } from "@/lib/types/account";
 import type { LutDTO } from "@/lib/types/lut";
-
-export const plansQueryOptions = queryOptions({
-  queryKey: ["plans"],
-  queryFn: getPlans,
-  staleTime: Infinity
-});
 
 /** GET /account/me — query lấy thông tin tài khoản hiện tại khi có token (plan §8). */
 export const accountMeQueryOptions = queryOptions({
@@ -76,15 +69,6 @@ export const logoutMutationOptions = mutationOptions({
   },
   meta: {
     successMessage: "Đã đăng xuất"
-  }
-});
-
-export const checkoutMutationOptions = mutationOptions({
-  mutationFn: ({ user, ...req }: CheckoutRequest & { user: ShopUserDTO }) => checkout(user, req),
-  meta: {
-    successMessage: (u) =>
-      `Đã nâng cấp lên gói ${MOCK_PLANS.find((p) => p.code === (u as ShopUserDTO).plan)?.name ?? ""}`,
-    errorMessage: "Thanh toán không thành công, vui lòng thử lại"
   }
 });
 

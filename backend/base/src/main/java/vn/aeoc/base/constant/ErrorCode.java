@@ -48,7 +48,14 @@ public enum ErrorCode {
     INVOICE_LOOKUP_NOT_FOUND(404, "Không tìm thấy hoá đơn. Kiểm tra lại mã số thuế người bán và mã tra cứu"),
     INVOICE_LOOKUP_BLOCKED(429, "Bạn đã tra cứu sai quá nhiều lần, vui lòng thử lại sau 10 phút"),
     INVOICE_FILE_TOKEN_INVALID(404, "Liên kết tải hoá đơn không hợp lệ hoặc đã hết hạn"),
-    LUT_FILE_INVALID(400, "File .cube không hợp lệ");
+    LUT_FILE_INVALID(400, "File .cube không hợp lệ"),
+    PREVIEW_MISSING(400, "LUT chưa có đủ ảnh / video xem trước"),
+    LUT_FILE_MISSING(400, "LUT chưa có file .cube đã đo đặc trưng màu"),
+    LUT_FEATURE_MISSING(400, "LUT cần ít nhất 3 thẻ và 1 danh mục"),
+    PLAN_ACTIVE(400, "Bạn đang dùng gói này"),
+    ORDER_INVALID_STATUS(400, "Đơn hàng đã được xử lý"),
+    PAYMENT_GATEWAY_ERROR(502, "Không kết nối được cổng thanh toán, vui lòng thử lại"),
+    INVALID_SIGNATURE(400, "Chữ ký không hợp lệ");
 
     public final int code;
     public final String message;

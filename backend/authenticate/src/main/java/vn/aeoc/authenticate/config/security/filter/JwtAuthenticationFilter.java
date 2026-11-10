@@ -40,7 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final List<String> WHITE_LIST_POST_API = List.of(
             "/account/register",
             "/auth/refresh",
-            "/auth/logout"
+            "/auth/logout",
+            "/payment/payos/webhook"
     );
 
     /** Các API public nhưng chỉ cho method GET. */

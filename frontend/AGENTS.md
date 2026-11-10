@@ -416,7 +416,9 @@ Mỗi nhóm menu là một mảng `{ code, title, url, icon }[]`, lọc `canView
 | Trang không phải bảng (tiêu đề + ô chọn + nội dung) | `routes/admin/phan-quyen.tsx` (khung `container mx-auto flex flex-col gap-6 p-6` như `DataTableAdvanced`, đang tải dùng `Skeleton`) |
 | Cột JSON (mảng trong một cột) | `parseActions` / `toResourceDTO` ở `lib/axios/resource.ts` |
 
-Chưa có mẫu (làm khi plan yêu cầu): tải file lên (multipart `FormData`, không tự đặt `Content-Type`, kiểm đuôi và dung lượng ở FE trước khi gửi); số / tiền trong form (giữ chuỗi, zod regex, `Number()` khi dựng payload, hiện bằng `formatVnd`); trang chỉ xem có `Sheet` chi tiết.
+Mẫu tải file lên (multipart `FormData`, không tự đặt `Content-Type`, kiểm đuôi và dung lượng ở FE trước khi gửi): `components/admin/lut/file-slot.tsx`.
+
+Chưa có mẫu (làm khi plan yêu cầu): số / tiền trong form (giữ chuỗi, zod regex, `Number()` khi dựng payload, hiện bằng `formatVnd`); trang chỉ xem có `Sheet` chi tiết.
 
 ### Tự kiểm trước khi gửi `worker_done`
 

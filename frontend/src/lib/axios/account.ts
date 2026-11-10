@@ -33,6 +33,6 @@ export async function getAccountMe(): Promise<ShopUserDTO> {
     name: dto.name,
     email: dto.email,
     plan: dto.plan,
-    planExpiresAt: dto.planExpiresAt ?? null
+    planExpiresAt: dto.planExpiresAt ?? undefined
   };
 }

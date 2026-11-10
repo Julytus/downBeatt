@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Boxes, Command, House, KeyRound, LayoutGrid, Palette, ShieldCheck } from "lucide-react";
+import { Boxes, Command, Film, House, KeyRound, LayoutGrid, Palette, ShieldCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 import { AdminMain, type AdminNavItem } from "@/components/admin/sidebar/admin-main";
@@ -19,6 +19,7 @@ import { useCanView } from "@/hooks/use-can-view";
  * Backend vẫn chặn ở API nên đây chỉ là ẩn/hiện UI, không phải lớp bảo vệ.
  */
 const FEATURE_ITEMS: (AdminNavItem & { code: string })[] = [
+  { code: "LUT", title: "LUT", url: "/admin/luts", icon: Film },
   { code: "LUT", title: "Đặc trưng màu", url: "/admin/dac-trung-mau", icon: Palette }
 ];
 

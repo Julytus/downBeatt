@@ -12,6 +12,7 @@ import org.jooq.impl.Internal;
 import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategoryMap;
 import vn.entity.backend.tables.LutTag;
+import vn.entity.backend.tables.PaymentOrder;
 import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.UserApp;
@@ -33,6 +34,8 @@ public class Indexes {
     public static final Index LUT_IDX_LUT_STATUS_PUBLISHED = Internal.createIndex(DSL.name("idx_lut_status_published"), Lut.LUT, new OrderField[] { Lut.LUT.STATUS, Lut.LUT.PUBLISHED_TIME }, false);
     public static final Index LUT_IDX_LUT_STYLE = Internal.createIndex(DSL.name("idx_lut_style"), Lut.LUT, new OrderField[] { Lut.LUT.STYLE }, false);
     public static final Index LUT_TAG_IDX_LUT_TAG_TAG = Internal.createIndex(DSL.name("idx_lut_tag_tag"), LutTag.LUT_TAG, new OrderField[] { LutTag.LUT_TAG.TAG }, false);
+    public static final Index PAYMENT_ORDER_IDX_PAYMENT_ORDER_STATUS_CREATED = Internal.createIndex(DSL.name("idx_payment_order_status_created"), PaymentOrder.PAYMENT_ORDER, new OrderField[] { PaymentOrder.PAYMENT_ORDER.STATUS, PaymentOrder.PAYMENT_ORDER.CREATED_TIME }, false);
+    public static final Index PAYMENT_ORDER_IDX_PAYMENT_ORDER_USER_CREATED = Internal.createIndex(DSL.name("idx_payment_order_user_created"), PaymentOrder.PAYMENT_ORDER, new OrderField[] { PaymentOrder.PAYMENT_ORDER.USER_ID, PaymentOrder.PAYMENT_ORDER.CREATED_TIME }, false);
     public static final Index REFRESH_TOKEN_REFRESH_TOKEN_USER_INDEX = Internal.createIndex(DSL.name("refresh_token_user_index"), RefreshToken.REFRESH_TOKEN, new OrderField[] { RefreshToken.REFRESH_TOKEN.USER_ID }, false);
     public static final Index RESOURCE_RESOURCE_URI_INDEX = Internal.createIndex(DSL.name("resource_uri_index"), Resource.RESOURCE, new OrderField[] { Resource.RESOURCE.URI }, false);
     public static final Index USER_APP_USER_APP_ROLE_INDEX = Internal.createIndex(DSL.name("user_app_role_index"), UserApp.USER_APP, new OrderField[] { UserApp.USER_APP.ROLE_ID }, false);

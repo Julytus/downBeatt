@@ -1,25 +1,25 @@
+import { Link } from "@tanstack/react-router";
 import { Check, User, Users } from "lucide-react";
 import { ShopButton } from "@/components/shop/ui/shop-button";
-import type { BillingCycle, PlanDTO } from "@/lib/types/account";
+import { Badge } from "@/components/ui/badge";
+import type { BillingCycle, PlanDTO, ShopUserDTO } from "@/lib/types/account";
 import { cn } from "@/lib/utils";
 import { formatVnd } from "@/lib/utils/money";
+import { planAction } from "@/lib/utils/plan";
 
 interface PlanCardProps {
   plan: PlanDTO;
   cycle: BillingCycle;
-  /** Gói đang dùng của tài khoản đăng nhập */
-  current: boolean;
-  ctaLabel: string;
+  user?: ShopUserDTO | null;
   onSelect: () => void;
-  /** Kiểu thẻ ở trang chủ: phần đầu tô nền, nút trắng, góc vuông hơn (theo bản tham chiếu) */
+  /** Kiểu thẻ ở trang chủ: phần đầu tô nền, nút trắng, góc vuông hơn */
   home?: boolean;
 }
 
 export function PlanCard({
   plan,
   cycle,
-  current,
-  ctaLabel,
+  user,
   onSelect,
   home = false
 }: PlanCardProps) {
@@ -32,13 +32,17 @@ export function PlanCard({
       ? "text-sky-600 dark:text-sky-300"
       : "text-(--sh-pink)";
 
+  const action = planAction(user, plan);
+  const isHighlight = Boolean(plan.isHighlight);
+
   return (
     <article
-      aria-labelledby={`plan-${plan.code}`}
+      id={`plan-${plan.code}`}
+      aria-labelledby={`plan-heading-${plan.code}`}
       className={cn(
         "relative flex flex-col border",
         home ? "rounded-[4px]" : "rounded-[12px] p-6",
-        plan.highlight
+        isHighlight
           ? "border-(--sh-primary) shadow-[0_0_0_1px_var(--sh-primary)]"
           : home
             ? "border-(--sh-border) dark:border-transparent"
@@ -46,10 +50,18 @@ export function PlanCard({
         !home && plan.code === "studio" && "bg-(--sh-surface)/50"
       )}
     >
-      {plan.highlight && (
+      {isHighlight && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-(--sh-primary) px-3 py-0.5 text-xs font-bold tracking-wide text-white uppercase">
           Phổ biến
         </span>
+      )}
+      {action.isCurrent && (
+        <Badge
+          variant="outline"
+          className="absolute -top-3 right-4 rounded-full border-(--sh-border) bg-(--sh-elevated) px-2.5 py-0.5 text-xs font-semibold text-(--sh-fg)"
+        >
+          Gói hiện tại
+        </Badge>
       )}
       <div
         className={cn(
@@ -61,7 +73,7 @@ export function PlanCard({
         )}
       >
         <h2
-          id={`plan-${plan.code}`}
+          id={`plan-heading-${plan.code}`}
           className={cn(home ? "text-2xl font-semibold" : "font-display text-xl font-bold")}
         >
           {plan.name}
@@ -81,24 +93,40 @@ export function PlanCard({
           {free
             ? "Không cần thẻ thanh toán"
             : cycle === "year"
-              ? `Thanh toán ${formatVnd(price * 12)}/năm, hoặc ${formatVnd(plan.monthlyPrice)}/tháng`
+              ? `Thanh toán ${formatVnd(price * 12)} mỗi năm`
               : `Hoặc ${formatVnd(plan.yearlyMonthlyPrice)}/tháng khi trả theo năm`}
         </p>
 
-        <ShopButton
-          variant={plan.highlight ? "primary" : "outline"}
-          className={cn(
-            "mt-5 w-full",
-            home && "h-11 rounded-[4px] text-base",
-            home &&
-              !plan.highlight &&
-              "border-(--sh-border) bg-white text-[#151a20] hover:bg-white/90 dark:border-transparent"
-          )}
-          disabled={current}
-          onClick={onSelect}
-        >
-          {current ? "Gói hiện tại" : ctaLabel}
-        </ShopButton>
+        {action.isLink && action.href ? (
+          <ShopButton
+            asChild
+            variant={isHighlight ? "primary" : "outline"}
+            className={cn(
+              "mt-5 w-full",
+              home && "h-11 rounded-[4px] text-base",
+              home &&
+                !isHighlight &&
+                "border-(--sh-border) bg-white text-[#151a20] hover:bg-white/90 dark:border-transparent"
+            )}
+          >
+            <Link to={action.href}>{action.label}</Link>
+          </ShopButton>
+        ) : (
+          <ShopButton
+            variant={isHighlight ? "primary" : "outline"}
+            className={cn(
+              "mt-5 w-full",
+              home && "h-11 rounded-[4px] text-base",
+              home &&
+                !isHighlight &&
+                "border-(--sh-border) bg-white text-[#151a20] hover:bg-white/90 dark:border-transparent"
+            )}
+            disabled={action.disabled}
+            onClick={onSelect}
+          >
+            {action.label}
+          </ShopButton>
+        )}
       </div>
 
       <div className={cn(home && "px-5 pt-2 pb-7")}>

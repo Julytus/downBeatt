@@ -100,50 +100,54 @@ public class FileStorageService {
         }
     }
 
-    public String upload(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new AppException(ErrorCode.FILE_EMPTY);
-        }
-        if (file.getSize() > maxSize.toBytes()) {
-            throw new AppException(ErrorCode.FILE_TOO_LARGE,
-                    "File vượt quá dung lượng cho phép (" + maxSize.toMegabytes() + "MB)");
-        }
-
-        String ext = extensionOf(file.getOriginalFilename());
-        String contentType = ALLOWED_TYPES.get(ext);
-        if (contentType == null) {
-            throw new AppException(ErrorCode.FILE_TYPE_NOT_ALLOWED);
-        }
-
-        String objectKey = LocalDate.now().format(KEY_DATE) + "/" + UUID.randomUUID() + "." + ext;
-
-        try (InputStream stream = new BufferedInputStream(file.getInputStream())) {
-            verifySignature(stream, ext);
-
-            // Tài liệu luôn tải xuống, không render inline trên domain của app
-            Map<String, String> headers = contentType.startsWith("image/")
-                    ? Map.of("Cache-Control", CACHE_CONTROL)
-                    : Map.of("Cache-Control", CACHE_CONTROL,
-                             "Content-Disposition", "attachment; filename=\"" + downloadName(file, ext) + "\"");
-
+    public String putPublic(String key, InputStream in, long size, String contentType) {
+        try {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucket)
-                    .object(objectKey)
-                    .stream(stream, file.getSize(), -1)
+                    .object(key)
+                    .stream(in, size, -1)
                     .contentType(contentType)
-                    .headers(headers)
+                    .headers(Map.of("Cache-Control", CACHE_CONTROL))
                     .build());
-        } catch (AppException e) {
-            throw e;
+            return StringUtils.removeEnd(fileUrl, "/") + "/" + bucket + "/" + key;
         } catch (Exception e) {
-            log.error("Upload file lên MinIO thất bại, key={}", objectKey, e);
+            log.error("Upload file công khai lên MinIO thất bại, key={}", key, e);
             throw new AppException(ErrorCode.UPLOAD_FILE_FAILED);
         }
-
-        return StringUtils.removeEnd(fileUrl, "/") + "/" + bucket + "/" + objectKey;
     }
 
-    private static String extensionOf(String filename) {
+    public void putPrivate(String key, byte[] data, String contentType) {
+        try {
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(privateBucket)
+                    .object(key)
+                    .stream(new java.io.ByteArrayInputStream(data), data.length, -1)
+                    .contentType(contentType)
+                    .build());
+        } catch (Exception e) {
+            log.error("Upload file riêng tư lên MinIO thất bại, key={}", key, e);
+            throw new AppException(ErrorCode.UPLOAD_FILE_FAILED);
+        }
+    }
+
+    public String requireExtension(MultipartFile file, java.util.Set<String> allowed, String message) {
+        String ext = extensionOf(file == null ? null : file.getOriginalFilename());
+        if (ext.isEmpty() || !allowed.contains(ext)) {
+            throw new AppException(ErrorCode.FILE_TYPE_NOT_ALLOWED, message);
+        }
+        return ext;
+    }
+
+    public void requireMaxSize(MultipartFile file, DataSize max) {
+        if (file != null && file.getSize() > max.toBytes()) {
+            String msg = max.toMegabytes() == 10
+                    ? "File vượt quá dung lượng cho phép (10MB)"
+                    : "File vượt quá dung lượng cho phép";
+            throw new AppException(ErrorCode.FILE_TOO_LARGE, msg);
+        }
+    }
+
+    public static String extensionOf(String filename) {
         String ext = StringUtils.substringAfterLast(StringUtils.defaultString(filename), ".");
         return ext.toLowerCase(Locale.ROOT);
     }
@@ -156,8 +160,18 @@ public class FileStorageService {
         return base + "." + ext;
     }
 
+    public void verifySignature(MultipartFile file, String ext) {
+        try (InputStream stream = new BufferedInputStream(file.getInputStream())) {
+            verifySignature(stream, ext);
+        } catch (AppException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.UPLOAD_FILE_FAILED, "Không đọc được file");
+        }
+    }
+
     /** So magic bytes để chặn file giả đuôi (vd. HTML đổi tên thành .png). */
-    private static void verifySignature(InputStream stream, String ext) throws IOException {
+    public static void verifySignature(InputStream stream, String ext) throws IOException {
         stream.mark(SNIFF_BYTES);
         byte[] head = stream.readNBytes(SNIFF_BYTES);
         stream.reset();
@@ -171,6 +185,8 @@ public class FileStorageService {
             case "pdf" -> startsWith(head, '%', 'P', 'D', 'F');
             case "docx", "xlsx" -> startsWith(head, 'P', 'K', 0x03, 0x04);
             case "doc", "xls" -> startsWith(head, 0xD0, 0xCF, 0x11, 0xE0);
+            case "mp4" -> head.length >= 8 && head[4] == 'f' && head[5] == 't' && head[6] == 'y' && head[7] == 'p';
+            case "webm" -> startsWith(head, 0x1A, 0x45, 0xDF, 0xA3);
             default -> true; // txt/csv: được ép content-type text/plain nên không thực thi được
         };
         if (!valid) {

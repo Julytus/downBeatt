@@ -15,4 +15,5 @@ Một plan chỉ được cook khi `status: approved`, nghĩa là người dùng
 | [kho-lut](kho-lut.md) | Kho LUT: 6 API công khai, 36 LUT mẫu có file .cube + ảnh trước / sau / bìa thật trên MinIO, cửa hàng đổi từ dữ liệu giả sang API | thiết kế tổng quát §9 lát 1 | done |
 | [tai-khoan-khach](tai-khoan-khach.md) | Tài khoản khách hàng: role Khách hàng, `account/register`, `account/me`, hộp thoại đăng nhập / đăng ký và menu tài khoản ở cửa hàng dùng API thật | kế hoạch tổng 1.1 | done |
 | [dac-trung-mau](dac-trung-mau.md) | Đặc trưng màu: đọc file .cube, đo 10 đặc trưng màu (CIELAB), bảng `lut_color_feature`, tính lúc khởi động, trang `/admin/dac-trung-mau` | kế hoạch tổng 1.2 | done |
-| [quan-ly-lut](quan-ly-lut.md) | Quản lý LUT: thêm nháp, sửa, upload .cube / ảnh / video, xuất bản có kiểm điều kiện, ẩn, xoá ở `/admin/luts` (danh mục, tác giả tách lát sau) | kế hoạch tổng 1.3 | draft |
+| [quan-ly-lut](quan-ly-lut.md) | Quản lý LUT: thêm nháp, sửa, upload .cube / ảnh / video, xuất bản có kiểm điều kiện, ẩn, xoá ở `/admin/luts` (danh mục, tác giả tách lát sau) | kế hoạch tổng 1.3 | done |
+| [goi-thanh-toan](goi-thanh-toan.md) | Gói và thanh toán payOS: bảng `plan` / `payment_order` / `subscription`, tạo đơn, webhook có chữ ký, kích hoạt / gia hạn / nâng cấp, trang kết quả, nhắc gia hạn (lịch sử đơn, huỷ gói, quản trị đơn tách lát sau) | kế hoạch tổng 1.4 | done |

@@ -19,8 +19,8 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 0.4 | 0. Nền tảng | phân quyền theo role (V4, không qua plan) | | done (07/11/2026) |
 | 1.1 | 1. Cửa hàng | `tai-khoan-khach` | | done (10/11/2026) |
 | 1.2 | 1. Cửa hàng | `dac-trung-mau` | 0.3 | done (10/11/2026) |
-| 1.3 | 1. Cửa hàng | `quan-ly-lut` | 0.3, 0.4, 1.2 | đang lập plan |
-| 1.4 | 1. Cửa hàng | `goi-thanh-toan` | 1.1 | chưa làm |
+| 1.3 | 1. Cửa hàng | `quan-ly-lut` | 0.3, 0.4, 1.2 | done (10/11/2026) |
+| 1.4 | 1. Cửa hàng | `goi-thanh-toan` | 1.1 | done (10/11/2026) |
 | 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | chưa làm |
 | 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | chưa làm |
 | 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | chưa làm |
@@ -90,43 +90,53 @@ Thiết kế: §7.2.4, Phụ lục A, UT-01 đến UT-05. Bảng: `lut_color_fea
 - [x] Frontend: thành phần "Đặc trưng màu" (9 thanh + cờ đen trắng, `lut-color-feature-card.tsx`) dùng lại được ở `/admin/luts`; trang `/admin/dac-trung-mau`
 - [x] E2E + review + tài liệu (`/cook`, `/doc-chuc-nang`). Tài liệu: [docs/chuc-nang/dac-trung-mau.md](../chuc-nang/dac-trung-mau.md)
 
-### 1.3 `quan-ly-lut` — đang lập plan ([plan/quan-ly-lut.md](../../plan/quan-ly-lut.md), phần LUT; danh mục / tác giả đề xuất tách lát)
+### 1.3 `quan-ly-lut` — done (10/11/2026) ([plan/quan-ly-lut.md](../../plan/quan-ly-lut.md), phần LUT; danh mục / tác giả đề xuất tách lát)
 
 Thiết kế: §5.6 (lut, lut-category, creator), §6.6, §9.4. Resource: `LUT`, `LUT_CATEGORY`, `CREATOR`.
 
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] Migration resource + permission cho role quản trị
+- [x] Plan → duyệt (10/11/2026)
+- [x] Backend
+  - [x] Migration resource + permission cho role quản trị (resource `LUT` có sẵn từ `dac-trung-mau`, lát này không thêm migration)
   - [ ] CRUD `lut`, `lut-category`, `creator` theo khuôn `list/get/update/delete`
-  - [ ] `upload` multipart: .cube (bucket riêng tư, gọi `ColorFeatureExtractor`), ảnh jpg/png/webp, video mp4/webm ≤ 50 MB; từ chối svg/html
-  - [ ] `publish/{id}`: kiểm `PREVIEW_MISSING`, đặc trưng màu, `LUT_FEATURE_MISSING` (≥ 3 thẻ, ≥ 1 danh mục); `hide/{id}`
-  - [ ] Slug sinh từ tiêu đề, trùng thêm `-2`, `-3`
-- [ ] Frontend
-  - [ ] `/admin/luts`: bảng lọc trạng thái, form thêm / sửa, chọn kiểu xem trước, upload, thẻ "Đặc trưng màu", nút xuất bản / ẩn
+    > Xong phần `lut` (+ `GET /lut/creators` cho ô chọn). CRUD `lut-category`, `creator` (resource `LUT_CATEGORY`, `CREATOR`) dời sang lát riêng theo plan §1.
+  - [x] `upload` multipart: .cube (bucket riêng tư, gọi `ColorFeatureExtractor`), ảnh jpg/png/webp, video mp4/webm ≤ 50 MB; từ chối svg/html
+  - [x] `publish/{id}`: kiểm `PREVIEW_MISSING`, đặc trưng màu, `LUT_FEATURE_MISSING` (≥ 3 thẻ, ≥ 1 danh mục); `hide/{id}`
+  - [x] Slug sinh từ tiêu đề, trùng thêm `-2`, `-3`
+- [x] Frontend
+  - [x] `/admin/luts`: bảng lọc trạng thái, form thêm / sửa, chọn kiểu xem trước, upload, thẻ "Đặc trưng màu", nút xuất bản / ẩn
   - [ ] `/admin/danh-muc`, `/admin/tac-gia`
-- [ ] E2E + review + tài liệu
+    > Dời sang lát riêng cùng CRUD danh mục / tác giả.
+- [x] E2E + review + tài liệu (`/cook`, `/doc-chuc-nang`). Tài liệu: [docs/chuc-nang/quan-ly-lut.md](../chuc-nang/quan-ly-lut.md)
 
-### 1.4 `goi-thanh-toan` — chưa làm
+> Đề xuất lát nhỏ riêng **`seed-minio`** (người dùng chọn 10/11/2026, làm sau 1.3): máy mới chạy Flyway có 36 LUT trong DB nhưng MinIO trống (ảnh hỏng, không đo được đặc trưng màu) cho tới khi chạy tay `tools/seed/kho-lut/build.py` (Python + mạng). Cần cách nạp sẵn file ảnh / .cube / video lên MinIO sau khi seed.
+
+### 1.4 `goi-thanh-toan` — done (10/11/2026) ([plan/goi-thanh-toan.md](../../plan/goi-thanh-toan.md))
+
+> Tách làm ba lát (người dùng đồng ý 10/11/2026): `goi-thanh-toan` (gói, đơn, payOS, webhook, subscription, tác vụ 00:10, `/pricing`, trang kết quả, nhắc gia hạn) → `goi-cua-toi` (`order/my-list`, `subscription/cancel`, lịch sử đơn, huỷ gói) → `quan-tri-don-hang` (resource PLAN / ORDER / CUSTOMER, trang quản trị đơn, khách, sửa giá).
 
 Thiết kế: §2.2, §4.5, §5.4 (order, subscription), §6.4, §6.5, §6.8 (tác vụ 00:10). Resource: `PLAN`, `ORDER`, `CUSTOMER`.
 
-- [ ] Trước khi lập plan: người dùng đưa tài liệu + khoá thử nghiệm payOS (không có thì làm `mock-pay` trước)
-- [ ] Chốt vấn đề mở #1 (nâng cấp giữa kỳ: không tính chênh lệch) và #3 (demo bằng khoá thử nghiệm)
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] Migration `plan` (3 gói), `payment_order` (có sẵn cột `source_lut_id`), `subscription` (cột sinh `active_user_id` UNIQUE), resource
-  - [ ] `GET /plan/public/list` (cache)
-  - [ ] `order/create` (backend tự tính tiền, `PLAN_ACTIVE`, `PAYMENT_GATEWAY_ERROR`), `order/get`, `order/cancel`, `order/my-list`, `order/mock-pay` (chỉ local)
-  - [ ] Webhook payOS: chữ ký (`INVALID_SIGNATURE`), so số tiền, `UPDATE ... WHERE status = 'PENDING'`, kích hoạt / gia hạn / nâng cấp subscription
+- [x] Trước khi lập plan: tài liệu payOS (khoá người dùng đặt vào `backend/.env` trước khi cook)
+- [x] Chốt vấn đề mở #1 (nâng cấp: quy đổi ngày còn lại sang gói mới, gia hạn bất cứ lúc nào) và #3 (demo bằng khoá payOS thật, giá hạ tạm)
+- [x] Plan → duyệt (10/11/2026)
+- [x] Backend (lát `goi-thanh-toan` nghiệm thu xong 10/11/2026; phần còn lại thuộc `goi-cua-toi` / `quan-tri-don-hang`)
+  - [x] Migration `plan` (3 gói), `payment_order` (có sẵn cột `source_lut_id`), `subscription` (cột sinh `active_user_id` UNIQUE)
+    - resource `PLAN` / `ORDER` / `CUSTOMER` dời sang `quan-tri-don-hang`
+  - [x] `GET /plan/public/list` (cache)
+  - [x] `order/create` (backend tự tính tiền, `PLAN_ACTIVE`, `PAYMENT_GATEWAY_ERROR`), `order/get`, `order/cancel`, `order/mock-pay` (chỉ local)
+    - `order/my-list` dời sang `goi-cua-toi`
+  - [x] Webhook payOS: chữ ký (`INVALID_SIGNATURE`), so số tiền, `UPDATE ... WHERE status = 'PENDING'`, kích hoạt / gia hạn / nâng cấp subscription
   - [ ] `subscription/cancel` (tắt tự gia hạn); `account/me` trả gói và hạn thật
-  - [ ] Tác vụ 00:10: subscription quá hạn và đơn PENDING quá 24 giờ chuyển `EXPIRED`
-  - [ ] Quản trị: `plan/list,update`, `order/list,get`, `customer/list,get`
-- [ ] Frontend
-  - [ ] `/pricing` đọc API, nút mua → payOS; `/thanh-toan/ket-qua` hỏi trạng thái mỗi 2 giây
-  - [ ] Hộp thoại nâng cấp (nhớ `sourceLutId`), nhắc gia hạn khi còn 3 ngày (không gửi email)
-  - [ ] Menu tài khoản: lịch sử đơn, huỷ gói
-  - [ ] `/admin/don-hang`, `/admin/khach-hang`, sửa giá gói
-- [ ] E2E (có webhook lặp, sai chữ ký, sai số tiền) + review + tài liệu
+    - `account/me` trả gói và hạn thật: xong; `subscription/cancel` dời sang `goi-cua-toi`
+  - [x] Tác vụ 00:10: subscription quá hạn và đơn PENDING quá 24 giờ chuyển `EXPIRED`
+  - [ ] Quản trị: `plan/list,update`, `order/list,get`, `customer/list,get` — lát `quan-tri-don-hang`
+- [x] Frontend
+  - [x] `/pricing` đọc API, nút mua → payOS; `/thanh-toan/ket-qua` hỏi trạng thái mỗi 2 giây
+  - [x] Hộp thoại nâng cấp (nhớ `sourceLutId`), nhắc gia hạn khi còn 3 ngày (không gửi email)
+  - [ ] Menu tài khoản: lịch sử đơn, huỷ gói — lát `goi-cua-toi` (lát này đã thêm "Gia hạn gói", "Nâng cấp lên Studio")
+  - [ ] `/admin/don-hang`, `/admin/khach-hang`, sửa giá gói — lát `quan-tri-don-hang`
+- [x] E2E (có webhook lặp, sai chữ ký, sai số tiền) + review + tài liệu
+  - E2E + review: xong (27/27); tài liệu: `docs/chuc-nang/goi-thanh-toan.md`
 
 ### 1.5 `tai-lut` — chưa làm
 

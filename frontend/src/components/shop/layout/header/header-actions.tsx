@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, LogOut, Sparkles, Star } from "lucide-react";
+import { ChevronDown, LogOut, RefreshCcw, Sparkles, Star } from "lucide-react";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import {
   DropdownMenu,
@@ -11,10 +11,11 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MOCK_PLANS } from "@/lib/mock/data/plans";
 import { useShopDialog } from "@/lib/stores/shop-dialog";
 import { useShopSession } from "@/lib/stores/shop-session";
 import { logoutMutationOptions } from "@/lib/tanstack/options/account";
+import { plansQueryOptions } from "@/lib/tanstack/options/billing";
+import { daysLeft, formatPlanDate } from "@/lib/utils/plan";
 
 const initials = (name: string) =>
   name
@@ -24,12 +25,13 @@ const initials = (name: string) =>
     .map((w) => w[0]!.toUpperCase())
     .join("");
 
-/** Cụm nút bên phải header: chưa đăng nhập → Bảng giá / Đăng ký / Đăng nhập; đã đăng nhập → menu tài khoản. */
+/** Cụm nút bên phải header: chưa đăng nhập → Bảng giá / Đăng ký / Đăng nhập; đã đăng nhập → menu tài khoản (plan §6.5). */
 export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }) {
   const user = useShopSession((s) => s.user);
   const loading = useShopSession((s) => s.loading);
   const openDialog = useShopDialog((s) => s.open);
   const logoutMutation = useMutation(logoutMutationOptions);
+  const { data: plans } = useQuery(plansQueryOptions);
 
   const pricing = !hidePricing && (
     <ShopButton asChild variant="secondary" className="hidden sm:inline-flex">
@@ -64,7 +66,13 @@ export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }
     );
   }
 
-  const plan = MOCK_PLANS.find((p) => p.code === user.plan);
+  const plan =
+    plans?.find((p) => p.code === user.plan) ?? {
+      name: user.plan === "studio" ? "Studio" : user.plan === "pro" ? "Pro" : "Miễn phí"
+    };
+
+  const days = user.planExpiresAt ? daysLeft(user.planExpiresAt) : undefined;
+  const isExpiringSoon = user.plan !== "free" && user.planExpiresAt && days !== undefined && days <= 3;
 
   return (
     <div className="flex shrink-0 items-center gap-2">
@@ -72,7 +80,7 @@ export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }
       {/* modal=false: không ẩn (aria-hidden) phần còn lại của trang khi mở menu */}
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          {/* Tên đọc = chữ đang hiện ("Tài khoản" + tên), không dùng aria-label khác chữ (WCAG 2.5.3) */}
+          {/* Tên đọc = chữ đang hiện ("Tài khoản " + tên), không dùng aria-label khác chữ (WCAG 2.5.3) */}
           <ShopButton variant="ghost" className="gap-2 pr-2 pl-1.5">
             <span
               aria-hidden
@@ -93,15 +101,34 @@ export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }
           <div className="mx-2 mb-2 flex items-center gap-2 rounded-[8px] bg-(--sh-surface) px-2.5 py-2 text-sm">
             <Star className="size-4 text-(--sh-pink)" aria-hidden />
             <span>
-              Gói <b>{plan?.name}</b>
+              Gói <b>{plan.name}</b>
               {user.planExpiresAt && (
                 <span className="block text-xs text-(--sh-muted)">
-                  Hết hạn {new Date(user.planExpiresAt).toLocaleDateString("vi-VN")}
+                  Hết hạn {formatPlanDate(user.planExpiresAt)}
+                </span>
+              )}
+              {isExpiringSoon && (
+                <span className="block text-xs font-semibold text-amber-500">
+                  {days === 0 ? "Hết hạn hôm nay" : `Còn ${days} ngày`}
                 </span>
               )}
             </span>
           </div>
           <DropdownMenuSeparator />
+          {isExpiringSoon && (
+            <DropdownMenuItem asChild>
+              <Link to="/pricing">
+                <RefreshCcw /> Gia hạn gói
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {user.plan === "pro" && (
+            <DropdownMenuItem asChild>
+              <Link to="/pricing">
+                <Sparkles /> Nâng cấp lên Studio
+              </Link>
+            </DropdownMenuItem>
+          )}
           {user.plan === "free" && (
             <DropdownMenuItem asChild>
               <Link to="/pricing">
@@ -109,9 +136,7 @@ export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }
               </Link>
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem
-            onSelect={() => logoutMutation.mutate()}
-          >
+          <DropdownMenuItem onSelect={() => logoutMutation.mutate()}>
             <LogOut /> Đăng xuất
           </DropdownMenuItem>
         </DropdownMenuContent>
