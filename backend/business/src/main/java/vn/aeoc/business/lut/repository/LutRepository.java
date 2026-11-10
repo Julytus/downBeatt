@@ -28,6 +28,7 @@ import static vn.entity.backend.tables.Creator.CREATOR;
 import static vn.entity.backend.tables.Lut.LUT;
 import static vn.entity.backend.tables.LutCategory.LUT_CATEGORY;
 import static vn.entity.backend.tables.LutCategoryMap.LUT_CATEGORY_MAP;
+import static vn.entity.backend.tables.LutColorFeature.LUT_COLOR_FEATURE;
 import static vn.entity.backend.tables.LutTag.LUT_TAG;
 
 @Repository
@@ -42,7 +43,7 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
     }
 
     private Table<?> joined() {
-        return LUT.join(CREATOR).on(CREATOR.ID.eq(LUT.CREATOR_ID));
+        return LUT.leftJoin(CREATOR).on(CREATOR.ID.eq(LUT.CREATOR_ID));
     }
 
     /** Cột trả ra API công khai: không có file_key, status, created_*. */
@@ -176,5 +177,75 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
                 .where(LUT_TAG.LUT_ID.in(ids))
                 .orderBy(LUT_TAG.TAG.asc())
                 .fetchInto(LutTag.class);
+    }
+
+    private List<Field<?>> adminFields() {
+        return List.of(
+                LUT.ID,
+                LUT.SLUG,
+                LUT.TITLE,
+                CREATOR.NAME.as("creator_name"),
+                LUT.STYLE,
+                LUT.STATUS,
+                LUT.COVER_URL,
+                LUT.FILE_KEY,
+                LUT.LUT_SIZE
+        );
+    }
+
+    private Condition getAdminCondition(String keyword, String style, String status, Integer hasFeature) {
+        Condition condition = DSL.noCondition();
+        if (keyword != null && !keyword.isBlank()) {
+            String like = LutQuerySupport.toLikePattern(keyword.trim());
+            condition = condition.and(LUT.TITLE.like(like, '\\').or(LUT.SLUG.like(like, '\\')));
+        }
+        if (style != null && !style.isBlank()) {
+            condition = condition.and(LUT.STYLE.eq(style.trim()));
+        }
+        if (status != null && !status.isBlank()) {
+            condition = condition.and(LUT.STATUS.eq(status.trim()));
+        }
+        if (hasFeature != null) {
+            var featureExists = selectOne().from(LUT_COLOR_FEATURE)
+                    .where(LUT_COLOR_FEATURE.LUT_ID.eq(LUT.ID));
+            if (hasFeature == 1) {
+                condition = condition.and(DSL.exists(featureExists));
+            } else if (hasFeature == 0) {
+                condition = condition.and(DSL.notExists(featureExists));
+            }
+        }
+        return condition;
+    }
+
+    public List<Lut> adminList(String keyword, String style, String status, Integer hasFeature, Pageable pageable) {
+        return getListByCriteriaWithJoin(
+                adminFields(),
+                joined(),
+                getAdminCondition(keyword, style, status, hasFeature),
+                List.of(LUT.ID.asc()),
+                pageable);
+    }
+
+    public Long adminCount(String keyword, String style, String status, Integer hasFeature) {
+        return getCountWithCriteria(getAdminCondition(keyword, style, status, hasFeature));
+    }
+
+    public List<Lut> getAdminByIds(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return getListByCriteriaWithJoin(
+                adminFields(),
+                joined(),
+                LUT.ID.in(ids),
+                List.of(LUT.ID.asc()));
+    }
+
+    public List<Lut> getWithFile() {
+        return getListByCriteriaWithJoin(
+                adminFields(),
+                joined(),
+                LUT.FILE_KEY.isNotNull().and(LUT.FILE_KEY.ne("")),
+                List.of(LUT.ID.asc()));
     }
 }

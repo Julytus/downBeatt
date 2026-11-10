@@ -47,7 +47,8 @@ public enum ErrorCode {
     INVOICE_FILE_FAILED(503, "Không tạo được tệp hoá đơn, vui lòng thử lại sau"),
     INVOICE_LOOKUP_NOT_FOUND(404, "Không tìm thấy hoá đơn. Kiểm tra lại mã số thuế người bán và mã tra cứu"),
     INVOICE_LOOKUP_BLOCKED(429, "Bạn đã tra cứu sai quá nhiều lần, vui lòng thử lại sau 10 phút"),
-    INVOICE_FILE_TOKEN_INVALID(404, "Liên kết tải hoá đơn không hợp lệ hoặc đã hết hạn");
+    INVOICE_FILE_TOKEN_INVALID(404, "Liên kết tải hoá đơn không hợp lệ hoặc đã hết hạn"),
+    LUT_FILE_INVALID(400, "File .cube không hợp lệ");
 
     public final int code;
     public final String message;

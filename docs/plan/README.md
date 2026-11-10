@@ -18,8 +18,8 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 0.3 | 0. Nền tảng | `kho-lut` | | done |
 | 0.4 | 0. Nền tảng | phân quyền theo role (V4, không qua plan) | | done (07/11/2026) |
 | 1.1 | 1. Cửa hàng | `tai-khoan-khach` | | done (10/11/2026) |
-| 1.2 | 1. Cửa hàng | `dac-trung-mau` | 0.3 | chưa làm |
-| 1.3 | 1. Cửa hàng | `quan-ly-lut` | 0.3, 0.4, 1.2 | chưa làm |
+| 1.2 | 1. Cửa hàng | `dac-trung-mau` | 0.3 | done (10/11/2026) |
+| 1.3 | 1. Cửa hàng | `quan-ly-lut` | 0.3, 0.4, 1.2 | đang lập plan |
 | 1.4 | 1. Cửa hàng | `goi-thanh-toan` | 1.1 | chưa làm |
 | 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | chưa làm |
 | 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | chưa làm |
@@ -76,21 +76,21 @@ Thiết kế: §2.4, §3.6, §5.3, §6.2 (chỉ phần đăng ký). Migration: r
   - [x] Bấm "Tải" khi chưa đăng nhập mở hộp thoại đăng ký
 - [x] E2E + review + tài liệu (`/cook`, `/doc-chuc-nang`). Tài liệu: [docs/chuc-nang/tai-khoan-khach.md](../chuc-nang/tai-khoan-khach.md)
 
-### 1.2 `dac-trung-mau` — chưa làm (tách từ `goi-y-lut`)
+### 1.2 `dac-trung-mau` — done (10/11/2026) ([plan/dac-trung-mau.md](../../plan/dac-trung-mau.md), tách từ `goi-y-lut`)
 
 Thiết kế: §7.2.4, Phụ lục A, UT-01 đến UT-05. Bảng: `lut_color_feature`.
 
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] `CubeParser`: đọc .cube 17 / 33 / 65, `DOMAIN_MIN/MAX`, từ chối LUT 1D và file lỗi (`LUT_FILE_INVALID`)
-  - [ ] `ColorFeatureExtractor`: lấy mẫu 17^3, đổi CIELAB, tính 10 đặc trưng
-  - [ ] Migration bảng `lut_color_feature`
-  - [ ] Tính đặc trưng cho 36 LUT mẫu đang có (lệnh nạp lại trong `tools/seed` hoặc khi khởi động)
-  - [ ] Unit test UT-01 đến UT-05
-- [ ] Frontend: thành phần "Đặc trưng màu" (10 thanh) dùng lại được ở `/admin/luts`
-- [ ] E2E + review + tài liệu
+- [x] Plan → duyệt
+- [x] Backend
+  - [x] `CubeParser`: đọc .cube 17 / 33 / 65, `DOMAIN_MIN/MAX`, từ chối LUT 1D và file lỗi (`LUT_FILE_INVALID`)
+  - [x] `ColorFeatureExtractor`: lấy mẫu 17^3, đổi CIELAB, tính 10 đặc trưng
+  - [x] Migration bảng `lut_color_feature`
+  - [x] Tính đặc trưng cho 36 LUT mẫu đang có (lệnh nạp lại trong `tools/seed` hoặc khi khởi động)
+  - [x] Unit test UT-01 đến UT-05
+- [x] Frontend: thành phần "Đặc trưng màu" (9 thanh + cờ đen trắng, `lut-color-feature-card.tsx`) dùng lại được ở `/admin/luts`; trang `/admin/dac-trung-mau`
+- [x] E2E + review + tài liệu (`/cook`, `/doc-chuc-nang`). Tài liệu: [docs/chuc-nang/dac-trung-mau.md](../chuc-nang/dac-trung-mau.md)
 
-### 1.3 `quan-ly-lut` — chưa làm
+### 1.3 `quan-ly-lut` — đang lập plan ([plan/quan-ly-lut.md](../../plan/quan-ly-lut.md), phần LUT; danh mục / tác giả đề xuất tách lát)
 
 Thiết kế: §5.6 (lut, lut-category, creator), §6.6, §9.4. Resource: `LUT`, `LUT_CATEGORY`, `CREATOR`.
 

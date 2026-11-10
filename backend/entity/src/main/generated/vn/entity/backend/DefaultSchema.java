@@ -15,6 +15,7 @@ import vn.entity.backend.tables.Creator;
 import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategory;
 import vn.entity.backend.tables.LutCategoryMap;
+import vn.entity.backend.tables.LutColorFeature;
 import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.Permission;
@@ -56,6 +57,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>lut_category_map</code>.
      */
     public final LutCategoryMap LUT_CATEGORY_MAP = LutCategoryMap.LUT_CATEGORY_MAP;
+
+    /**
+     * The table <code>lut_color_feature</code>.
+     */
+    public final LutColorFeature LUT_COLOR_FEATURE = LutColorFeature.LUT_COLOR_FEATURE;
 
     /**
      * The table <code>lut_tag</code>.
@@ -112,6 +118,7 @@ public class DefaultSchema extends SchemaImpl {
             Lut.LUT,
             LutCategory.LUT_CATEGORY,
             LutCategoryMap.LUT_CATEGORY_MAP,
+            LutColorFeature.LUT_COLOR_FEATURE,
             LutTag.LUT_TAG,
             Module.MODULE,
             Permission.PERMISSION,

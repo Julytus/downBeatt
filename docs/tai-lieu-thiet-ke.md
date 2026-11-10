@@ -495,7 +495,7 @@ Không có dòng ACTIVE nghĩa là đang ở gói Miễn phí.
 
 ### 4.7 Nhóm gợi ý
 
-Bảng `lut_color_feature`: đặc trưng màu tính từ file .cube khi upload (mục 7.2.4).
+Bảng `lut_color_feature`: đặc trưng màu tính từ file .cube khi upload (mục 7.2.4). Bản đã làm (lát `dac-trung-mau`) có thêm cột `id` tự tăng, `lut_id` là UNIQUE (vì `AbsMysqlRepository` bắt buộc cột `id`), và dùng kiểu `DOUBLE` thay `float`.
 
 | Cột | Kiểu | Ý nghĩa |
 |---|---|---|
@@ -575,12 +575,13 @@ Bảng `rec_eval_run`: kết quả mỗi lần chạy đánh giá offline.
 | V3 | kho-lut | creator, lut, lut_category, lut_category_map, lut_tag |
 | V4 | quan-ly-lut | resource LUT, LUT_CATEGORY, CREATOR và quyền cho role quản trị |
 | V5 | tai-khoan-khach | role Khách hàng, đổi `is_default` |
-| V6 | goi-thanh-toan | plan (kèm dữ liệu 3 gói), payment_order, subscription, resource PLAN, ORDER, CUSTOMER |
-| V7 | tai-lut | download_log |
-| V8 | dashboard-admin | resource DASHBOARD |
-| V9 | bo-suu-tap | collection, collection_item |
-| V10 | goi-y-lut | lut_color_feature, user_preference, user_event, lut_similarity, rec_impression, cột payment_order.source_lut_id, resource RECOMMEND |
-| V11 | danh-gia-goi-y | rec_eval_run |
+| V6 | dac-trung-mau | lut_color_feature, module Kho LUT (CATALOG), resource LUT (đã làm) |
+| V7 | goi-thanh-toan | plan (kèm dữ liệu 3 gói), payment_order, subscription, resource PLAN, ORDER, CUSTOMER |
+| V8 | tai-lut | download_log |
+| V9 | dashboard-admin | resource DASHBOARD |
+| V10 | bo-suu-tap | collection, collection_item |
+| V11 | goi-y-lut | user_preference, user_event, lut_similarity, rec_impression, cột payment_order.source_lut_id, resource RECOMMEND |
+| V12 | danh-gia-goi-y | rec_eval_run |
 
 Số thứ tự thực tế theo thứ tự làm các lát; bảng trên chỉ để thấy bảng nào thuộc lát nào.
 
@@ -612,7 +613,7 @@ Số thứ tự thực tế theo thứ tự làm các lát; bảng trên chỉ �
 
 | Phương thức, đường dẫn | Ghi chú |
 |---|---|
-| `POST /account/register` | Thân `{ name, email, password }`. Tạo người dùng role Khách hàng, trả token như đăng nhập |
+| `POST /account/register` | Thân `{ name, email, plainPassword }` (cùng kiểu thân với `/user/authenticate`). Tạo người dùng role Khách hàng, trả token như đăng nhập |
 | `POST /user/authenticate`, `/auth/refresh`, `/auth/logout` | Có sẵn, dùng chung với quản trị |
 | `GET /account/me` | `{ id, name, email, plan, planExpiresAt }`, plan lấy từ subscription ACTIVE, không có thì `free` |
 | `GET /account/preference` | `{ categorySlugs[] }` |

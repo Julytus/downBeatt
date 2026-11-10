@@ -74,6 +74,7 @@ interface DataTableAdvancedProps<TData> {
   filter?: TableSearchFilterProps;
   toolbarActions?: React.ReactNode;
   bulkActions?: (selectedIds: number[], clearSelection: () => void) => React.ReactNode;
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTableAdvanced<TData extends { id: number }>({
@@ -94,6 +95,7 @@ export function DataTableAdvanced<TData extends { id: number }>({
   filter,
   toolbarActions,
   bulkActions,
+  onRowClick,
   getRowId = (row) => row.id.toString()
 }: DataTableAdvancedProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState({});
@@ -275,7 +277,22 @@ export function DataTableAdvanced<TData extends { id: number }>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className={onRowClick ? "cursor-pointer" : undefined}
+                  onClick={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (
+                      target.closest(
+                        "button, [role='button'], a, input, [role='checkbox'], [role='menuitem']"
+                      )
+                    ) {
+                      return;
+                    }
+                    onRowClick?.(row.original);
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

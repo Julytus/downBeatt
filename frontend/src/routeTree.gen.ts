@@ -18,6 +18,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminTaiNguyenRouteImport } from './routes/admin/tai-nguyen'
 import { Route as AdminPhanQuyenRouteImport } from './routes/admin/phan-quyen'
 import { Route as AdminModuleRouteImport } from './routes/admin/module'
+import { Route as AdminDacTrungMauRouteImport } from './routes/admin/dac-trung-mau'
 import { Route as AdminChucVuRouteImport } from './routes/admin/chuc-vu'
 import { Route as PlainPricingRouteImport } from './routes/_plain/pricing'
 import { Route as AuthLogoutRouteImport } from './routes/_auth/logout'
@@ -68,6 +69,11 @@ const AdminModuleRoute = AdminModuleRouteImport.update({
   path: '/module',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDacTrungMauRoute = AdminDacTrungMauRouteImport.update({
+  id: '/dac-trung-mau',
+  path: '/dac-trung-mau',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminChucVuRoute = AdminChucVuRouteImport.update({
   id: '/chuc-vu',
   path: '/chuc-vu',
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/logout': typeof AuthLogoutRoute
   '/pricing': typeof PlainPricingRoute
   '/admin/chuc-vu': typeof AdminChucVuRoute
+  '/admin/dac-trung-mau': typeof AdminDacTrungMauRoute
   '/admin/module': typeof AdminModuleRoute
   '/admin/phan-quyen': typeof AdminPhanQuyenRoute
   '/admin/tai-nguyen': typeof AdminTaiNguyenRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/logout': typeof AuthLogoutRoute
   '/pricing': typeof PlainPricingRoute
   '/admin/chuc-vu': typeof AdminChucVuRoute
+  '/admin/dac-trung-mau': typeof AdminDacTrungMauRoute
   '/admin/module': typeof AdminModuleRoute
   '/admin/phan-quyen': typeof AdminPhanQuyenRoute
   '/admin/tai-nguyen': typeof AdminTaiNguyenRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/_auth/logout': typeof AuthLogoutRoute
   '/_plain/pricing': typeof PlainPricingRoute
   '/admin/chuc-vu': typeof AdminChucVuRoute
+  '/admin/dac-trung-mau': typeof AdminDacTrungMauRoute
   '/admin/module': typeof AdminModuleRoute
   '/admin/phan-quyen': typeof AdminPhanQuyenRoute
   '/admin/tai-nguyen': typeof AdminTaiNguyenRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/pricing'
     | '/admin/chuc-vu'
+    | '/admin/dac-trung-mau'
     | '/admin/module'
     | '/admin/phan-quyen'
     | '/admin/tai-nguyen'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/pricing'
     | '/admin/chuc-vu'
+    | '/admin/dac-trung-mau'
     | '/admin/module'
     | '/admin/phan-quyen'
     | '/admin/tai-nguyen'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/_auth/logout'
     | '/_plain/pricing'
     | '/admin/chuc-vu'
+    | '/admin/dac-trung-mau'
     | '/admin/module'
     | '/admin/phan-quyen'
     | '/admin/tai-nguyen'
@@ -273,6 +285,13 @@ declare module '@tanstack/react-router' {
       path: '/module'
       fullPath: '/admin/module'
       preLoaderRoute: typeof AdminModuleRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dac-trung-mau': {
+      id: '/admin/dac-trung-mau'
+      path: '/dac-trung-mau'
+      fullPath: '/admin/dac-trung-mau'
+      preLoaderRoute: typeof AdminDacTrungMauRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/chuc-vu': {
@@ -365,6 +384,7 @@ const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
 
 interface AdminRouteChildren {
   AdminChucVuRoute: typeof AdminChucVuRoute
+  AdminDacTrungMauRoute: typeof AdminDacTrungMauRoute
   AdminModuleRoute: typeof AdminModuleRoute
   AdminPhanQuyenRoute: typeof AdminPhanQuyenRoute
   AdminTaiNguyenRoute: typeof AdminTaiNguyenRoute
@@ -373,6 +393,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminChucVuRoute: AdminChucVuRoute,
+  AdminDacTrungMauRoute: AdminDacTrungMauRoute,
   AdminModuleRoute: AdminModuleRoute,
   AdminPhanQuyenRoute: AdminPhanQuyenRoute,
   AdminTaiNguyenRoute: AdminTaiNguyenRoute,
