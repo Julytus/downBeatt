@@ -4,12 +4,15 @@
 package vn.entity.backend;
 
 
+import vn.entity.backend.tables.Collection;
+import vn.entity.backend.tables.CollectionItem;
 import vn.entity.backend.tables.Creator;
 import vn.entity.backend.tables.DownloadLog;
 import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategory;
 import vn.entity.backend.tables.LutCategoryMap;
 import vn.entity.backend.tables.LutColorFeature;
+import vn.entity.backend.tables.LutSimilarity;
 import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.PaymentOrder;
@@ -27,6 +30,16 @@ import vn.entity.backend.tables.UserApp;
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
+
+    /**
+     * The table <code>collection</code>.
+     */
+    public static final Collection COLLECTION = Collection.COLLECTION;
+
+    /**
+     * The table <code>collection_item</code>.
+     */
+    public static final CollectionItem COLLECTION_ITEM = CollectionItem.COLLECTION_ITEM;
 
     /**
      * The table <code>creator</code>.
@@ -57,6 +70,11 @@ public class Tables {
      * The table <code>lut_color_feature</code>.
      */
     public static final LutColorFeature LUT_COLOR_FEATURE = LutColorFeature.LUT_COLOR_FEATURE;
+
+    /**
+     * The table <code>lut_similarity</code>.
+     */
+    public static final LutSimilarity LUT_SIMILARITY = LutSimilarity.LUT_SIMILARITY;
 
     /**
      * The table <code>lut_tag</code>.

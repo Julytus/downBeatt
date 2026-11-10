@@ -340,6 +340,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/collection/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["update_5"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/collection/item/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["removeItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/collection/item/add": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["addItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/collection/delete/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["delete_4"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/refresh": {
         parameters: {
             query?: never;
@@ -724,6 +788,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/collection/my-list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["myList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/collection/get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_7"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/account/me": {
         parameters: {
             query?: never;
@@ -1012,6 +1108,39 @@ export interface components {
             result?: components["schemas"]["DownloadLog"];
             errors?: Record<string, never>;
         };
+        LutCollection: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            name?: string;
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: date-time */
+            updatedTime?: string;
+            /** Format: int32 */
+            lutId?: number;
+            /** Format: int32 */
+            itemCount?: number;
+            coverUrls?: string[];
+            containsLut?: boolean;
+            luts?: components["schemas"]["Lut"][];
+        };
+        ApiResponseLutCollection: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["LutCollection"];
+            errors?: Record<string, never>;
+        };
+        CollectionItem: {
+            /** Format: int32 */
+            collectionId?: number;
+            /** Format: int32 */
+            lutId?: number;
+            /** Format: date-time */
+            createdTime?: string;
+        };
         RefreshTokenRequest: {
             refreshToken?: string;
         };
@@ -1174,6 +1303,13 @@ export interface components {
             code?: number;
             message?: string;
             result?: components["schemas"]["LutCategory"];
+            errors?: Record<string, never>;
+        };
+        ApiResponseListLutCollection: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["LutCollection"][];
             errors?: Record<string, never>;
         };
     };
@@ -1659,6 +1795,100 @@ export interface operations {
         };
     };
     delete_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseInteger"];
+                };
+            };
+        };
+    };
+    update_5: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["LutCollection"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLutCollection"];
+                };
+            };
+        };
+    };
+    removeItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CollectionItem"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLutCollection"];
+                };
+            };
+        };
+    };
+    addItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CollectionItem"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLutCollection"];
+                };
+            };
+        };
+    };
+    delete_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -2232,6 +2462,50 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseLutCategory"];
+                };
+            };
+        };
+    };
+    myList: {
+        parameters: {
+            query?: {
+                lutId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListLutCollection"];
+                };
+            };
+        };
+    };
+    get_7: {
+        parameters: {
+            query?: {
+                id?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLutCollection"];
                 };
             };
         };

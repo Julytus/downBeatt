@@ -10,12 +10,15 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
 
+import vn.entity.backend.tables.Collection;
+import vn.entity.backend.tables.CollectionItem;
 import vn.entity.backend.tables.Creator;
 import vn.entity.backend.tables.DownloadLog;
 import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategory;
 import vn.entity.backend.tables.LutCategoryMap;
 import vn.entity.backend.tables.LutColorFeature;
+import vn.entity.backend.tables.LutSimilarity;
 import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.PaymentOrder;
@@ -26,12 +29,15 @@ import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.Subscription;
 import vn.entity.backend.tables.UserApp;
+import vn.entity.backend.tables.records.CollectionItemRecord;
+import vn.entity.backend.tables.records.CollectionRecord;
 import vn.entity.backend.tables.records.CreatorRecord;
 import vn.entity.backend.tables.records.DownloadLogRecord;
 import vn.entity.backend.tables.records.LutCategoryMapRecord;
 import vn.entity.backend.tables.records.LutCategoryRecord;
 import vn.entity.backend.tables.records.LutColorFeatureRecord;
 import vn.entity.backend.tables.records.LutRecord;
+import vn.entity.backend.tables.records.LutSimilarityRecord;
 import vn.entity.backend.tables.records.LutTagRecord;
 import vn.entity.backend.tables.records.ModuleRecord;
 import vn.entity.backend.tables.records.PaymentOrderRecord;
@@ -55,6 +61,9 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<CollectionRecord> KEY_COLLECTION_PRIMARY = Internal.createUniqueKey(Collection.COLLECTION, DSL.name("KEY_collection_PRIMARY"), new TableField[] { Collection.COLLECTION.ID }, true);
+    public static final UniqueKey<CollectionRecord> KEY_COLLECTION_UQ_COLLECTION_USER_NAME = Internal.createUniqueKey(Collection.COLLECTION, DSL.name("KEY_collection_uq_collection_user_name"), new TableField[] { Collection.COLLECTION.USER_ID, Collection.COLLECTION.NAME }, true);
+    public static final UniqueKey<CollectionItemRecord> KEY_COLLECTION_ITEM_PRIMARY = Internal.createUniqueKey(CollectionItem.COLLECTION_ITEM, DSL.name("KEY_collection_item_PRIMARY"), new TableField[] { CollectionItem.COLLECTION_ITEM.COLLECTION_ID, CollectionItem.COLLECTION_ITEM.LUT_ID }, true);
     public static final UniqueKey<CreatorRecord> KEY_CREATOR_PRIMARY = Internal.createUniqueKey(Creator.CREATOR, DSL.name("KEY_creator_PRIMARY"), new TableField[] { Creator.CREATOR.ID }, true);
     public static final UniqueKey<CreatorRecord> KEY_CREATOR_SLUG = Internal.createUniqueKey(Creator.CREATOR, DSL.name("KEY_creator_slug"), new TableField[] { Creator.CREATOR.SLUG }, true);
     public static final UniqueKey<DownloadLogRecord> KEY_DOWNLOAD_LOG_PRIMARY = Internal.createUniqueKey(DownloadLog.DOWNLOAD_LOG, DSL.name("KEY_download_log_PRIMARY"), new TableField[] { DownloadLog.DOWNLOAD_LOG.ID }, true);
@@ -65,6 +74,8 @@ public class Keys {
     public static final UniqueKey<LutCategoryMapRecord> KEY_LUT_CATEGORY_MAP_PRIMARY = Internal.createUniqueKey(LutCategoryMap.LUT_CATEGORY_MAP, DSL.name("KEY_lut_category_map_PRIMARY"), new TableField[] { LutCategoryMap.LUT_CATEGORY_MAP.LUT_ID, LutCategoryMap.LUT_CATEGORY_MAP.CATEGORY_ID }, true);
     public static final UniqueKey<LutColorFeatureRecord> KEY_LUT_COLOR_FEATURE_PRIMARY = Internal.createUniqueKey(LutColorFeature.LUT_COLOR_FEATURE, DSL.name("KEY_lut_color_feature_PRIMARY"), new TableField[] { LutColorFeature.LUT_COLOR_FEATURE.ID }, true);
     public static final UniqueKey<LutColorFeatureRecord> KEY_LUT_COLOR_FEATURE_UK_LUT_COLOR_FEATURE_LUT = Internal.createUniqueKey(LutColorFeature.LUT_COLOR_FEATURE, DSL.name("KEY_lut_color_feature_uk_lut_color_feature_lut"), new TableField[] { LutColorFeature.LUT_COLOR_FEATURE.LUT_ID }, true);
+    public static final UniqueKey<LutSimilarityRecord> KEY_LUT_SIMILARITY_PRIMARY = Internal.createUniqueKey(LutSimilarity.LUT_SIMILARITY, DSL.name("KEY_lut_similarity_PRIMARY"), new TableField[] { LutSimilarity.LUT_SIMILARITY.ID }, true);
+    public static final UniqueKey<LutSimilarityRecord> KEY_LUT_SIMILARITY_UK_LUT_SIMILARITY_PAIR = Internal.createUniqueKey(LutSimilarity.LUT_SIMILARITY, DSL.name("KEY_lut_similarity_uk_lut_similarity_pair"), new TableField[] { LutSimilarity.LUT_SIMILARITY.LUT_ID, LutSimilarity.LUT_SIMILARITY.SIMILAR_LUT_ID }, true);
     public static final UniqueKey<LutTagRecord> KEY_LUT_TAG_PRIMARY = Internal.createUniqueKey(LutTag.LUT_TAG, DSL.name("KEY_lut_tag_PRIMARY"), new TableField[] { LutTag.LUT_TAG.LUT_ID, LutTag.LUT_TAG.TAG }, true);
     public static final UniqueKey<ModuleRecord> KEY_MODULE_MODULE_CODE_UINDEX = Internal.createUniqueKey(Module.MODULE, DSL.name("KEY_module_module_code_uindex"), new TableField[] { Module.MODULE.CODE }, true);
     public static final UniqueKey<ModuleRecord> KEY_MODULE_PRIMARY = Internal.createUniqueKey(Module.MODULE, DSL.name("KEY_module_PRIMARY"), new TableField[] { Module.MODULE.ID }, true);
@@ -91,6 +102,9 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<CollectionRecord, UserAppRecord> FK_COLLECTION_USER = Internal.createForeignKey(Collection.COLLECTION, DSL.name("fk_collection_user"), new TableField[] { Collection.COLLECTION.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
+    public static final ForeignKey<CollectionItemRecord, CollectionRecord> FK_COLLECTION_ITEM_COLLECTION = Internal.createForeignKey(CollectionItem.COLLECTION_ITEM, DSL.name("fk_collection_item_collection"), new TableField[] { CollectionItem.COLLECTION_ITEM.COLLECTION_ID }, Keys.KEY_COLLECTION_PRIMARY, new TableField[] { Collection.COLLECTION.ID }, true);
+    public static final ForeignKey<CollectionItemRecord, LutRecord> FK_COLLECTION_ITEM_LUT = Internal.createForeignKey(CollectionItem.COLLECTION_ITEM, DSL.name("fk_collection_item_lut"), new TableField[] { CollectionItem.COLLECTION_ITEM.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
     public static final ForeignKey<DownloadLogRecord, LutRecord> FK_DOWNLOAD_LOG_LUT = Internal.createForeignKey(DownloadLog.DOWNLOAD_LOG, DSL.name("fk_download_log_lut"), new TableField[] { DownloadLog.DOWNLOAD_LOG.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
     public static final ForeignKey<DownloadLogRecord, UserAppRecord> FK_DOWNLOAD_LOG_USER = Internal.createForeignKey(DownloadLog.DOWNLOAD_LOG, DSL.name("fk_download_log_user"), new TableField[] { DownloadLog.DOWNLOAD_LOG.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
     public static final ForeignKey<LutRecord, UserAppRecord> FK_LUT_CREATED_BY = Internal.createForeignKey(Lut.LUT, DSL.name("fk_lut_created_by"), new TableField[] { Lut.LUT.CREATED_BY }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
@@ -98,6 +112,8 @@ public class Keys {
     public static final ForeignKey<LutCategoryMapRecord, LutCategoryRecord> FK_LCM_CATEGORY = Internal.createForeignKey(LutCategoryMap.LUT_CATEGORY_MAP, DSL.name("fk_lcm_category"), new TableField[] { LutCategoryMap.LUT_CATEGORY_MAP.CATEGORY_ID }, Keys.KEY_LUT_CATEGORY_PRIMARY, new TableField[] { LutCategory.LUT_CATEGORY.ID }, true);
     public static final ForeignKey<LutCategoryMapRecord, LutRecord> FK_LCM_LUT = Internal.createForeignKey(LutCategoryMap.LUT_CATEGORY_MAP, DSL.name("fk_lcm_lut"), new TableField[] { LutCategoryMap.LUT_CATEGORY_MAP.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
     public static final ForeignKey<LutColorFeatureRecord, LutRecord> FK_LUT_COLOR_FEATURE_LUT = Internal.createForeignKey(LutColorFeature.LUT_COLOR_FEATURE, DSL.name("fk_lut_color_feature_lut"), new TableField[] { LutColorFeature.LUT_COLOR_FEATURE.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
+    public static final ForeignKey<LutSimilarityRecord, LutRecord> FK_LUT_SIMILARITY_LUT = Internal.createForeignKey(LutSimilarity.LUT_SIMILARITY, DSL.name("fk_lut_similarity_lut"), new TableField[] { LutSimilarity.LUT_SIMILARITY.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
+    public static final ForeignKey<LutSimilarityRecord, LutRecord> FK_LUT_SIMILARITY_SIMILAR = Internal.createForeignKey(LutSimilarity.LUT_SIMILARITY, DSL.name("fk_lut_similarity_similar"), new TableField[] { LutSimilarity.LUT_SIMILARITY.SIMILAR_LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
     public static final ForeignKey<LutTagRecord, LutRecord> FK_LUT_TAG_LUT = Internal.createForeignKey(LutTag.LUT_TAG, DSL.name("fk_lut_tag_lut"), new TableField[] { LutTag.LUT_TAG.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
     public static final ForeignKey<PaymentOrderRecord, LutRecord> FK_PAYMENT_ORDER_LUT = Internal.createForeignKey(PaymentOrder.PAYMENT_ORDER, DSL.name("fk_payment_order_lut"), new TableField[] { PaymentOrder.PAYMENT_ORDER.SOURCE_LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
     public static final ForeignKey<PaymentOrderRecord, PlanRecord> FK_PAYMENT_ORDER_PLAN = Internal.createForeignKey(PaymentOrder.PAYMENT_ORDER, DSL.name("fk_payment_order_plan"), new TableField[] { PaymentOrder.PAYMENT_ORDER.PLAN_ID }, Keys.KEY_PLAN_PRIMARY, new TableField[] { Plan.PLAN.ID }, true);

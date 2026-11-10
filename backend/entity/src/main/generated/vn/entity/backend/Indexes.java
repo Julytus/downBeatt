@@ -9,9 +9,12 @@ import org.jooq.OrderField;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
 
+import vn.entity.backend.tables.Collection;
+import vn.entity.backend.tables.CollectionItem;
 import vn.entity.backend.tables.DownloadLog;
 import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategoryMap;
+import vn.entity.backend.tables.LutSimilarity;
 import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.PaymentOrder;
 import vn.entity.backend.tables.RefreshToken;
@@ -29,10 +32,13 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index COLLECTION_ITEM_IDX_COLLECTION_ITEM_LUT = Internal.createIndex(DSL.name("idx_collection_item_lut"), CollectionItem.COLLECTION_ITEM, new OrderField[] { CollectionItem.COLLECTION_ITEM.LUT_ID }, false);
+    public static final Index COLLECTION_IDX_COLLECTION_USER = Internal.createIndex(DSL.name("idx_collection_user"), Collection.COLLECTION, new OrderField[] { Collection.COLLECTION.USER_ID, Collection.COLLECTION.UPDATED_TIME }, false);
     public static final Index DOWNLOAD_LOG_IDX_DOWNLOAD_LOG_LUT = Internal.createIndex(DSL.name("idx_download_log_lut"), DownloadLog.DOWNLOAD_LOG, new OrderField[] { DownloadLog.DOWNLOAD_LOG.LUT_ID, DownloadLog.DOWNLOAD_LOG.CREATED_TIME }, false);
     public static final Index DOWNLOAD_LOG_IDX_DOWNLOAD_LOG_USER = Internal.createIndex(DSL.name("idx_download_log_user"), DownloadLog.DOWNLOAD_LOG, new OrderField[] { DownloadLog.DOWNLOAD_LOG.USER_ID, DownloadLog.DOWNLOAD_LOG.CREATED_TIME }, false);
     public static final Index LUT_CATEGORY_MAP_IDX_LUT_CATEGORY_CATEGORY = Internal.createIndex(DSL.name("idx_lut_category_category"), LutCategoryMap.LUT_CATEGORY_MAP, new OrderField[] { LutCategoryMap.LUT_CATEGORY_MAP.CATEGORY_ID }, false);
     public static final Index LUT_IDX_LUT_CREATOR = Internal.createIndex(DSL.name("idx_lut_creator"), Lut.LUT, new OrderField[] { Lut.LUT.CREATOR_ID }, false);
+    public static final Index LUT_SIMILARITY_IDX_LUT_SIMILARITY_SCORE = Internal.createIndex(DSL.name("idx_lut_similarity_score"), LutSimilarity.LUT_SIMILARITY, new OrderField[] { LutSimilarity.LUT_SIMILARITY.LUT_ID, LutSimilarity.LUT_SIMILARITY.SCORE }, false);
     public static final Index LUT_IDX_LUT_STATUS_DOWNLOADS = Internal.createIndex(DSL.name("idx_lut_status_downloads"), Lut.LUT, new OrderField[] { Lut.LUT.STATUS, Lut.LUT.DOWNLOAD_COUNT }, false);
     public static final Index LUT_IDX_LUT_STATUS_PUBLISHED = Internal.createIndex(DSL.name("idx_lut_status_published"), Lut.LUT, new OrderField[] { Lut.LUT.STATUS, Lut.LUT.PUBLISHED_TIME }, false);
     public static final Index LUT_IDX_LUT_STYLE = Internal.createIndex(DSL.name("idx_lut_style"), Lut.LUT, new OrderField[] { Lut.LUT.STYLE }, false);

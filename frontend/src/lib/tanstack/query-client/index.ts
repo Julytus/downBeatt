@@ -8,7 +8,7 @@ declare module "@tanstack/react-query" {
       invalidatesQuery?: QueryKey[];
       successMessage?: string | ((data: unknown) => string);
       errorMessage?: string;
-      silentError?: boolean;
+      silentError?: boolean | ((error: unknown) => boolean);
     };
   }
 }
@@ -28,8 +28,9 @@ export const queryClient = new QueryClient({
     },
 
     onError: (err, _vars, _context, mutation) => {
-      // Bỏ qua toast khi silentError = true (RT-12)
-      if (mutation.meta?.silentError) return;
+      // Bỏ qua toast khi silentError = true hoặc trả về true (RT-12)
+      const silent = mutation.meta?.silentError;
+      if (typeof silent === "function" ? silent(err) : silent) return;
 
       // Ưu tiên message của backend (vd "Email đã tồn tại", "Mật khẩu phải có từ 8..."),
       // meta.errorMessage chỉ dùng khi lỗi không có body (mất mạng, timeout...)

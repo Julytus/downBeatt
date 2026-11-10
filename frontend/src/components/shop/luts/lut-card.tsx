@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { CirclePlus, Download, Loader2, Play, Star } from "lucide-react";
+import { CirclePlus, Download, Loader2, Play, Star, X } from "lucide-react";
 import { memo, useState } from "react";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -37,6 +37,7 @@ interface LutCardProps {
   lut: LutDTO;
   onDownload?: (lut: LutDTO) => void;
   onAddToCollection?: (lut: LutDTO) => void;
+  onRemove?: (lut: LutDTO) => void;
   /** Đang xin link tải LUT này */
   downloading?: boolean;
 }
@@ -45,6 +46,7 @@ export const LutCard = memo(function LutCard({
   lut,
   onDownload,
   onAddToCollection,
+  onRemove,
   downloading = false
 }: LutCardProps) {
   const isVideo = lut.previewType === "video" && !!lut.previewVideoUrl;
@@ -106,10 +108,34 @@ export const LutCard = memo(function LutCard({
         <span
           role="img"
           aria-label="Premium"
-          className="pointer-events-none absolute top-3 right-3 z-20 flex size-5 items-center justify-center rounded-full bg-(--sh-pink) text-white"
+          className={cn(
+            "pointer-events-none absolute top-3 z-20 flex size-5 items-center justify-center rounded-full bg-(--sh-pink) text-white",
+            onRemove ? "right-10" : "right-3"
+          )}
         >
           <Star className="size-3 fill-white" />
         </span>
+      )}
+
+      {onRemove && (
+        <div className="absolute top-2 right-2 z-20 pointer-events-auto transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ShopButton
+                variant="overlay"
+                size="icon-sm"
+                aria-label={`Bỏ ${lut.title} khỏi bộ sưu tập`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove(lut);
+                }}
+              >
+                <X className="size-4" />
+              </ShopButton>
+            </TooltipTrigger>
+            <TooltipContent>Bỏ khỏi bộ sưu tập</TooltipContent>
+          </Tooltip>
+        </div>
       )}
 
       {/* Lớp tối + thông tin, hiện khi rê chuột hoặc focus bằng bàn phím */}

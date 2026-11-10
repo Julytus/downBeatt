@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, LogOut, RefreshCcw, Sparkles, Star } from "lucide-react";
+import { ChevronDown, FolderHeart, LogOut, RefreshCcw, Sparkles, Star } from "lucide-react";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import {
   DropdownMenu,
@@ -136,6 +136,11 @@ export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }
               </Link>
             </DropdownMenuItem>
           )}
+          <DropdownMenuItem asChild>
+            <Link to="/bo-suu-tap">
+              <FolderHeart /> Bộ sưu tập của tôi
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => logoutMutation.mutate()}>
             <LogOut /> Đăng xuất
           </DropdownMenuItem>

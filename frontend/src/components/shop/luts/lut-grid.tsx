@@ -1,11 +1,9 @@
 import { Loader2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useRef, useState } from "react";
 import { useLutDownload } from "@/hooks/use-lut-download";
+import { useSaveToCollection } from "@/hooks/use-save-to-collection";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useShopDialog } from "@/lib/stores/shop-dialog";
-import { useShopSession } from "@/lib/stores/shop-session";
 import type { LutDTO } from "@/lib/types/lut";
 import { cn } from "@/lib/utils";
 import { LutCard } from "./lut-card";
@@ -53,17 +51,9 @@ export function LutGrid({
   label = "Danh sách LUT"
 }: LutGridProps) {
   const { download, pendingId } = useLutDownload();
-  const openDialog = useShopDialog((s) => s.open);
+  const { open: addToCollection } = useSaveToCollection();
   const [autoLoad, setAutoLoad] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
-
-  const addToCollection = useCallback(
-    (lut: LutDTO) => {
-      if (!useShopSession.getState().user) return openDialog({ type: "register", lut });
-      /* chỗ giữ chỗ tới lát `bo-suu-tap` */ toast.info("Bộ sưu tập sẽ có ở bản sau", { description: lut.title });
-    },
-    [openDialog]
-  );
 
   useEffect(() => {
     const el = sentinelRef.current;

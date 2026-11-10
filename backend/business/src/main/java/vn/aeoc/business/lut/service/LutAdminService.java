@@ -1,5 +1,6 @@
 package vn.aeoc.business.lut.service;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +12,7 @@ import vn.aeoc.base.exception.AppException;
 import vn.aeoc.base.service.BaseService;
 import vn.aeoc.base.util.QueryExecutor;
 import vn.aeoc.business.lut.constant.LutUploadKind;
+import vn.aeoc.business.lut.event.LutCatalogChangedEvent;
 import vn.aeoc.business.lut.feature.CubeLut;
 import vn.aeoc.business.lut.feature.CubeParser;
 import vn.aeoc.business.lut.repository.LutColorFeatureRepository;
@@ -33,16 +35,19 @@ public class LutAdminService extends BaseService<LutRepository, Lut, Integer> {
     private final LutColorFeatureService lutColorFeatureService;
     private final LutColorFeatureRepository lutColorFeatureRepository;
     private final FileStorageService fileStorageService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public LutAdminService(LutRepository repository,
                            LutColorFeatureService lutColorFeatureService,
                            LutColorFeatureRepository lutColorFeatureRepository,
                            FileStorageService fileStorageService,
-                           QueryExecutor queryExecutor) {
+                           QueryExecutor queryExecutor,
+                           ApplicationEventPublisher eventPublisher) {
         super(repository, queryExecutor);
         this.lutColorFeatureService = lutColorFeatureService;
         this.lutColorFeatureRepository = lutColorFeatureRepository;
         this.fileStorageService = fileStorageService;
+        this.eventPublisher = eventPublisher;
     }
 
     public Page<Lut> list(String keyword, String status, String style, Integer page, Integer limit) {
@@ -143,6 +148,10 @@ public class LutAdminService extends BaseService<LutRepository, Lut, Integer> {
         repository.replaceTags(current.getId(), normalizedTags);
         repository.replaceCategories(current.getId(), categoryIds);
 
+        if ("PUBLISHED".equals(current.getStatus())) {
+            eventPublisher.publishEvent(new LutCatalogChangedEvent(current.getId(), "sửa"));
+        }
+
         return get(current.getId());
     }
 
@@ -175,6 +184,7 @@ public class LutAdminService extends BaseService<LutRepository, Lut, Integer> {
 
         LocalDateTime publishedTime = lut.getPublishedTime() != null ? lut.getPublishedTime() : LocalDateTime.now();
         repository.updateStatus(lut.getId(), "PUBLISHED", publishedTime);
+        eventPublisher.publishEvent(new LutCatalogChangedEvent(lut.getId(), "xuất bản"));
         return get(lut.getId());
     }
 
@@ -188,6 +198,7 @@ public class LutAdminService extends BaseService<LutRepository, Lut, Integer> {
             throw new AppException(ErrorCode.BAD_REQUEST, "Chỉ ẩn được LUT đang xuất bản");
         }
         repository.updateStatus(lut.getId(), "HIDDEN", null);
+        eventPublisher.publishEvent(new LutCatalogChangedEvent(lut.getId(), "ẩn"));
         return get(lut.getId());
     }
 
@@ -226,6 +237,10 @@ public class LutAdminService extends BaseService<LutRepository, Lut, Integer> {
 
             repository.updateFile(lut.getId(), key, fileSizeKb, lutSize);
             lutColorFeatureService.computeAndSave(lut.getId(), bytes);
+
+            if ("PUBLISHED".equals(lut.getStatus())) {
+                eventPublisher.publishEvent(new LutCatalogChangedEvent(lut.getId(), "đổi file .cube"));
+            }
 
             return get(lut.getId());
         }

@@ -20,8 +20,11 @@ import vn.aeoc.entity.data.mysql.lut.LutTag;
 import vn.entity.backend.tables.records.LutRecord;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 import static org.jooq.impl.DSL.inline;
@@ -33,6 +36,7 @@ import static vn.entity.backend.tables.Lut.LUT;
 import static vn.entity.backend.tables.LutCategory.LUT_CATEGORY;
 import static vn.entity.backend.tables.LutCategoryMap.LUT_CATEGORY_MAP;
 import static vn.entity.backend.tables.LutColorFeature.LUT_COLOR_FEATURE;
+import static vn.entity.backend.tables.LutSimilarity.LUT_SIMILARITY;
 import static vn.entity.backend.tables.LutTag.LUT_TAG;
 
 @Repository
@@ -141,6 +145,34 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
         return getOneByCriteriaWithJoin(publicFields(), joined(), published().and(LUT.SLUG.eq(slug)));
     }
 
+    public List<Lut> listPublishedByIds(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        List<Lut> list = getListByCriteriaWithJoin(
+                publicFields(),
+                joined(),
+                published().and(LUT.ID.in(ids)),
+                (OrderField<?>) null);
+        Map<Integer, Lut> byId = list.stream()
+                .collect(Collectors.toMap(Lut::getId, l -> l, (a, b) -> a));
+        List<Lut> ordered = new ArrayList<>(ids.size());
+        for (Integer id : ids) {
+            Lut item = byId.get(id);
+            if (item != null) {
+                ordered.add(item);
+            }
+        }
+        return ordered;
+    }
+
+    public boolean isPublished(Integer id) {
+        if (id == null) {
+            return false;
+        }
+        return exists(published().and(LUT.ID.eq(id)));
+    }
+
     /** Điểm = 10·[cùng style] + số danh mục đang hiện mà hai LUT cùng thuộc. */
     public List<Lut> relatedPublished(Lut base, Pageable pageable) {
         var mine = LUT_CATEGORY_MAP.as("mine");
@@ -165,6 +197,32 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
 
     public Long countRelatedPublished(Integer baseId) {
         return getCountWithCriteria(relatedCondition(baseId));
+    }
+
+    public List<Lut> similarPublished(Integer baseId, Pageable pageable) {
+        List<Field<?>> fields = new ArrayList<>(publicFields());
+        fields.add(LUT_SIMILARITY.SCORE.as("similarity"));
+        Table<?> joinedTable = LUT.join(LUT_SIMILARITY)
+                .on(LUT_SIMILARITY.SIMILAR_LUT_ID.eq(LUT.ID).and(LUT_SIMILARITY.LUT_ID.eq(baseId)))
+                .leftJoin(CREATOR).on(CREATOR.ID.eq(LUT.CREATOR_ID));
+        return getListByCriteriaWithJoin(
+                fields,
+                joinedTable,
+                published(),
+                List.of(LUT_SIMILARITY.SCORE.desc(), LUT.DOWNLOAD_COUNT.desc(), LUT.ID.asc()),
+                pageable);
+    }
+
+    public Long countSimilarPublished(Integer baseId) {
+        return getCountWithCriteria(published().and(DSL.exists(selectOne().from(LUT_SIMILARITY)
+                .where(LUT_SIMILARITY.LUT_ID.eq(baseId).and(LUT_SIMILARITY.SIMILAR_LUT_ID.eq(LUT.ID))))));
+    }
+
+    public List<Lut> listPublishedForIndex() {
+        return dslContext.select(LUT.ID, LUT.TITLE, LUT.DESCRIPTION, LUT.CREATOR_ID, LUT.STYLE, LUT.DOWNLOAD_COUNT)
+                .from(LUT)
+                .where(published())
+                .fetchInto(Lut.class);
     }
 
     private static Condition relatedCondition(Integer baseId) {

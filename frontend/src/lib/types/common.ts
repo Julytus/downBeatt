@@ -17,6 +17,14 @@ export function getServerErrorMessage(err: unknown): string | undefined {
   return undefined;
 }
 
+/** Mã lỗi từ backend (ví dụ "COLLECTION_NAME_EXISTS", "COLLECTION_LIMIT"). */
+export function getServerErrorCode(err: unknown): string | undefined {
+  if (err instanceof AxiosError && err.response?.data) {
+    return (err.response.data as Partial<ErrorResponse>).errorCode;
+  }
+  return undefined;
+}
+
 export function ErrorResponseWarper(err: unknown, fallback = "Đã có lỗi xảy ra"): string {
   return getServerErrorMessage(err) ?? (err instanceof Error ? err.message : fallback);
 }

@@ -37,4 +37,5 @@ public class Lut {
     // Chỉ trả ở /lut/feature/**
     private LutColorFeature colorFeature;
     private String featureError;
+    private Double similarity;
 }

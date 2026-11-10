@@ -2,6 +2,7 @@ import type { LinkProps } from "@tanstack/react-router";
 import {
   AudioWaveform,
   Diamond,
+  FolderHeart,
   HandCoins,
   LifeBuoy,
   MessageSquare,
@@ -33,7 +34,10 @@ export const SHOP_NAV_GROUPS: ShopNavItem[][] = [
     { id: "trending", label: "Thịnh hành", icon: TrendingUp },
     { id: "playlist", label: "Tạo playlist", icon: Diamond }
   ],
-  [{ id: "pricing", label: "Bảng giá", icon: Star, to: "/pricing" }],
+  [
+    { id: "collections", label: "Bộ sưu tập", icon: FolderHeart, to: "/bo-suu-tap" },
+    { id: "pricing", label: "Bảng giá", icon: Star, to: "/pricing" }
+  ],
   [
     { id: "refer", label: "Giới thiệu bạn bè", icon: HandCoins },
     { id: "help", label: "Trung tâm trợ giúp", icon: LifeBuoy },

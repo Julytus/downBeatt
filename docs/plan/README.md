@@ -22,8 +22,8 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 1.3 | 1. Cửa hàng | `quan-ly-lut` | 0.3, 0.4, 1.2 | done (10/11/2026) |
 | 1.4 | 1. Cửa hàng | `goi-thanh-toan` | 1.1 | done (10/11/2026) |
 | 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | done (10/11/2026) |
-| 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | chưa làm |
-| 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | chưa làm |
+| 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | done (10/11/2026) |
+| 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | done (10/11/2026) |
 | 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | chưa làm |
 | 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | chưa làm |
 | 2.4 | 2. Hệ gợi ý | `quan-tri-goi-y` | 2.3 | chưa làm |
@@ -58,7 +58,7 @@ Làm song song được (khác bảng, khác màn hình): **1.1 ∥ 1.2**, **1.6
 - [x] **0.4 Phân quyền theo role**: V4, trang `/admin/chuc-vu`, `/admin/phan-quyen`, `/admin/tai-nguyen`, `/admin/module`. Làm ngoài luồng plan (commit `5339c1a`), chưa có `docs/chuc-nang/`.
   - [ ] Bổ sung tài liệu chức năng phân quyền (ảnh đã có ở `docs/chuc-nang/img/phan-quyen/`)
 
-## Giai đoạn 1. Cửa hàng hoàn chỉnh
+## Giai đoạn 1. Cửa hàng hoàn chỉnh — done
 
 ### 1.1 `tai-khoan-khach` — done (10/11/2026) ([plan/tai-khoan-khach.md](../../plan/tai-khoan-khach.md))
 
@@ -150,40 +150,43 @@ Thiết kế: §4.6, §6.3. Bảng: `download_log`.
 - [x] E2E + review + tài liệu
   - E2E (21/21) + review xong; tài liệu: `docs/chuc-nang/tai-lut.md`
 
-### 1.6 `bo-suu-tap` — chưa làm
+### 1.6 `bo-suu-tap` — done (10/11/2026) ([plan/bo-suu-tap.md](../../plan/bo-suu-tap.md))
 
 Thiết kế: §4.6, §5.4 (collection), §6.7.
 
-- [ ] Plan → duyệt
-- [ ] Backend: migration `collection`, `collection_item`; 5 API; gói Miễn phí tối đa 3 bộ
-- [ ] Frontend: nút "Lưu vào bộ sưu tập" ở thẻ / trang chi tiết, trang bộ sưu tập của tôi
-- [ ] E2E + review + tài liệu
+- [x] Plan → duyệt (10/11/2026)
+- [x] Backend: migration `collection`, `collection_item`; 6 API (plan chốt 6, không phải 5: thêm `item/remove`); gói Miễn phí tối đa 3 bộ
+- [x] Frontend: nút "Lưu vào bộ sưu tập" ở thẻ / trang chi tiết, trang bộ sưu tập của tôi
+- [x] E2E + review + tài liệu
+  - E2E (31/31) + review xong; tài liệu: `docs/chuc-nang/bo-suu-tap.md`
 
 ## Giai đoạn 2. Hệ gợi ý theo nội dung
 
 Bốn lát dưới đây thay cho lát `goi-y-lut` của thiết kế. Đặc trưng màu từ file .cube (§7.2.4) đã nằm ở lát 1.2. Mọi tham số lấy từ `recommend.*` (Phụ lục B) qua một đối tượng cấu hình, để trình đánh giá ở 3.1 chạy được nhiều cấu hình mà không sửa mã.
 
-### 2.1 `chi-muc-tuong-dong` — chưa làm
+### 2.1 `chi-muc-tuong-dong` — done (10/11/2026) ([plan/chi-muc-tuong-dong.md](../../plan/chi-muc-tuong-dong.md))
 
 Thiết kế: §7.1, §7.2, §7.3, §7.8 (`LutVectorIndex`, `SimilarityService`), UT-06. Bảng: `lut_similarity`.
 
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] Cấu hình `recommend.*` (trọng số khối, `similarity-top`, bảng đồng nghĩa thẻ, danh sách từ dừng)
-  - [ ] Hồ sơ sản phẩm 6 khối (§7.2)
-    - [ ] Khối thẻ: chuẩn hoá thẻ + gộp đồng nghĩa, TF-IDF với idf = ln((N + 1) / (df + 1)) + 1, chuẩn L2
-    - [ ] Khối danh mục: multi-hot nhân IDF, chuẩn L2, **bỏ nhóm `phan-mem`**
-    - [ ] Khối phong cách: one-hot 8 chiều theo `lut.style`
-    - [ ] Khối màu: đọc `lut_color_feature`, z-score trên toàn kho, cắt [-3, 3]; mean / std tính lại mỗi lần dựng
-    - [ ] Khối văn bản: NFC, tách âm tiết, bỏ từ dừng, âm tiết đơn + cặp âm tiết (giữ cặp có ở ≥ 2 LUT), tf = 1 + ln(số lần), TF-IDF, chuẩn L2
-    - [ ] Khối tác giả: one-hot `creator_id`
-  - [ ] `LutVectorIndex`: giữ vector thưa của mọi LUT `PUBLISHED`; dựng bản mới ở luồng riêng rồi thay tham chiếu (không khoá)
-  - [ ] Độ tương đồng (§7.3): cosine cho 5 khối rời rạc, RBF exp(-‖z_i − z_j‖² / 2D) cho khối màu, tổng có trọng số
-  - [ ] Bảng `lut_similarity`: top 50 mỗi LUT, tính lại toàn bảng khi xuất bản / sửa / ẩn (móc vào `publish`, `hide` của lát 1.3) và tác vụ 03:00
-  - [ ] `GET /lut/public/related` đổi từ luật sang `sim(c, j)` (chưa có phần cá nhân hoá 0.2), giữ nguyên hợp đồng
-  - [ ] Unit test: UT-06 (sim(i, i) = 1, đối xứng, trong [0, 1]); TF-IDF và RBF trên ví dụ nhỏ tính tay
-- [ ] Frontend: không đổi (cùng hợp đồng `related`); kiểm lại "Có thể bạn cũng thích" không chứa chính LUT đang xem (UI-05)
-- [ ] E2E (related trả LUT cùng gu, LUT bị ẩn biến khỏi related) + review + tài liệu
+- [x] Plan → duyệt (10/11/2026)
+- [x] Backend
+  - [x] Cấu hình `recommend.*` (trọng số khối, `similarity-top`, bảng đồng nghĩa thẻ, danh sách từ dừng)
+  - [x] Hồ sơ sản phẩm 6 khối (§7.2)
+    - [x] Khối thẻ: chuẩn hoá thẻ + gộp đồng nghĩa, TF-IDF với idf = ln((N + 1) / (df + 1)) + 1, chuẩn L2
+    - [x] Khối danh mục: multi-hot nhân IDF, chuẩn L2, **bỏ nhóm `phan-mem`**
+    - [x] Khối phong cách: one-hot 8 chiều theo `lut.style`
+    - [x] Khối màu: đọc `lut_color_feature`, z-score trên toàn kho, cắt [-3, 3]; mean / std tính lại mỗi lần dựng
+    - [x] Khối văn bản: NFC, tách âm tiết, bỏ từ dừng, âm tiết đơn + cặp âm tiết (giữ cặp có ở ≥ 2 LUT), tf = 1 + ln(số lần), TF-IDF, chuẩn L2
+    - [x] Khối tác giả: one-hot `creator_id`
+  - [x] `LutVectorIndex`: giữ vector thưa của mọi LUT `PUBLISHED`; dựng bản mới rồi thay tham chiếu (không khoá đọc)
+    - Lệch: dựng đồng bộ trong luồng gọi sau commit, không dùng luồng riêng (AGENTS cấm xử lý bất đồng bộ; plan §7 mục 7)
+  - [x] Độ tương đồng (§7.3): cosine cho 5 khối rời rạc, RBF exp(-‖z_i − z_j‖² / 2D) cho khối màu, tổng có trọng số
+  - [x] Bảng `lut_similarity`: top 50 mỗi LUT, tính lại toàn bảng khi xuất bản / sửa / ẩn (móc vào `publish`, `hide` của lát 1.3) và tác vụ 03:00
+  - [x] `GET /lut/public/related` đổi từ luật sang `sim(c, j)` (chưa có phần cá nhân hoá 0.2), giữ nguyên hợp đồng (chỉ thêm field `similarity`)
+  - [x] Unit test: UT-06 (sim(i, i) = 1, đối xứng, trong [0, 1]); TF-IDF và RBF trên ví dụ nhỏ tính tay
+- [x] Frontend: không đổi (cùng hợp đồng `related`); kiểm lại "Có thể bạn cũng thích" không chứa chính LUT đang xem (UI-05)
+- [x] E2E (related trả LUT cùng gu, LUT bị ẩn biến khỏi related) + review: 12/12 test xanh
+- [x] Tài liệu `docs/chuc-nang/chi-muc-tuong-dong.md`
 
 ### 2.2 `ho-so-nguoi-dung` — chưa làm
 

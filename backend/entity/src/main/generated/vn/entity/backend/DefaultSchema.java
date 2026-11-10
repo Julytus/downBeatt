@@ -11,12 +11,15 @@ import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
+import vn.entity.backend.tables.Collection;
+import vn.entity.backend.tables.CollectionItem;
 import vn.entity.backend.tables.Creator;
 import vn.entity.backend.tables.DownloadLog;
 import vn.entity.backend.tables.Lut;
 import vn.entity.backend.tables.LutCategory;
 import vn.entity.backend.tables.LutCategoryMap;
 import vn.entity.backend.tables.LutColorFeature;
+import vn.entity.backend.tables.LutSimilarity;
 import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.PaymentOrder;
@@ -41,6 +44,16 @@ public class DefaultSchema extends SchemaImpl {
      * The reference instance of <code>DEFAULT_SCHEMA</code>
      */
     public static final DefaultSchema DEFAULT_SCHEMA = new DefaultSchema();
+
+    /**
+     * The table <code>collection</code>.
+     */
+    public final Collection COLLECTION = Collection.COLLECTION;
+
+    /**
+     * The table <code>collection_item</code>.
+     */
+    public final CollectionItem COLLECTION_ITEM = CollectionItem.COLLECTION_ITEM;
 
     /**
      * The table <code>creator</code>.
@@ -71,6 +84,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>lut_color_feature</code>.
      */
     public final LutColorFeature LUT_COLOR_FEATURE = LutColorFeature.LUT_COLOR_FEATURE;
+
+    /**
+     * The table <code>lut_similarity</code>.
+     */
+    public final LutSimilarity LUT_SIMILARITY = LutSimilarity.LUT_SIMILARITY;
 
     /**
      * The table <code>lut_tag</code>.
@@ -138,12 +156,15 @@ public class DefaultSchema extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
+            Collection.COLLECTION,
+            CollectionItem.COLLECTION_ITEM,
             Creator.CREATOR,
             DownloadLog.DOWNLOAD_LOG,
             Lut.LUT,
             LutCategory.LUT_CATEGORY,
             LutCategoryMap.LUT_CATEGORY_MAP,
             LutColorFeature.LUT_COLOR_FEATURE,
+            LutSimilarity.LUT_SIMILARITY,
             LutTag.LUT_TAG,
             Module.MODULE,
             PaymentOrder.PAYMENT_ORDER,

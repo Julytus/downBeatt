@@ -52,4 +52,18 @@ public class LutCategoryRepository extends AbsMysqlRepository<LutCategoryRecord,
                 .orderBy(LUT_CATEGORY.SORT_ORDER.asc())
                 .fetchGroups(LUT_CATEGORY_MAP.LUT_ID, LUT_CATEGORY.SLUG);
     }
+
+    /** Slug danh mục đang hiện (khác nhóm phan-mem) của nhiều LUT trong một truy vấn. */
+    public Map<Integer, List<String>> getActiveNonSoftwareSlugsByLutIds(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Map.of();
+        }
+        return dslContext.select(LUT_CATEGORY_MAP.LUT_ID, LUT_CATEGORY.SLUG)
+                .from(LUT_CATEGORY_MAP.join(LUT_CATEGORY).on(LUT_CATEGORY.ID.eq(LUT_CATEGORY_MAP.CATEGORY_ID)))
+                .where(LUT_CATEGORY_MAP.LUT_ID.in(ids)
+                        .and(active())
+                        .and(LUT_CATEGORY.GROUP_CODE.ne("phan-mem")))
+                .orderBy(LUT_CATEGORY.SORT_ORDER.asc())
+                .fetchGroups(LUT_CATEGORY_MAP.LUT_ID, LUT_CATEGORY.SLUG);
+    }
 }

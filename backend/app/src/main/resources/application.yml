@@ -117,3 +117,24 @@ lut:
   download:
     url-ttl: ${LUT_DOWNLOAD_URL_TTL:5m}
 
+collection:
+  free-limit: ${COLLECTION_FREE_LIMIT:3}
+
+recommend:
+  weights:                 # tự chia cho tổng nếu tổng khác 1; có trọng số âm hoặc tổng = 0 → app không khởi động
+    tag: 0.30
+    color: 0.25
+    category: 0.15
+    style: 0.15
+    text: 0.10
+    creator: 0.05
+  similarity-top: 50       # số LUT lưu cho mỗi LUT trong lut_similarity
+  build-on-startup: true   # dựng chỉ mục khi ApplicationReadyEvent
+  rebuild-cron: "0 0 3 * * *"
+  tag-synonyms:            # mỗi nhóm một dòng, phần tử đầu là dạng chuẩn
+    - [đen trắng, trắng đen, b&w, bw, black and white]
+    - [vintage, cổ điển, retro]
+    - [phim, film]
+  text-stopwords: [của, và, cho, là, những, các, với, một, được, có, này, như, rất, khi]
+
+
