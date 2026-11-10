@@ -1,5 +1,6 @@
 import "@/components/shop/shop-theme.css";
 import { ShopDialogs } from "@/components/shop/account/shop-dialogs";
+import { ShopSessionSync } from "@/components/shop/account/shop-session-sync";
 import { cn } from "@/lib/utils";
 import { RouteProgress } from "./route-progress";
 
@@ -27,6 +28,7 @@ export function ShopShell({ className, children }: { className?: string; childre
       <RouteProgress />
       {children}
       <ShopDialogs />
+      <ShopSessionSync />
     </div>
   );
 }

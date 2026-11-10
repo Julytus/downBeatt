@@ -11,7 +11,7 @@ import type { LutDTO } from "@/lib/types/lut";
  * - checkout: xác nhận mua gói
  */
 export type ShopDialog =
-  | { type: "login"; lut?: LutDTO; plan?: Exclude<PlanCode, "free"> }
+  | { type: "login"; lut?: LutDTO; plan?: Exclude<PlanCode, "free">; email?: string }
   | { type: "register"; lut?: LutDTO; plan?: Exclude<PlanCode, "free"> }
   | { type: "upgrade"; lut: LutDTO }
   | { type: "checkout"; plan: Exclude<PlanCode, "free">; cycle: BillingCycle };

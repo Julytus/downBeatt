@@ -31,4 +31,7 @@ public class User {
     private Integer gender;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String token;
+    // Gói khách hàng, chỉ trả ở /account/me
+    private String plan;
+    private Timestamp planExpiresAt;
 }

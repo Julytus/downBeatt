@@ -1,6 +1,7 @@
 import { refreshAccessToken } from "@/lib/axios/auth";
 import env from "@/lib/env";
 import { useAuthStore } from "@/lib/stores/auth";
+import { useShopSession } from "@/lib/stores/shop-session";
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 const axiosInstance = axios.create({
@@ -21,10 +22,11 @@ type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 // Mọi request 401 trong lúc đang refresh dùng chung 1 lần gọi /auth/refresh
 let refreshPromise: Promise<string> | null = null;
 
-/** Hết phiên: xoá token và về trang đăng nhập (layout /admin cũng tự chuyển khi store trống). */
+/** Hết phiên: xoá token và phiên cửa hàng; chỉ chuyển /login khi ở trang /admin (plan §8, E4). */
 function endSession() {
   useAuthStore.getState().clear();
-  if (!window.location.pathname.startsWith("/login")) {
+  useShopSession.getState().logout();
+  if (window.location.pathname.startsWith("/admin")) {
     window.location.assign("/login");
   }
 }

@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MOCK_PLANS } from "@/lib/mock/data/plans";
 import { useShopDialog } from "@/lib/stores/shop-dialog";
 import { useShopSession } from "@/lib/stores/shop-session";
@@ -26,15 +27,28 @@ const initials = (name: string) =>
 /** Cụm nút bên phải header: chưa đăng nhập → Bảng giá / Đăng ký / Đăng nhập; đã đăng nhập → menu tài khoản. */
 export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }) {
   const user = useShopSession((s) => s.user);
-  const logout = useShopSession((s) => s.logout);
+  const loading = useShopSession((s) => s.loading);
   const openDialog = useShopDialog((s) => s.open);
-  const logoutMutation = useMutation({ ...logoutMutationOptions, onSuccess: () => logout() });
+  const logoutMutation = useMutation(logoutMutationOptions);
 
   const pricing = !hidePricing && (
     <ShopButton asChild variant="secondary" className="hidden sm:inline-flex">
       <Link to="/pricing">{user && user.plan === "free" ? "Nâng cấp" : "Bảng giá"}</Link>
     </ShopButton>
   );
+
+  if (loading && !user) {
+    return (
+      <div className="flex shrink-0 items-center gap-2">
+        {pricing}
+        <Skeleton
+          role="status"
+          aria-label="Đang tải tài khoản"
+          className="size-8 rounded-full bg-(--sh-surface)"
+        />
+      </div>
+    );
+  }
 
   if (!user) {
     return (

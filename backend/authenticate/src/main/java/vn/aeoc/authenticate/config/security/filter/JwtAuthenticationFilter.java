@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * Các đường dẫn được khai báo tương đối với context path.
      */
     private static final List<String> WHITE_LIST_API = List.of(
-            "/user/create",
             "/user/authenticate"
     );
 
@@ -39,6 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * Refresh/logout: access token có thể đã hết hạn, xác thực bằng refresh token trong body.
      */
     private static final List<String> WHITE_LIST_POST_API = List.of(
+            "/account/register",
             "/auth/refresh",
             "/auth/logout"
     );

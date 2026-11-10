@@ -15,6 +15,7 @@ public enum ErrorCode {
     DUPLICATED_DATA(400, "Trùng dữ liệu"),
     INVALID_AUTHENTICATION_INFO(400, "Tài khoản hoặc mật khẩu không đúng."),
     DUPLICATED_EMAIL(400, "Email đã tồn tại"),
+    EMAIL_EXISTS(400, "Email đã được đăng ký"),
     UPLOAD_FILE_FAILED(400, "Upload file thất bại"),
     FILE_EMPTY(400, "File rỗng"),
     FILE_TOO_LARGE(413, "File vượt quá dung lượng cho phép"),

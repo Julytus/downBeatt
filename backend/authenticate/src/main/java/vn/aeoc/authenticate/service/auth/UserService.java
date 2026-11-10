@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.aeoc.authenticate.repository.auth.UserRepository;
 import vn.aeoc.authenticate.service.RestService;
 import vn.aeoc.authenticate.service.cache.CacheKeyFactory;
@@ -20,6 +21,8 @@ import vn.aeoc.entity.data.mysql.auth.Role;
 import vn.aeoc.entity.data.mysql.auth.User;
 import vn.aeoc.entity.data.response.TokenResponse;
 
+import java.util.Locale;
+
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static vn.aeoc.authenticate.util.SecurityUtils.toSimpleSecurityUser;
 
@@ -32,6 +35,7 @@ public class UserService extends BaseService<UserRepository, User, Integer> {
     private final RestService restService;
     private final Cache<String, Object> authCache;
     private final RefreshTokenService refreshTokenService;
+    private final RoleService roleService;
 
     public UserService(UserRepository repository,
                        PermissionService permissionService,
@@ -39,6 +43,7 @@ public class UserService extends BaseService<UserRepository, User, Integer> {
                        RestService restService,
                        @Qualifier("authCache") Cache<String, Object> authCache,
                        RefreshTokenService refreshTokenService,
+                       RoleService roleService,
                        QueryExecutor queryExecutor) {
         super(repository, queryExecutor);
         this.permissionService = permissionService;
@@ -46,6 +51,7 @@ public class UserService extends BaseService<UserRepository, User, Integer> {
         this.restService = restService;
         this.authCache = authCache;
         this.refreshTokenService = refreshTokenService;
+        this.roleService = roleService;
     }
 
     public User getUserById(Integer userId) {
@@ -98,6 +104,100 @@ public class UserService extends BaseService<UserRepository, User, Integer> {
                 jwtService.generateJwt(toSimpleSecurityUser(userDb)),
                 refreshTokenService.issue(userDb.getId()),
                 userDb.getId());
+    }
+
+    @Transactional
+    public TokenResponse register(User request) {
+        // Bước 1: Họ tên
+        if (request == null || request.getName() == null) {
+            throw new AppException(ErrorCode.BAD_REQUEST, "Vui lòng nhập họ tên");
+        }
+        String name = request.getName().trim();
+        if (name.isEmpty()) {
+            throw new AppException(ErrorCode.BAD_REQUEST, "Vui lòng nhập họ tên");
+        }
+
+        // Bước 2: Email
+        if (request.getEmail() == null) {
+            throw new AppException(ErrorCode.BAD_REQUEST, "Email không hợp lệ");
+        }
+        String email = request.getEmail().trim().toLowerCase(Locale.ROOT);
+        if (email.isEmpty() || !email.contains("@")) {
+            throw new AppException(ErrorCode.BAD_REQUEST, "Email không hợp lệ");
+        }
+
+        // Bước 3: Mật khẩu
+        PasswordPolicy.validate(request.getPlainPassword());
+
+        // Bước 4: Role mặc định khách hàng (is_default = 1 AND is_operator = 0)
+        Role defaultRole = roleService.getDefaultCustomerRole();
+        if (defaultRole == null || defaultRole.getId() == null) {
+            throw new AppException(ErrorCode.REGISTRATION_DISABLED);
+        }
+
+        // Bước 5: Kiểm tra email đã tồn tại
+        User existingUser = repository.getUserByEmail(email);
+        if (existingUser != null && existingUser.getId() != null) {
+            throw new AppException(ErrorCode.EMAIL_EXISTS);
+        }
+
+        // Bước 6: Tạo user_app mới
+        User newUser = new User();
+        newUser.setName(name);
+        newUser.setEmail(email);
+        newUser.setPassword(BCrypt.hashpw(request.getPlainPassword(), BCrypt.gensalt()));
+        newUser.setHasPassword(1);
+        newUser.setRoleId(defaultRole.getId());
+        newUser.setActive(1);
+        newUser.setFirstTime(1);
+
+        User savedUser;
+        try {
+            savedUser = insert(newUser);
+        } catch (org.jooq.exception.DataAccessException e) {
+            if (isUniqueViolation(e)) {
+                throw new AppException(ErrorCode.EMAIL_EXISTS);
+            }
+            throw e;
+        }
+
+        if (savedUser == null) {
+            savedUser = newUser;
+        }
+        if (savedUser.getId() == null) {
+            savedUser.setId(newUser.getId());
+        }
+        if (savedUser.getName() == null) {
+            savedUser.setName(newUser.getName());
+        }
+        if (savedUser.getEmail() == null) {
+            savedUser.setEmail(newUser.getEmail());
+        }
+        if (savedUser.getRoleId() == null) {
+            savedUser.setRoleId(newUser.getRoleId());
+        }
+
+        // Bước 7: Trả issueTokens
+        return issueTokens(savedUser);
+    }
+
+    private boolean isUniqueViolation(org.jooq.exception.DataAccessException e) {
+        if (e instanceof org.jooq.exception.IntegrityConstraintViolationException) {
+            return true;
+        }
+        Throwable cause = e;
+        while (cause != null) {
+            String name = cause.getClass().getSimpleName();
+            if (name.contains("DuplicateKey") || name.contains("IntegrityConstraintViolation")) {
+                return true;
+            }
+            String msg = cause.getMessage();
+            if (msg != null && (msg.toLowerCase().contains("duplicate") || msg.contains("Duplicate entry"))) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
     }
 
     /** Đổi refresh token cũ (dùng 1 lần) lấy cặp token mới; user bị khoá / xoá => thu hồi mọi phiên. */

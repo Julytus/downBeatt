@@ -88,10 +88,17 @@ export function ShopDialogs() {
           <DialogDescription className="mt-2 mb-6 text-sm text-(--sh-muted)">{heading.description}</DialogDescription>
 
           {dialog.type === "login" && (
-            <LoginForm onSuccess={afterAuth} onSwitchToRegister={() => open({ type: "register", lut: dialog.lut, plan: dialog.plan })} />
+            <LoginForm
+              defaultEmail={dialog.email}
+              onSuccess={afterAuth}
+              onSwitchToRegister={() => open({ type: "register", lut: dialog.lut, plan: dialog.plan })}
+            />
           )}
           {dialog.type === "register" && (
-            <RegisterForm onSuccess={afterAuth} onSwitchToLogin={() => open({ type: "login", lut: dialog.lut, plan: dialog.plan })} />
+            <RegisterForm
+              onSuccess={afterAuth}
+              onSwitchToLogin={(email) => open({ type: "login", lut: dialog.lut, plan: dialog.plan, email })}
+            />
           )}
           {dialog.type === "upgrade" && <UpgradePanel onClose={close} />}
           {dialog.type === "checkout" && <CheckoutPanel plan={dialog.plan} cycle={dialog.cycle} onDone={close} />}
