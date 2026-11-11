@@ -29,6 +29,8 @@ import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.Subscription;
 import vn.entity.backend.tables.UserApp;
+import vn.entity.backend.tables.UserEvent;
+import vn.entity.backend.tables.UserPreference;
 import vn.entity.backend.tables.records.CollectionItemRecord;
 import vn.entity.backend.tables.records.CollectionRecord;
 import vn.entity.backend.tables.records.CreatorRecord;
@@ -48,6 +50,8 @@ import vn.entity.backend.tables.records.ResourceRecord;
 import vn.entity.backend.tables.records.RoleRecord;
 import vn.entity.backend.tables.records.SubscriptionRecord;
 import vn.entity.backend.tables.records.UserAppRecord;
+import vn.entity.backend.tables.records.UserEventRecord;
+import vn.entity.backend.tables.records.UserPreferenceRecord;
 
 
 /**
@@ -97,6 +101,9 @@ public class Keys {
     public static final UniqueKey<UserAppRecord> KEY_USER_APP_PRIMARY = Internal.createUniqueKey(UserApp.USER_APP, DSL.name("KEY_user_app_PRIMARY"), new TableField[] { UserApp.USER_APP.ID }, true);
     public static final UniqueKey<UserAppRecord> KEY_USER_APP_USER_APP_EMAIL_UINDEX = Internal.createUniqueKey(UserApp.USER_APP, DSL.name("KEY_user_app_user_app_email_uindex"), new TableField[] { UserApp.USER_APP.EMAIL }, true);
     public static final UniqueKey<UserAppRecord> KEY_USER_APP_USER_APP_PHONE_UINDEX = Internal.createUniqueKey(UserApp.USER_APP, DSL.name("KEY_user_app_user_app_phone_uindex"), new TableField[] { UserApp.USER_APP.PHONE }, true);
+    public static final UniqueKey<UserEventRecord> KEY_USER_EVENT_PRIMARY = Internal.createUniqueKey(UserEvent.USER_EVENT, DSL.name("KEY_user_event_PRIMARY"), new TableField[] { UserEvent.USER_EVENT.ID }, true);
+    public static final UniqueKey<UserPreferenceRecord> KEY_USER_PREFERENCE_PRIMARY = Internal.createUniqueKey(UserPreference.USER_PREFERENCE, DSL.name("KEY_user_preference_PRIMARY"), new TableField[] { UserPreference.USER_PREFERENCE.ID }, true);
+    public static final UniqueKey<UserPreferenceRecord> KEY_USER_PREFERENCE_UK_USER_PREFERENCE = Internal.createUniqueKey(UserPreference.USER_PREFERENCE, DSL.name("KEY_user_preference_uk_user_preference"), new TableField[] { UserPreference.USER_PREFERENCE.USER_ID, UserPreference.USER_PREFERENCE.CATEGORY_ID }, true);
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -126,4 +133,8 @@ public class Keys {
     public static final ForeignKey<SubscriptionRecord, PlanRecord> FK_SUBSCRIPTION_PLAN = Internal.createForeignKey(Subscription.SUBSCRIPTION, DSL.name("fk_subscription_plan"), new TableField[] { Subscription.SUBSCRIPTION.PLAN_ID }, Keys.KEY_PLAN_PRIMARY, new TableField[] { Plan.PLAN.ID }, true);
     public static final ForeignKey<SubscriptionRecord, UserAppRecord> FK_SUBSCRIPTION_USER = Internal.createForeignKey(Subscription.SUBSCRIPTION, DSL.name("fk_subscription_user"), new TableField[] { Subscription.SUBSCRIPTION.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
     public static final ForeignKey<UserAppRecord, RoleRecord> USER_APP_ROLE_FK = Internal.createForeignKey(UserApp.USER_APP, DSL.name("user_app_role_fk"), new TableField[] { UserApp.USER_APP.ROLE_ID }, Keys.KEY_ROLE_PRIMARY, new TableField[] { Role.ROLE.ID }, true);
+    public static final ForeignKey<UserEventRecord, LutRecord> FK_USER_EVENT_LUT = Internal.createForeignKey(UserEvent.USER_EVENT, DSL.name("fk_user_event_lut"), new TableField[] { UserEvent.USER_EVENT.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
+    public static final ForeignKey<UserEventRecord, UserAppRecord> FK_USER_EVENT_USER = Internal.createForeignKey(UserEvent.USER_EVENT, DSL.name("fk_user_event_user"), new TableField[] { UserEvent.USER_EVENT.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
+    public static final ForeignKey<UserPreferenceRecord, LutCategoryRecord> FK_USER_PREFERENCE_CATEGORY = Internal.createForeignKey(UserPreference.USER_PREFERENCE, DSL.name("fk_user_preference_category"), new TableField[] { UserPreference.USER_PREFERENCE.CATEGORY_ID }, Keys.KEY_LUT_CATEGORY_PRIMARY, new TableField[] { LutCategory.LUT_CATEGORY.ID }, true);
+    public static final ForeignKey<UserPreferenceRecord, UserAppRecord> FK_USER_PREFERENCE_USER = Internal.createForeignKey(UserPreference.USER_PREFERENCE, DSL.name("fk_user_preference_user"), new TableField[] { UserPreference.USER_PREFERENCE.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
 }

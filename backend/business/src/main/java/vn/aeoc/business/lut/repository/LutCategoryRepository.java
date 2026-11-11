@@ -8,6 +8,7 @@ import vn.aeoc.base.repo.AbsMysqlRepository;
 import vn.aeoc.entity.data.mysql.lut.LutCategory;
 import vn.entity.backend.tables.records.LutCategoryRecord;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -65,5 +66,15 @@ public class LutCategoryRepository extends AbsMysqlRepository<LutCategoryRecord,
                         .and(LUT_CATEGORY.GROUP_CODE.ne("phan-mem")))
                 .orderBy(LUT_CATEGORY.SORT_ORDER.asc())
                 .fetchGroups(LUT_CATEGORY_MAP.LUT_ID, LUT_CATEGORY.SLUG);
+    }
+
+    public Map<String, Integer> activeIdsBySlugs(Collection<String> slugs) {
+        if (slugs == null || slugs.isEmpty()) {
+            return Map.of();
+        }
+        return dslContext.select(LUT_CATEGORY.SLUG, LUT_CATEGORY.ID)
+                .from(LUT_CATEGORY)
+                .where(LUT_CATEGORY.SLUG.in(slugs).and(active()))
+                .fetchMap(LUT_CATEGORY.SLUG, LUT_CATEGORY.ID);
     }
 }

@@ -136,5 +136,22 @@ recommend:
     - [vintage, cổ điển, retro]
     - [phim, film]
   text-stopwords: [của, và, cho, là, những, các, với, một, được, có, này, như, rất, khi]
+  event:                  # trọng số sự kiện (Phụ lục B)
+    view: 1
+    preview: 2
+    search: 0.5
+    filter-style: 0.5
+    favorite: 4
+    download: 5
+    purchase: 6
+    dismiss: -4
+  half-life-days: 30      # ≤ 0 nghĩa là không suy giảm (dùng cho thí nghiệm ∞ ở lát 3.1)
+  history-days: 180
+  history-max-pairs: 200
+  cold-start-k: 5
+  event-dedup-minutes: 30
+  profile-cache-minutes: 5
+  preference-max: 12
+  event-cleanup-cron: "0 30 0 * * *"
 
 

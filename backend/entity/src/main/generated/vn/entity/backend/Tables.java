@@ -23,6 +23,8 @@ import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.Subscription;
 import vn.entity.backend.tables.UserApp;
+import vn.entity.backend.tables.UserEvent;
+import vn.entity.backend.tables.UserPreference;
 
 
 /**
@@ -125,4 +127,14 @@ public class Tables {
      * The table <code>user_app</code>.
      */
     public static final UserApp USER_APP = UserApp.USER_APP;
+
+    /**
+     * The table <code>user_event</code>.
+     */
+    public static final UserEvent USER_EVENT = UserEvent.USER_EVENT;
+
+    /**
+     * The table <code>user_preference</code>.
+     */
+    public static final UserPreference USER_PREFERENCE = UserPreference.USER_PREFERENCE;
 }

@@ -30,6 +30,8 @@ import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.Subscription;
 import vn.entity.backend.tables.UserApp;
+import vn.entity.backend.tables.UserEvent;
+import vn.entity.backend.tables.UserPreference;
 
 
 /**
@@ -141,6 +143,16 @@ public class DefaultSchema extends SchemaImpl {
     public final UserApp USER_APP = UserApp.USER_APP;
 
     /**
+     * The table <code>user_event</code>.
+     */
+    public final UserEvent USER_EVENT = UserEvent.USER_EVENT;
+
+    /**
+     * The table <code>user_preference</code>.
+     */
+    public final UserPreference USER_PREFERENCE = UserPreference.USER_PREFERENCE;
+
+    /**
      * No further instances allowed
      */
     private DefaultSchema() {
@@ -174,7 +186,9 @@ public class DefaultSchema extends SchemaImpl {
             Resource.RESOURCE,
             Role.ROLE,
             Subscription.SUBSCRIPTION,
-            UserApp.USER_APP
+            UserApp.USER_APP,
+            UserEvent.USER_EVENT,
+            UserPreference.USER_PREFERENCE
         );
     }
 }

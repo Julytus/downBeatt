@@ -9,6 +9,7 @@ import org.jooq.impl.TableImpl;
 import org.springframework.stereotype.Repository;
 import vn.aeoc.base.repo.AbsMysqlRepository;
 import vn.aeoc.entity.data.mysql.billing.PaymentOrder;
+import vn.aeoc.entity.data.mysql.recommend.UserSignal;
 import vn.entity.backend.tables.records.PaymentOrderRecord;
 
 import java.time.LocalDate;
@@ -102,5 +103,29 @@ public class PaymentOrderRepository extends AbsMysqlRepository<PaymentOrderRecor
                 .set(PAYMENT_ORDER.STATUS, "EXPIRED")
                 .where(PAYMENT_ORDER.STATUS.eq("PENDING").and(PAYMENT_ORDER.CREATED_TIME.lt(threshold)))
                 .execute();
+    }
+
+    public List<UserSignal> purchaseSignals(Integer userId, LocalDateTime since) {
+        if (userId == null) {
+            return List.of();
+        }
+        var countField = DSL.count().as("count");
+        var maxTimeField = DSL.max(PAYMENT_ORDER.PAID_TIME).as("last_time");
+
+        return dslContext.select(PAYMENT_ORDER.SOURCE_LUT_ID, countField, maxTimeField)
+                .from(PAYMENT_ORDER)
+                .where(PAYMENT_ORDER.USER_ID.eq(userId)
+                        .and(PAYMENT_ORDER.STATUS.eq("PAID"))
+                        .and(PAYMENT_ORDER.SOURCE_LUT_ID.isNotNull())
+                        .and(PAYMENT_ORDER.PAID_TIME.ge(since)))
+                .groupBy(PAYMENT_ORDER.SOURCE_LUT_ID)
+                .fetch(r -> new UserSignal(
+                        "PURCHASE",
+                        r.get(PAYMENT_ORDER.SOURCE_LUT_ID),
+                        null,
+                        null,
+                        r.get(countField),
+                        r.get(maxTimeField)
+                ));
     }
 }

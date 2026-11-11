@@ -173,6 +173,13 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
         return exists(published().and(LUT.ID.eq(id)));
     }
 
+    public boolean existsPublishedStyle(String style) {
+        if (style == null || style.isBlank()) {
+            return false;
+        }
+        return exists(published().and(LUT.STYLE.eq(style.trim())));
+    }
+
     /** Điểm = 10·[cùng style] + số danh mục đang hiện mà hai LUT cùng thuộc. */
     public List<Lut> relatedPublished(Lut base, Pageable pageable) {
         var mine = LUT_CATEGORY_MAP.as("mine");
@@ -219,7 +226,7 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
     }
 
     public List<Lut> listPublishedForIndex() {
-        return dslContext.select(LUT.ID, LUT.TITLE, LUT.DESCRIPTION, LUT.CREATOR_ID, LUT.STYLE, LUT.DOWNLOAD_COUNT)
+        return dslContext.select(LUT.ID, LUT.TITLE, LUT.DESCRIPTION, LUT.CREATOR_ID, LUT.STYLE, LUT.DOWNLOAD_COUNT, LUT.SLUG)
                 .from(LUT)
                 .where(published())
                 .fetchInto(Lut.class);

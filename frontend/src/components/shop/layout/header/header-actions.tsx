@@ -1,6 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, FolderHeart, LogOut, RefreshCcw, Sparkles, Star } from "lucide-react";
+import { ChevronDown, FolderHeart, History, LogOut, Palette, RefreshCcw, Sparkles, Star } from "lucide-react";
+import { useState } from "react";
+import { ClearHistoryDialog } from "@/components/shop/account/clear-history-dialog";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import {
   DropdownMenu,
@@ -27,6 +29,7 @@ const initials = (name: string) =>
 
 /** Cụm nút bên phải header: chưa đăng nhập → Bảng giá / Đăng ký / Đăng nhập; đã đăng nhập → menu tài khoản (plan §6.5). */
 export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }) {
+  const [clearHistoryOpen, setClearHistoryOpen] = useState(false);
   const user = useShopSession((s) => s.user);
   const loading = useShopSession((s) => s.loading);
   const openDialog = useShopDialog((s) => s.open);
@@ -141,11 +144,18 @@ export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }
               <FolderHeart /> Bộ sưu tập của tôi
             </Link>
           </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => openDialog({ type: "preference", mode: "edit" })}>
+            <Palette /> Sở thích màu
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setClearHistoryOpen(true)}>
+            <History /> Xoá lịch sử gợi ý
+          </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => logoutMutation.mutate()}>
             <LogOut /> Đăng xuất
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <ClearHistoryDialog open={clearHistoryOpen} onOpenChange={setClearHistoryOpen} />
     </div>
   );
 }

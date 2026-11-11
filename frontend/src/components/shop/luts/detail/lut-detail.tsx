@@ -1,11 +1,12 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { BookmarkCheck, ChevronRight, CirclePlus, Download, ExternalLink, Loader2, Star } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useLutDownload } from "@/hooks/use-lut-download";
 import { useSaveToCollection } from "@/hooks/use-save-to-collection";
 import { LutGrid } from "@/components/shop/luts/lut-grid";
 import { ShopButton } from "@/components/shop/ui/shop-button";
+import { trackEvent } from "@/lib/recommend/track";
 import { canDownloadPremium, useShopSession } from "@/lib/stores/shop-session";
 import { myCollectionsQueryOptions } from "@/lib/tanstack/options/collection";
 import { createInfiniteRelatedLutsQueryOptions, lutCategoriesQueryOptions } from "@/lib/tanstack/options/luts";
@@ -27,6 +28,14 @@ export function LutDetail({ lut }: { lut: LutDTO }) {
   const lutCategories = categories.filter((c) => lut.categories.includes(c.slug));
   const locked = lut.premium && !canDownloadPremium(user);
   const downloading = pendingId === lut.id;
+
+  const viewTrackedIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (lut.id && viewTrackedIdRef.current !== lut.id) {
+      viewTrackedIdRef.current = lut.id;
+      trackEvent("VIEW", { lutId: lut.id });
+    }
+  }, [lut.id]);
 
   return (
     <article>

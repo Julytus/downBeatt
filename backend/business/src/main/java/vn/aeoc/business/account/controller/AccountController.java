@@ -11,6 +11,8 @@ import vn.aeoc.authenticate.util.Mapper;
 import vn.aeoc.authenticate.util.SecurityUtils;
 import vn.aeoc.base.config.model.ApiResponse;
 import vn.aeoc.business.account.service.AccountService;
+import vn.aeoc.business.account.service.PreferenceService;
+import vn.aeoc.entity.data.mysql.account.UserPreference;
 import vn.aeoc.entity.data.mysql.auth.User;
 import vn.aeoc.entity.data.response.TokenResponse;
 
@@ -19,10 +21,14 @@ import java.security.Principal;
 @RestController
 public class AccountController extends BaseController {
     private final AccountService accountService;
+    private final PreferenceService preferenceService;
 
-    public AccountController(AccountService accountService, UserService userService) {
+    public AccountController(AccountService accountService,
+                             PreferenceService preferenceService,
+                             UserService userService) {
         super(userService);
         this.accountService = accountService;
+        this.preferenceService = preferenceService;
     }
 
     @PostMapping("/account/register")
@@ -33,5 +39,16 @@ public class AccountController extends BaseController {
     @GetMapping("/account/me")
     public ResponseEntity<ApiResponse<User>> me(Principal principal) {
         return Mapper.map(accountService.me(SecurityUtils.userId(principal)), ApiResponse::okEntity);
+    }
+
+    @GetMapping("/account/preference")
+    public ResponseEntity<ApiResponse<UserPreference>> getPreference(Principal principal) {
+        return Mapper.map(preferenceService.get(SecurityUtils.userId(principal)), ApiResponse::okEntity);
+    }
+
+    @PostMapping("/account/preference")
+    public ResponseEntity<ApiResponse<UserPreference>> savePreference(@RequestBody UserPreference request,
+                                                                      Principal principal) {
+        return Mapper.map(preferenceService.save(SecurityUtils.userId(principal), request), ApiResponse::okEntity);
     }
 }

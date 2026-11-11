@@ -59,7 +59,8 @@ public enum ErrorCode {
     PLAN_REQUIRED(403, "LUT Premium cần gói Pro hoặc Studio"),
     LUT_FILE_UNAVAILABLE(503, "File LUT đang không sẵn sàng, vui lòng thử lại sau"),
     COLLECTION_LIMIT(403, "Gói Miễn phí lưu được tối đa 3 bộ sưu tập"),
-    COLLECTION_NAME_EXISTS(400, "Bạn đã có bộ sưu tập tên này");
+    COLLECTION_NAME_EXISTS(400, "Bạn đã có bộ sưu tập tên này"),
+    PREFERENCE_INVALID(400, "Lựa chọn không hợp lệ");
 
     public final int code;
     public final String message;

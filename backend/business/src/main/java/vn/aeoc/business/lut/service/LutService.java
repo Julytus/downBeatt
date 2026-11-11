@@ -127,6 +127,13 @@ public class LutService extends BaseService<LutRepository, Lut, Integer> {
         return repository.isPublished(id);
     }
 
+    public boolean existsPublishedStyle(String style) {
+        if (style == null || style.isBlank()) {
+            return false;
+        }
+        return repository.existsPublishedStyle(style.trim());
+    }
+
     private Lut requirePublished(String slug) {
         Lut lut = repository.getPublishedBySlug(slug);
         if (lut == null) {

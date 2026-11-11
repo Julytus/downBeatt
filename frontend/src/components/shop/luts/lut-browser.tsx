@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { trackEvent } from "@/lib/recommend/track";
 import { hasActiveFilters, toLutListFilter, type LutsSearch } from "@/lib/search/luts";
 import { createInfiniteLutsQueryOptions } from "@/lib/tanstack/options/luts";
 import { LutGrid } from "./lut-grid";
@@ -40,8 +41,44 @@ export function LutBrowser({ search, onSearchChange, category, label }: LutBrows
   const { fetchNextPage, refetch } = query;
   const loadMore = useCallback(() => void fetchNextPage(), [fetchNextPage]);
 
+  const rawSearch = useMemo(
+    () => [toolbarValue.q, ...(toolbarValue.keywords ?? [])].filter(Boolean).join(" ").trim(),
+    [toolbarValue.q, toolbarValue.keywords]
+  );
+
+  const lastTrackedSearchRef = useRef<string>("");
+  useEffect(() => {
+    if (!rawSearch) {
+      return;
+    }
+
+    const firstPage = query.data?.pages[0];
+    if (query.isPlaceholderData || !query.isSuccess || !firstPage || firstPage.total <= 0) {
+      return;
+    }
+
+    if (lastTrackedSearchRef.current === rawSearch) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      lastTrackedSearchRef.current = rawSearch;
+      trackEvent("SEARCH", { value: rawSearch });
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [rawSearch, query.isPlaceholderData, query.isSuccess, query.data?.pages]);
+
   const updateFilter = useCallback(
-    (patch: Partial<LutsToolbarValue>) => onSearchChange(toLutsSearch({ ...toolbarValue, ...patch })),
+    (patch: Partial<LutsToolbarValue>) => {
+      if (patch.styles) {
+        const newlyAdded = patch.styles.filter((s) => !toolbarValue.styles.includes(s));
+        for (const style of newlyAdded) {
+          trackEvent("FILTER_STYLE", { value: style });
+        }
+      }
+      onSearchChange(toLutsSearch({ ...toolbarValue, ...patch }));
+    },
     [onSearchChange, toolbarValue]
   );
 

@@ -65,7 +65,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        if (isWhiteListed(request)) {
+        String requestUri = request.getRequestURI();
+        String contextPath = request.getContextPath() != null ? request.getContextPath() : "";
+        String path = (contextPath.isEmpty() || !requestUri.startsWith(contextPath))
+                ? requestUri
+                : requestUri.substring(contextPath.length());
+
+        if (isPublicPath(path)) {
+            String token = extractTokenFromRequest(request);
+            if (token != null) {
+                try {
+                    if (!jwtService.isTokenExpired(token)) {
+                        Principal principal = jwtService.extractPrincipal(token, request);
+                        if (principal != null) {
+                            request = new PrincipalRequestWrapper(request, principal);
+                        }
+                    }
+                } catch (Exception ignored) {
+                    // Thiếu / sai / hết hạn -> đi tiếp không principal, không 401
+                }
+            }
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (isWhiteListed(request, path)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -124,16 +148,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean isWhiteListed(HttpServletRequest request) {
-        String requestUri = request.getRequestURI();
-        String contextPath = request.getContextPath();
+    private boolean isPublicPath(String path) {
+        return path != null && (path.startsWith("/public/") || PUBLIC_FILE_PATH.matcher(path).matches());
+    }
 
-        // Ví dụ: /api/swagger-ui/swagger-ui.css
-        // Sau chuẩn hóa: /swagger-ui/swagger-ui.css
-        String path = requestUri.substring(contextPath.length());
-
-        if (path.startsWith("/public/") || PUBLIC_FILE_PATH.matcher(path).matches()) return true;
-
+    private boolean isWhiteListed(HttpServletRequest request, String path) {
         return WHITE_LIST_API.contains(path)
                 || ("POST".equalsIgnoreCase(request.getMethod()) && WHITE_LIST_POST_API.contains(path))
                 || ("GET".equalsIgnoreCase(request.getMethod()) && WHITE_LIST_GET_API.contains(path))

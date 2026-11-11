@@ -24,7 +24,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | done (10/11/2026) |
 | 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | done (10/11/2026) |
 | 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | done (10/11/2026) |
-| 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | chưa làm |
+| 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | done (11/11/2026) |
 | 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | chưa làm |
 | 2.4 | 2. Hệ gợi ý | `quan-tri-goi-y` | 2.3 | chưa làm |
 | 3.1 | 3. Đánh giá | `danh-gia-goi-y` | 2.3 | chưa làm |
@@ -188,31 +188,33 @@ Thiết kế: §7.1, §7.2, §7.3, §7.8 (`LutVectorIndex`, `SimilarityService`)
 - [x] E2E (related trả LUT cùng gu, LUT bị ẩn biến khỏi related) + review: 12/12 test xanh
 - [x] Tài liệu `docs/chuc-nang/chi-muc-tuong-dong.md`
 
-### 2.2 `ho-so-nguoi-dung` — chưa làm
+### 2.2 `ho-so-nguoi-dung` — done (11/11/2026) ([plan/ho-so-nguoi-dung.md](../../plan/ho-so-nguoi-dung.md))
 
 Thiết kế: §6.2, §7.4, §7.5.1, §5.5 (`event`, `merge-anon`, `clear-history`), §5.3 (`preference`), §9.3 (bước chọn phong cách, ghi sự kiện), UT-07 đến UT-09, API-03, API-04, API-07 đến API-09. Bảng: `user_preference`, `user_event`.
 
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] Migration `user_preference`, `user_event`
-  - [ ] Thu tín hiệu
-    - [ ] `account/preference` GET / POST, thay toàn bộ, tối đa 12, slug sai trả `PREFERENCE_INVALID`
-    - [ ] `recommend/public/event`: VIEW, PREVIEW, SEARCH, FILTER_STYLE; luôn trả 200; chống ghi lặp 30 phút; chuẩn hoá từ khoá
-    - [ ] `merge-anon` (UPDATE `user_id` theo `anon_id`), `clear-history` (chỉ xoá `user_event`), tác vụ 00:30 xoá sự kiện > 180 ngày
-  - [ ] `UserProfileService` (§7.4)
-    - [ ] Đọc 5 nguồn: `user_event`, `collection_item` (4), `download_log` (5), `payment_order.source_lut_id` đơn PAID (6), `user_preference`
-    - [ ] Gộp theo cặp (LUT, loại): c = w · (1 + ln(số lần)) · 0.5^(số ngày / 30); giới hạn 180 ngày, 200 cặp
-    - [ ] Hồ sơ hành vi H_u: khối rời rạc chia cho Σ|c| (DISMISS kéo ra xa); khối màu chỉ trung bình tín hiệu dương
-    - [ ] SEARCH vào khối thẻ + văn bản, FILTER_STYLE vào khối phong cách
-    - [ ] Hồ sơ khai báo E_u (§7.5.1): phong cách one-hot trung bình, danh mục multi-hot IDF, thẻ / màu / văn bản **mượn trọng tâm** các LUT thuộc danh mục đã chọn
-    - [ ] Trộn P_u = α·E_u + (1 − α)·H_u, α = k / (k + n), k = 5; xác định strategy `PROFILE / PREFERENCE / POPULAR`
-    - [ ] Nhận thời điểm tham chiếu làm tham số (cho 3.1); cache Caffeine 5 phút, xoá khi tải / lưu bộ sưu tập / dismiss / lưu sở thích
-  - [ ] Unit test UT-07 (suy giảm 30 ngày còn một nửa), UT-08 (chỉ khai báo: α = 1, PREFERENCE), UT-09 (5 LUT: α = 0.5)
-- [ ] Frontend
-  - [ ] `anonId` trong localStorage (bọc try/catch), gửi sự kiện không chờ: VIEW, PREVIEW (kéo thanh / video 3 giây), SEARCH (chờ 1 giây), FILTER_STYLE
-  - [ ] Gọi `merge-anon` sau đăng nhập / đăng ký
-  - [ ] Bước 2 "Chọn phong cách" (ảnh mẫu, 1 đến 5 phong cách, Bỏ qua) + mục "Sở thích màu", "Xoá lịch sử gợi ý" trong menu tài khoản
-- [ ] E2E + review + tài liệu
+- [x] Plan → duyệt (10/11/2026)
+- [x] Backend
+  - [x] Migration `user_preference`, `user_event`
+  - [x] Thu tín hiệu
+    - [x] `account/preference` GET / POST, thay toàn bộ, tối đa 12, slug sai trả `PREFERENCE_INVALID`
+    - [x] `recommend/public/event`: VIEW, PREVIEW, SEARCH, FILTER_STYLE; luôn trả 200; chống ghi lặp 30 phút; chuẩn hoá từ khoá
+    - [x] `merge-anon` (UPDATE `user_id` theo `anon_id`), `clear-history` (chỉ xoá `user_event`), tác vụ 00:30 xoá sự kiện > 180 ngày
+  - [x] `UserProfileService` (§7.4)
+    - [x] Đọc 5 nguồn: `user_event`, `collection_item` (4), `download_log` (5), `payment_order.source_lut_id` đơn PAID (6), `user_preference`
+    - [x] Gộp theo cặp (LUT, loại): c = w · (1 + ln(số lần)) · 0.5^(số ngày / 30); giới hạn 180 ngày, 200 cặp
+    - [x] Hồ sơ hành vi H_u: khối rời rạc chia cho Σ|c| (DISMISS kéo ra xa); khối màu chỉ trung bình tín hiệu dương
+    - [x] SEARCH vào khối thẻ + văn bản, FILTER_STYLE vào khối phong cách
+    - [x] Hồ sơ khai báo E_u (§7.5.1): phong cách one-hot trung bình, danh mục multi-hot IDF, thẻ / màu / văn bản **mượn trọng tâm** các LUT thuộc danh mục đã chọn
+    - [x] Trộn P_u = α·E_u + (1 − α)·H_u, α = k / (k + n), k = 5; xác định strategy `PROFILE / PREFERENCE / POPULAR`
+    - [x] Nhận thời điểm tham chiếu làm tham số (cho 3.1); cache Caffeine 5 phút, xoá khi tải / lưu bộ sưu tập / dismiss / lưu sở thích
+      - Xoá cache khi dismiss: chỗ phát sự kiện thuộc lát 2.3 (`xep-hang-goi-y`); listener đã sẵn.
+  - [x] Unit test UT-07 (suy giảm 30 ngày còn một nửa), UT-08 (chỉ khai báo: α = 1, PREFERENCE), UT-09 (5 LUT: α = 0.5)
+- [x] Frontend
+  - [x] `anonId` trong localStorage (bọc try/catch), gửi sự kiện không chờ: VIEW, PREVIEW (kéo thanh / video 3 giây), SEARCH (chờ 1 giây), FILTER_STYLE
+  - [x] Gọi `merge-anon` sau đăng nhập / đăng ký
+  - [x] Bước 2 "Chọn phong cách" (ảnh mẫu, 1 đến 5 phong cách, Bỏ qua) + mục "Sở thích màu", "Xoá lịch sử gợi ý" trong menu tài khoản
+- [x] E2E + review + tài liệu
+  - E2E (28/28) + review xong (11/11/2026); tài liệu: `docs/chuc-nang/ho-so-nguoi-dung.md`
 
 ### 2.3 `xep-hang-goi-y` — chưa làm
 

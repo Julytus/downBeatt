@@ -100,6 +100,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recommend/public/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["getProfile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/public/event": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["recordEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/merge-anon": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["mergeAnon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/clear-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["clearHistory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/permission/update": {
         parameters: {
             query?: never;
@@ -446,6 +510,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/preference": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPreference"];
+        put?: never;
+        post: operations["savePreference"];
         delete?: never;
         options?: never;
         head?: never;
@@ -936,6 +1016,65 @@ export interface components {
             result?: components["schemas"]["Resource"];
             errors?: Record<string, never>;
         };
+        UserEvent: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            anonId?: string;
+            /** Format: int32 */
+            lutId?: number;
+            value?: string;
+            /** Format: int64 */
+            impressionId?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            type?: string;
+        };
+        ApiResponseRecommendProfile: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecommendProfile"];
+            errors?: Record<string, never>;
+        };
+        ProfileTerm: {
+            key?: string;
+            /** Format: double */
+            weight?: number;
+        };
+        RecommendProfile: {
+            strategy?: string;
+            /** Format: double */
+            alpha?: number;
+            /** Format: int32 */
+            positiveLutCount?: number;
+            preference?: string[];
+            topStyles?: components["schemas"]["ProfileTerm"][];
+            topCategories?: components["schemas"]["ProfileTerm"][];
+            topTags?: components["schemas"]["ProfileTerm"][];
+            signals?: components["schemas"]["UserSignal"][];
+        };
+        UserSignal: {
+            type?: string;
+            /** Format: int32 */
+            lutId?: number;
+            slug?: string;
+            value?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            days?: number;
+            /** Format: double */
+            weight?: number;
+        };
+        ApiResponseBoolean: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: boolean;
+            errors?: Record<string, never>;
+        };
         Permission: {
             /** Format: int32 */
             id?: number;
@@ -1053,6 +1192,8 @@ export interface components {
             tags?: string[];
             colorFeature?: components["schemas"]["LutColorFeature"];
             featureError?: string;
+            /** Format: double */
+            similarity?: number;
         };
         LutColorFeature: {
             /** Format: int32 */
@@ -1149,6 +1290,24 @@ export interface components {
             code?: number;
             message?: string;
             result?: string;
+            errors?: Record<string, never>;
+        };
+        UserPreference: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            /** Format: int32 */
+            categoryId?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            categorySlugs?: string[];
+        };
+        ApiResponseUserPreference: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["UserPreference"];
             errors?: Record<string, never>;
         };
         ApiResponsePageRole: {
@@ -1448,6 +1607,102 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseInteger"];
+                };
+            };
+        };
+    };
+    getProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserEvent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecommendProfile"];
+                };
+            };
+        };
+    };
+    recordEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserEvent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseBoolean"];
+                };
+            };
+        };
+    };
+    mergeAnon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserEvent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseInteger"];
+                };
+            };
+        };
+    };
+    clearHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserEvent"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -1978,6 +2233,50 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseTokenResponse"];
+                };
+            };
+        };
+    };
+    getPreference: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseUserPreference"];
+                };
+            };
+        };
+    };
+    savePreference: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserPreference"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseUserPreference"];
                 };
             };
         };

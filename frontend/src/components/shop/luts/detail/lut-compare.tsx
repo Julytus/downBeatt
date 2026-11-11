@@ -1,5 +1,6 @@
 import { ChevronsLeftRight } from "lucide-react";
 import { useRef, useState } from "react";
+import { trackEvent } from "@/lib/recommend/track";
 import type { LutDTO } from "@/lib/types/lut";
 import { BeforeAfter } from "../before-after";
 
@@ -13,6 +14,14 @@ export function LutCompare({ lut }: { lut: LutDTO }) {
   const [position, setPosition] = useState(55);
   const boxRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
+  const previewSentRef = useRef<number | null>(null);
+
+  const sendPreview = () => {
+    if (lut.id && previewSentRef.current !== lut.id) {
+      previewSentRef.current = lut.id;
+      trackEvent("PREVIEW", { lutId: lut.id });
+    }
+  };
 
   const moveTo = (clientX: number) => {
     const r = boxRef.current?.getBoundingClientRect();
@@ -24,6 +33,7 @@ export function LutCompare({ lut }: { lut: LutDTO }) {
       ref={boxRef}
       className="relative aspect-video w-full touch-pan-y overflow-hidden rounded-[12px] bg-(--sh-surface) select-none"
       onPointerDown={(e) => {
+        sendPreview();
         dragging.current = true;
         e.currentTarget.setPointerCapture(e.pointerId);
         moveTo(e.clientX);
@@ -57,6 +67,9 @@ export function LutCompare({ lut }: { lut: LutDTO }) {
         aria-valuenow={Math.round(position)}
         aria-valuetext={`${Math.round(position)}% đã áp LUT`}
         onKeyDown={(e) => {
+          if (["ArrowLeft", "ArrowDown", "ArrowRight", "ArrowUp", "Home", "End"].includes(e.key)) {
+            sendPreview();
+          }
           const step = e.shiftKey ? 10 : 2;
           if (e.key === "ArrowLeft" || e.key === "ArrowDown") setPosition((p) => clamp(p - step));
           else if (e.key === "ArrowRight" || e.key === "ArrowUp") setPosition((p) => clamp(p + step));

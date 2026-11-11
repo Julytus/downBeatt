@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { useLutDownload } from "@/hooks/use-lut-download";
 import { SaveToCollectionPanel } from "@/components/shop/collection/save-to-collection-panel";
@@ -6,10 +7,13 @@ import { ShopButton } from "@/components/shop/ui/shop-button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useShopDialog, type ShopDialog } from "@/lib/stores/shop-dialog";
 import { plansQueryOptions } from "@/lib/tanstack/options/billing";
+import type { LutDTO } from "@/lib/types/lut";
+import { cn } from "@/lib/utils";
 import { CheckoutPanel } from "./checkout-panel";
 import { DownloadDonePanel } from "./download-done-panel";
 import { LoginForm } from "./login-form";
 import { LutMiniCard } from "./lut-mini-card";
+import { PreferencePanel } from "./preference-panel";
 import { RegisterForm } from "./register-form";
 import { UpgradePanel } from "./upgrade-panel";
 
@@ -70,11 +74,38 @@ function headingOf(
           </>
         )
       };
+    case "preference":
+      if (dialog.mode === "onboarding") {
+        return {
+          title: "Bạn thích phong cách màu nào?",
+          description: (
+            <>
+              <span>Chọn 1 đến 5 phong cách, chúng tôi gợi ý LUT hợp gu.</span>
+              {dialog.next?.then === "download" && (
+                <span className="mt-1 block font-medium text-(--sh-pink)">
+                  Xong bước này, “{dialog.next.lut.title}” sẽ được tải ngay.
+                </span>
+              )}
+              {dialog.next?.then === "collection" && (
+                <span className="mt-1 block font-medium text-(--sh-pink)">
+                  Xong bước này, bạn chọn bộ sưu tập để lưu “{dialog.next.lut.title}”.
+                </span>
+              )}
+            </>
+          )
+        };
+      }
+      return {
+        title: "Sở thích màu",
+        description: "Chọn 1 đến 5 phong cách, chúng tôi gợi ý LUT hợp gu."
+      };
   }
 }
 
 /** Mọi hộp thoại của cửa hàng, render một lần ở layout. Mở bằng `useShopDialog().open(...)`. */
 export function ShopDialogs() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const dialog = useShopDialog((s) => s.dialog);
   const open = useShopDialog((s) => s.open);
   const close = useShopDialog((s) => s.close);
@@ -84,19 +115,62 @@ export function ShopDialogs() {
   const planName = (code: string) =>
     plans?.find((p) => p.code === code)?.name ?? (code === "studio" ? "Studio" : "Pro");
 
+  const continueAfterPreference = (
+    mode: "onboarding" | "edit",
+    next: { then: "download" | "collection"; lut: LutDTO } | undefined,
+    saved: boolean
+  ) => {
+    if (saved) {
+      if (mode === "onboarding") {
+        if (!next) {
+          close();
+          if (pathname !== "/luts") {
+            void navigate({ to: "/luts" });
+          }
+        } else if (next.then === "download") {
+          close();
+          download(next.lut);
+        } else if (next.then === "collection") {
+          open({ type: "collection", lut: next.lut });
+        }
+      } else {
+        close();
+      }
+    } else {
+      // Bỏ qua / Huỷ
+      if (!next) {
+        close();
+      } else if (next.then === "download") {
+        close();
+        download(next.lut);
+      } else if (next.then === "collection") {
+        open({ type: "collection", lut: next.lut });
+      }
+    }
+  };
+
   const afterAuth = () => {
     if (!dialog) return;
     if ((dialog.type === "login" || dialog.type === "register") && dialog.plan) {
       open({ type: "checkout", plan: dialog.plan, cycle: "year" });
       return;
     }
-    if ((dialog.type === "login" || dialog.type === "register") && dialog.then === "collection" && dialog.lut) {
+    if (dialog.type === "register") {
+      let next: { then: "download" | "collection"; lut: LutDTO } | undefined;
+      if (dialog.then === "collection" && dialog.lut) {
+        next = { then: "collection", lut: dialog.lut };
+      } else if (dialog.lut) {
+        next = { then: "download", lut: dialog.lut };
+      }
+      open({ type: "preference", mode: "onboarding", next });
+      return;
+    }
+    if (dialog.type === "login" && dialog.then === "collection" && dialog.lut) {
       open({ type: "collection", lut: dialog.lut });
       return;
     }
     close();
-    if ((dialog.type === "login" || dialog.type === "register") && dialog.lut) {
-      // Tiếp tục tải LUT người dùng vừa bấm (LUT Premium + gói Miễn phí sẽ mở hộp thoại nâng cấp)
+    if (dialog.type === "login" && dialog.lut) {
       download(dialog.lut);
     }
   };
@@ -110,7 +184,10 @@ export function ShopDialogs() {
         <DialogContent
           key={dialog.type}
           showCloseButton={false}
-          className="shop max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-[12px] border-(--sh-border) bg-(--sh-elevated) p-6 text-(--sh-fg) sm:max-w-[420px] sm:p-8"
+          className={cn(
+            "shop max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-[12px] border-(--sh-border) bg-(--sh-elevated) p-6 text-(--sh-fg) sm:p-8",
+            dialog.type === "preference" ? "sm:max-w-[600px]" : "sm:max-w-[420px]"
+          )}
         >
           <DialogClose asChild>
             <ShopButton variant="ghost" size="icon-sm" aria-label="Đóng" className="absolute top-4 right-4">
@@ -122,6 +199,9 @@ export function ShopDialogs() {
             <div className="mb-5 pr-8">
               <LutMiniCard lut={lut} />
             </div>
+          )}
+          {dialog.type === "preference" && dialog.mode === "onboarding" && (
+            <div className="mb-1 text-xs font-semibold text-(--sh-pink)">Bước 2 / 2</div>
           )}
           <DialogTitle className="font-display pr-8 text-2xl leading-tight font-bold">{heading.title}</DialogTitle>
           {heading.description && (
@@ -162,6 +242,13 @@ export function ShopDialogs() {
               lut={dialog.lut}
               fileName={dialog.fileName}
               onClose={close}
+            />
+          )}
+          {dialog.type === "preference" && (
+            <PreferencePanel
+              mode={dialog.mode}
+              next={dialog.next}
+              onDone={(saved) => continueAfterPreference(dialog.mode, dialog.next, saved)}
             />
           )}
         </DialogContent>

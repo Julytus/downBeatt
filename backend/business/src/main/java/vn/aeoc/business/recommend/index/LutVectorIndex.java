@@ -35,6 +35,8 @@ public class LutVectorIndex {
     private final Map<Integer, String> styles;
     private final Map<Integer, Integer> creatorIds;
     private final Map<Integer, Integer> downloadCounts;
+    private final Map<Integer, String> slugs;
+    private final Set<String> styleSet;
 
     private LutVectorIndex(RecommendProperties properties,
                            List<Integer> ids,
@@ -49,7 +51,9 @@ public class LutVectorIndex {
                            double[] colorStd,
                            Map<Integer, String> styles,
                            Map<Integer, Integer> creatorIds,
-                           Map<Integer, Integer> downloadCounts) {
+                           Map<Integer, Integer> downloadCounts,
+                           Map<Integer, String> slugs,
+                           Set<String> styleSet) {
         this.properties = properties;
         this.ids = Collections.unmodifiableList(ids);
         this.idSet = new HashSet<>(ids);
@@ -65,6 +69,8 @@ public class LutVectorIndex {
         this.styles = Collections.unmodifiableMap(styles);
         this.creatorIds = Collections.unmodifiableMap(creatorIds);
         this.downloadCounts = Collections.unmodifiableMap(downloadCounts);
+        this.slugs = Collections.unmodifiableMap(slugs);
+        this.styleSet = Collections.unmodifiableSet(styleSet);
     }
 
     public static LutVectorIndex build(List<Lut> luts, RecommendProperties props) {
@@ -80,6 +86,8 @@ public class LutVectorIndex {
         Map<Integer, String> styles = new HashMap<>(N);
         Map<Integer, Integer> creatorIds = new HashMap<>(N);
         Map<Integer, Integer> downloadCounts = new HashMap<>(N);
+        Map<Integer, String> slugs = new HashMap<>(N);
+        Set<String> styleSet = new LinkedHashSet<>();
 
         for (Lut lut : luts) {
             Integer id = lut.getId();
@@ -87,6 +95,10 @@ public class LutVectorIndex {
             styles.put(id, lut.getStyle());
             creatorIds.put(id, lut.getCreatorId());
             downloadCounts.put(id, lut.getDownloadCount() != null ? lut.getDownloadCount() : 0);
+            slugs.put(id, lut.getSlug());
+            if (lut.getStyle() != null && !lut.getStyle().isBlank()) {
+                styleSet.add(lut.getStyle().trim());
+            }
         }
 
         // 1. Tags
@@ -269,7 +281,8 @@ public class LutVectorIndex {
                 props, ids, tagIdfMap, categoryIdfMap, textIdfMap,
                 tagVectors, categoryVectors, textVectors,
                 colorZMap, colorMean, colorStd,
-                styles, creatorIds, downloadCounts
+                styles, creatorIds, downloadCounts,
+                slugs, styleSet
         );
     }
 
@@ -370,6 +383,22 @@ public class LutVectorIndex {
 
     public Integer creatorId(Integer id) {
         return creatorIds.get(id);
+    }
+
+    public Set<String> tagDictionary() {
+        return Collections.unmodifiableSet(tagIdfMap.keySet());
+    }
+
+    public Set<String> categoryDictionary() {
+        return Collections.unmodifiableSet(categoryIdfMap.keySet());
+    }
+
+    public Set<String> styleSet() {
+        return styleSet;
+    }
+
+    public String slug(Integer id) {
+        return slugs.get(id);
     }
 
     public RecommendProperties getProperties() {

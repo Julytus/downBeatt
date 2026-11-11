@@ -2,6 +2,7 @@ package vn.aeoc.business.download.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import vn.aeoc.authenticate.service.FileStorageService;
@@ -9,6 +10,7 @@ import vn.aeoc.base.constant.ErrorCode;
 import vn.aeoc.base.exception.AppException;
 import vn.aeoc.base.service.BaseService;
 import vn.aeoc.base.util.QueryExecutor;
+import vn.aeoc.business.account.event.UserSignalChangedEvent;
 import vn.aeoc.business.billing.repository.PlanRepository;
 import vn.aeoc.business.billing.repository.SubscriptionRepository;
 import vn.aeoc.business.download.repository.DownloadLogRepository;
@@ -17,9 +19,12 @@ import vn.aeoc.entity.data.mysql.billing.Plan;
 import vn.aeoc.entity.data.mysql.billing.Subscription;
 import vn.aeoc.entity.data.mysql.download.DownloadLog;
 import vn.aeoc.entity.data.mysql.lut.Lut;
+import vn.aeoc.entity.data.mysql.recommend.UserSignal;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -29,6 +34,7 @@ public class LutDownloadService extends BaseService<DownloadLogRepository, Downl
     private final PlanRepository planRepository;
     private final FileStorageService fileStorageService;
     private final TransactionTemplate transactionTemplate;
+    private final ApplicationEventPublisher publisher;
     private final Duration urlTtl;
 
     public LutDownloadService(DownloadLogRepository repository,
@@ -38,6 +44,7 @@ public class LutDownloadService extends BaseService<DownloadLogRepository, Downl
                               PlanRepository planRepository,
                               FileStorageService fileStorageService,
                               TransactionTemplate transactionTemplate,
+                              ApplicationEventPublisher publisher,
                               @Value("${lut.download.url-ttl:5m}") Duration urlTtl) {
         super(repository, queryExecutor);
         this.lutRepository = lutRepository;
@@ -45,6 +52,7 @@ public class LutDownloadService extends BaseService<DownloadLogRepository, Downl
         this.planRepository = planRepository;
         this.fileStorageService = fileStorageService;
         this.transactionTemplate = transactionTemplate;
+        this.publisher = publisher;
         this.urlTtl = urlTtl;
     }
 
@@ -133,11 +141,20 @@ public class LutDownloadService extends BaseService<DownloadLogRepository, Downl
             lutRepository.increaseDownloadCount(lut.getId());
         });
 
+        publisher.publishEvent(new UserSignalChangedEvent(userId, "tải LUT"));
+
         // (6) Trả kết quả: chỉ chứa fileName và url
         DownloadLog response = new DownloadLog();
         response.setFileName(fileName);
         response.setUrl(presignedUrl);
         return response;
+    }
+
+    public List<UserSignal> downloadSignals(Integer userId, LocalDateTime since) {
+        if (userId == null) {
+            return List.of();
+        }
+        return repository.downloadSignals(userId, since);
     }
 
     private void runInTransaction(Runnable runnable) {
