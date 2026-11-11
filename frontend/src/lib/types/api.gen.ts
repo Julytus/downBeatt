@@ -100,6 +100,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recommend/try-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["tryProfile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/rebuild": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["rebuild"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recommend/public/profile": {
         parameters: {
             query?: never;
@@ -644,6 +676,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recommend/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["customers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["config"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/plan/public/list": {
         parameters: {
             query?: never;
@@ -1048,79 +1128,30 @@ export interface components {
             result?: components["schemas"]["Resource"];
             errors?: Record<string, never>;
         };
-        UserEvent: {
-            /** Format: int64 */
-            id?: number;
+        TryProfileRequest: {
             /** Format: int32 */
             userId?: number;
             anonId?: string;
-            /** Format: int32 */
-            lutId?: number;
-            value?: string;
-            /** Format: int64 */
-            impressionId?: number;
-            /** Format: date-time */
-            createdTime?: string;
-            type?: string;
-        };
-        ApiResponseRecommendProfile: {
-            /** Format: int32 */
-            code?: number;
-            message?: string;
-            result?: components["schemas"]["RecommendProfile"];
-            errors?: Record<string, never>;
-        };
-        ProfileTerm: {
-            key?: string;
-            /** Format: double */
-            weight?: number;
-        };
-        RecommendProfile: {
-            strategy?: string;
-            /** Format: double */
-            alpha?: number;
-            /** Format: int32 */
-            positiveLutCount?: number;
-            preference?: string[];
-            topStyles?: components["schemas"]["ProfileTerm"][];
-            topCategories?: components["schemas"]["ProfileTerm"][];
-            topTags?: components["schemas"]["ProfileTerm"][];
-            signals?: components["schemas"]["UserSignal"][];
-        };
-        UserSignal: {
-            type?: string;
-            /** Format: int32 */
-            lutId?: number;
-            slug?: string;
-            value?: string;
-            /** Format: int32 */
-            count?: number;
-            /** Format: double */
-            days?: number;
-            /** Format: double */
-            weight?: number;
-        };
-        RecImpression: {
-            /** Format: int64 */
-            id?: number;
-            /** Format: int32 */
-            userId?: number;
-            anonId?: string;
-            placement?: string;
-            variant?: string;
-            strategy?: string;
-            lutIds?: number[];
-            /** Format: date-time */
-            createdTime?: string;
             /** Format: int32 */
             limit?: number;
         };
-        ApiResponseRecommendResult: {
+        ApiResponseTryProfileResult: {
             /** Format: int32 */
             code?: number;
             message?: string;
-            result?: components["schemas"]["RecommendResult"];
+            result?: components["schemas"]["TryProfileResult"];
             errors?: Record<string, never>;
+        };
+        ColorTerm: {
+            key?: string;
+            /** Format: double */
+            value?: number;
+        };
+        CustomerOption: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            email?: string;
         };
         Lut: {
             /** Format: int32 */
@@ -1164,6 +1195,9 @@ export interface components {
             reason?: string;
             /** Format: double */
             score?: number;
+            contributions?: {
+                [key: string]: number;
+            };
         };
         LutColorFeature: {
             /** Format: int32 */
@@ -1190,6 +1224,123 @@ export interface components {
             isMono?: number;
             /** Format: date-time */
             computedTime?: string;
+        };
+        ProfileTerm: {
+            key?: string;
+            /** Format: double */
+            weight?: number;
+        };
+        RecommendProfile: {
+            strategy?: string;
+            /** Format: double */
+            alpha?: number;
+            /** Format: int32 */
+            positiveLutCount?: number;
+            preference?: string[];
+            topStyles?: components["schemas"]["ProfileTerm"][];
+            topCategories?: components["schemas"]["ProfileTerm"][];
+            topTags?: components["schemas"]["ProfileTerm"][];
+            signals?: components["schemas"]["UserSignal"][];
+        };
+        TryProfileResult: {
+            customer?: components["schemas"]["CustomerOption"];
+            anonId?: string;
+            strategy?: string;
+            premiumLimited?: boolean;
+            /** Format: int32 */
+            premiumQuota?: number;
+            profile?: components["schemas"]["RecommendProfile"];
+            color?: components["schemas"]["ColorTerm"][];
+            categoryNames?: {
+                [key: string]: string;
+            };
+            items?: components["schemas"]["Lut"][];
+        };
+        UserSignal: {
+            type?: string;
+            /** Format: int32 */
+            lutId?: number;
+            slug?: string;
+            value?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            days?: number;
+            /** Format: double */
+            weight?: number;
+        };
+        ApiResponseRebuildResult: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RebuildResult"];
+            errors?: Record<string, never>;
+        };
+        FeatureFailure: {
+            /** Format: int32 */
+            id?: number;
+            title?: string;
+            error?: string;
+        };
+        RebuildResult: {
+            /** Format: int32 */
+            featureMissing?: number;
+            /** Format: int32 */
+            featureComputed?: number;
+            featureFailed?: components["schemas"]["FeatureFailure"][];
+            /** Format: int32 */
+            lutCount?: number;
+            /** Format: int32 */
+            similarityRows?: number;
+            /** Format: int64 */
+            elapsedMs?: number;
+            /** Format: date-time */
+            builtTime?: string;
+            reason?: string;
+        };
+        UserEvent: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            anonId?: string;
+            /** Format: int32 */
+            lutId?: number;
+            value?: string;
+            /** Format: int64 */
+            impressionId?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            type?: string;
+        };
+        ApiResponseRecommendProfile: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecommendProfile"];
+            errors?: Record<string, never>;
+        };
+        RecImpression: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            anonId?: string;
+            placement?: string;
+            variant?: string;
+            strategy?: string;
+            lutIds?: number[];
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: int32 */
+            limit?: number;
+        };
+        ApiResponseRecommendResult: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecommendResult"];
+            errors?: Record<string, never>;
         };
         RecommendResult: {
             /** Format: int64 */
@@ -1400,6 +1551,92 @@ export interface components {
             /** Format: int32 */
             page?: number;
             items?: components["schemas"]["Resource"][];
+        };
+        ApiResponseRecommendStats: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecommendStats"];
+            errors?: Record<string, never>;
+        };
+        PositionStat: {
+            /** Format: int32 */
+            position?: number;
+            /** Format: int64 */
+            impressions?: number;
+            /** Format: int64 */
+            clicks?: number;
+            /** Format: double */
+            ctr?: number;
+        };
+        RecommendStats: {
+            from?: string;
+            to?: string;
+            summary?: components["schemas"]["StatsRow"];
+            byVariant?: components["schemas"]["StatsRow"][];
+            byPosition?: components["schemas"]["PositionStat"][];
+        };
+        StatsRow: {
+            variant?: string;
+            strategy?: string;
+            /** Format: int64 */
+            impressions?: number;
+            /** Format: int64 */
+            clicked?: number;
+            /** Format: double */
+            ctr?: number;
+            /** Format: int64 */
+            downloaded?: number;
+            /** Format: double */
+            downloadRate?: number;
+            /** Format: int64 */
+            dismissals?: number;
+            /** Format: double */
+            dismissRate?: number;
+        };
+        ApiResponseListCustomerOption: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["CustomerOption"][];
+            errors?: Record<string, never>;
+        };
+        ApiResponseRecommendConfig: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecommendConfig"];
+            errors?: Record<string, never>;
+        };
+        IndexStatus: {
+            /** Format: int32 */
+            lutCount?: number;
+            /** Format: int32 */
+            similarityRows?: number;
+            /** Format: date-time */
+            builtTime?: string;
+            /** Format: int64 */
+            elapsedMs?: number;
+            reason?: string;
+            lastError?: string;
+            /** Format: date-time */
+            lastErrorTime?: string;
+        };
+        RecommendConfig: {
+            variant?: string;
+            weights?: {
+                [key: string]: number;
+            };
+            normalizedWeights?: {
+                [key: string]: number;
+            };
+            eventWeights?: {
+                [key: string]: number;
+            };
+            params?: {
+                [key: string]: Record<string, never>;
+            };
+            index?: components["schemas"]["IndexStatus"];
         };
         ApiResponseListPlan: {
             /** Format: int32 */
@@ -1678,6 +1915,50 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseInteger"];
+                };
+            };
+        };
+    };
+    tryProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["TryProfileRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseTryProfileResult"];
+                };
+            };
+        };
+    };
+    rebuild: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRebuildResult"];
                 };
             };
         };
@@ -2506,6 +2787,72 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseResource"];
+                };
+            };
+        };
+    };
+    stats: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecommendStats"];
+                };
+            };
+        };
+    };
+    customers: {
+        parameters: {
+            query?: {
+                keyword?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListCustomerOption"];
+                };
+            };
+        };
+    };
+    config: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecommendConfig"];
                 };
             };
         };

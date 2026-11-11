@@ -6,11 +6,14 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.springframework.stereotype.Repository;
 import vn.aeoc.base.repo.AbsMysqlRepository;
+import vn.aeoc.business.recommend.stats.EventRow;
 import vn.aeoc.entity.data.mysql.recommend.UserEvent;
 import vn.aeoc.entity.data.mysql.recommend.UserSignal;
 import vn.entity.backend.tables.records.UserEventRecord;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static vn.entity.backend.tables.UserEvent.USER_EVENT;
@@ -126,5 +129,35 @@ public class UserEventRepository extends AbsMysqlRepository<UserEventRecord, Use
                         r.get(countField),
                         r.get(maxTimeField)
                 ));
+    }
+
+    public List<EventRow> listByImpressionIds(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        List<Long> idList = ids instanceof List<Long> l ? l : new ArrayList<>(ids);
+        List<EventRow> result = new ArrayList<>();
+        int batchSize = 1000;
+        for (int i = 0; i < idList.size(); i += batchSize) {
+            List<Long> batch = idList.subList(i, Math.min(i + batchSize, idList.size()));
+            List<EventRow> rows = dslContext.select(
+                            USER_EVENT.IMPRESSION_ID,
+                            USER_EVENT.EVENT_TYPE,
+                            USER_EVENT.USER_ID,
+                            USER_EVENT.LUT_ID,
+                            USER_EVENT.CREATED_TIME)
+                    .from(USER_EVENT)
+                    .where(USER_EVENT.IMPRESSION_ID.in(batch)
+                            .and(USER_EVENT.EVENT_TYPE.in("VIEW", "DISMISS")))
+                    .fetch(r -> new EventRow(
+                            r.get(USER_EVENT.IMPRESSION_ID),
+                            r.get(USER_EVENT.EVENT_TYPE),
+                            r.get(USER_EVENT.USER_ID),
+                            r.get(USER_EVENT.LUT_ID) != null ? r.get(USER_EVENT.LUT_ID) : 0,
+                            r.get(USER_EVENT.CREATED_TIME)
+                    ));
+            result.addAll(rows);
+        }
+        return result;
     }
 }

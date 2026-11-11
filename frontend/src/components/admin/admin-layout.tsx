@@ -34,7 +34,7 @@ export function AdminLayout() {
   return (
     <SidebarProvider>
       <AdminSidebar />
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -55,7 +55,7 @@ export function AdminLayout() {
         {/* Main Content Area with rounded canvas effect */}
         <main className="flex-1 overflow-hidden px-4 pb-4">
           <div className="bg-background h-full w-full overflow-hidden rounded-3xl border shadow-sm">
-            <ScrollArea className="h-full w-full">
+            <ScrollArea className="h-full w-full [&_[data-slot=scroll-area-viewport]>div]:!block">
               <div className="p-6 md:p-8">
                 <Outlet />
               </div>

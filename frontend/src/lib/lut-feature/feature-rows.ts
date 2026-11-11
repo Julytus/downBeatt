@@ -148,3 +148,7 @@ export function featureRatio(value: number, row: FeatureRowConfig): number {
 export const FEATURE_ROW_BY_KEY: Record<FeatureRowKey, FeatureRowConfig> = Object.fromEntries(
   FEATURE_ROWS.map((r) => [r.key, r])
 ) as Record<FeatureRowKey, FeatureRowConfig>;
+
+/** Nhãn "Đen trắng" cho isMono (plan §6.6, §8 mục 7) */
+export const IS_MONO_LABEL = "Đen trắng";
+

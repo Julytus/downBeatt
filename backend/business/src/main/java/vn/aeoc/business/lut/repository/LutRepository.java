@@ -517,4 +517,15 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
                 .where(LUT.ID.eq(id))
                 .execute();
     }
+
+    public List<Integer> idsMissingFeature() {
+        return dslContext.select(LUT.ID)
+                .from(LUT)
+                .leftJoin(LUT_COLOR_FEATURE).on(LUT_COLOR_FEATURE.LUT_ID.eq(LUT.ID))
+                .where(LUT.FILE_KEY.isNotNull()
+                        .and(LUT.FILE_KEY.ne(""))
+                        .and(LUT_COLOR_FEATURE.ID.isNull()))
+                .orderBy(LUT.ID.asc())
+                .fetch(LUT.ID);
+    }
 }

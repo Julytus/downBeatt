@@ -46,6 +46,8 @@ public class RecommendProperties {
     private int forYouLimit = 12;
     private int forYouMaxLimit = 24;
     private String variant = "cbf-full";
+    private int statsDownloadWindowMinutes = 30;
+    private int statsMaxDays = 366;
 
     @PostConstruct
     public void init() {

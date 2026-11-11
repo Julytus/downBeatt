@@ -161,5 +161,7 @@ recommend:
   for-you-limit: 12
   for-you-max-limit: 24
   variant: cbf-full
+  stats-download-window-minutes: 30
+  stats-max-days: 366
 
 

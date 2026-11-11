@@ -26,7 +26,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | done (10/11/2026) |
 | 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | done (11/11/2026) |
 | 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | done (11/11/2026) |
-| 2.4 | 2. Hệ gợi ý | `quan-tri-goi-y` | 2.3 | chưa làm |
+| 2.4 | 2. Hệ gợi ý | `quan-tri-goi-y` | 2.3 | done (11/11/2026) |
 | 3.1 | 3. Đánh giá | `danh-gia-goi-y` | 2.3 | chưa làm |
 | 3.2 | 3. Đánh giá | thu thập D2 / D3 (người dùng thử) | 2.3 | chưa làm |
 | 4.1 | 4. Quản trị số liệu | `dashboard-admin` | 1.4, 1.5 | chưa làm |
@@ -160,7 +160,7 @@ Thiết kế: §4.6, §5.4 (collection), §6.7.
 - [x] E2E + review + tài liệu
   - E2E (31/31) + review xong; tài liệu: `docs/chuc-nang/bo-suu-tap.md`
 
-## Giai đoạn 2. Hệ gợi ý theo nội dung
+## Giai đoạn 2. Hệ gợi ý theo nội dung — done
 
 Bốn lát dưới đây thay cho lát `goi-y-lut` của thiết kế. Đặc trưng màu từ file .cube (§7.2.4) đã nằm ở lát 1.2. Mọi tham số lấy từ `recommend.*` (Phụ lục B) qua một đối tượng cấu hình, để trình đánh giá ở 3.1 chạy được nhiều cấu hình mà không sửa mã.
 
@@ -243,18 +243,19 @@ Thiết kế: §7.5.2 đến §7.5.4, §7.6, §7.7, §5.5 (`for-you`, `dismiss`)
 - [x] E2E (API-01, API-02, API-05, API-06, API-10, UI-01 đến UI-04) + review + tài liệu
   - E2E (22/22) + review xong (11/11/2026); tài liệu: `docs/chuc-nang/xep-hang-goi-y.md`
 
-### 2.4 `quan-tri-goi-y` — chưa làm
+### 2.4 `quan-tri-goi-y` — done (11/11/2026) ([plan/quan-tri-goi-y.md](../../plan/quan-tri-goi-y.md))
 
 Thiết kế: §5.6 (recommend), §9.4 `/admin/goi-y`, API-11, UI-06.
 
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] `GET /recommend/config` (trọng số, tham số đang dùng), `POST /recommend/rebuild`
-  - [ ] `GET /recommend/stats?from=&to=`: CTR, tỉ lệ tải, tỉ lệ bỏ qua theo vị trí và biến thể (từ `rec_impression` + `user_event.impression_id`)
-  - [ ] API "Thử hồ sơ": hồ sơ một khách (phong cách, thẻ, màu nổi bật) + 12 gợi ý kèm điểm từng khối
-  - [ ] Khách hàng gọi bị 403 (API-11)
-- [ ] Frontend: `/admin/goi-y` ba thẻ "Cấu hình", "Đánh giá" (để trống tới 3.1), "Trực tuyến"; công cụ "Thử hồ sơ"; nút "Tính lại chỉ mục"
-- [ ] E2E + review + tài liệu
+- [x] Plan → duyệt (11/11/2026)
+- [x] Backend
+  - [x] `GET /recommend/config` (trọng số, tham số đang dùng), `POST /recommend/rebuild`
+  - [x] `GET /recommend/stats?from=&to=`: CTR, tỉ lệ tải, tỉ lệ bỏ qua theo vị trí và biến thể (từ `rec_impression` + `user_event.impression_id`)
+  - [x] API "Thử hồ sơ": hồ sơ một khách (phong cách, thẻ, màu nổi bật) + 12 gợi ý kèm điểm từng khối
+  - [x] Khách hàng gọi bị 403 (API-11)
+- [x] Frontend: `/admin/goi-y` ba thẻ "Cấu hình", "Đánh giá" (để trống tới 3.1), "Trực tuyến"; công cụ "Thử hồ sơ"; nút "Tính lại chỉ mục"
+- [x] E2E + review + tài liệu
+  - E2E 19/19 + review xong (11/11/2026); tài liệu: `docs/chuc-nang/quan-tri-goi-y.md`
 
 ## Giai đoạn 3. Đánh giá thuật toán
 

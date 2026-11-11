@@ -108,6 +108,22 @@ public class UserProfileService {
         return UserProfile.empty();
     }
 
+    public UserProfile computeFresh(Integer userId, String anonId) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        LutVectorIndex currentIndex = lutIndexService.current();
+
+        if (userId != null && userId > 0) {
+            return computeUser(userId, now, currentIndex);
+        }
+
+        if (EventService.isValidUuid(anonId)) {
+            String cleanAnon = anonId.trim().toLowerCase(Locale.ROOT);
+            return computeAnon(cleanAnon, now, currentIndex);
+        }
+
+        return UserProfile.empty();
+    }
+
     private UserProfile computeUser(Integer userId, LocalDateTime now, LutVectorIndex index) {
         int historyDays = properties != null ? properties.getHistoryDays() : 180;
         LocalDateTime since = now.minusDays(historyDays);

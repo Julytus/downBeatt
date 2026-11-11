@@ -26,7 +26,7 @@ public class RecImpression {
         this.lutIds = parseIntegerList(value);
     }
 
-    private static List<Integer> parseIntegerList(Object value) {
+    public static List<Integer> parseIntegerList(Object value) {
         if (value == null) {
             return null;
         }

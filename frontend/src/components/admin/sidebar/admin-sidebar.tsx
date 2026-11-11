@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Boxes, Command, Film, House, KeyRound, LayoutGrid, Palette, ShieldCheck } from "lucide-react";
+import { Boxes, Command, Film, House, KeyRound, LayoutGrid, Palette, ShieldCheck, Sparkles } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 import { AdminMain, type AdminNavItem } from "@/components/admin/sidebar/admin-main";
@@ -20,7 +20,8 @@ import { useCanView } from "@/hooks/use-can-view";
  */
 const FEATURE_ITEMS: (AdminNavItem & { code: string })[] = [
   { code: "LUT", title: "LUT", url: "/admin/luts", icon: Film },
-  { code: "LUT", title: "Đặc trưng màu", url: "/admin/dac-trung-mau", icon: Palette }
+  { code: "LUT", title: "Đặc trưng màu", url: "/admin/dac-trung-mau", icon: Palette },
+  { code: "RECOMMEND", title: "Gợi ý", url: "/admin/goi-y", icon: Sparkles }
 ];
 
 /** Nhóm "Hệ thống": các trang phân quyền (resource MODULE / RESOURCE / ROLE / PERMISSION, migration V4). */

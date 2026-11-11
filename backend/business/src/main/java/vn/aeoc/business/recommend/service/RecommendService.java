@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.aeoc.base.config.extention.paging.Page;
 import vn.aeoc.base.config.extention.paging.Pageable;
+import vn.aeoc.base.constant.ErrorCode;
+import vn.aeoc.base.exception.AppException;
 import vn.aeoc.base.service.BaseService;
 import vn.aeoc.base.util.QueryExecutor;
 import vn.aeoc.business.billing.service.SubscriptionService;
@@ -23,16 +25,30 @@ import vn.aeoc.business.recommend.rank.ReasonBuilder;
 import vn.aeoc.business.recommend.rank.Recommender;
 import vn.aeoc.business.recommend.rank.ScoreCalculator;
 import vn.aeoc.business.recommend.repository.RecImpressionRepository;
+import vn.aeoc.business.recommend.repository.RecommendCustomerRepository;
+import vn.aeoc.business.recommend.stats.StatsCalculator;
 import vn.aeoc.entity.data.mysql.lut.Lut;
 import vn.aeoc.entity.data.mysql.lut.LutCategory;
+import vn.aeoc.entity.data.mysql.recommend.ColorTerm;
+import vn.aeoc.entity.data.mysql.recommend.CustomerOption;
 import vn.aeoc.entity.data.mysql.recommend.RecImpression;
+import vn.aeoc.entity.data.mysql.recommend.RecommendProfile;
 import vn.aeoc.entity.data.mysql.recommend.RecommendResult;
+import vn.aeoc.entity.data.mysql.recommend.TryProfileRequest;
+import vn.aeoc.entity.data.mysql.recommend.TryProfileResult;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class RecommendService extends BaseService<RecImpressionRepository, RecImpression, Long> {
@@ -46,6 +62,7 @@ public class RecommendService extends BaseService<RecImpressionRepository, RecIm
     private final LutDownloadService downloadService;
     private final LutService lutService;
     private final LutCategoryService lutCategoryService;
+    private final RecommendCustomerRepository customerRepository;
     private final RecommendProperties properties;
     private final Clock clock;
 
@@ -58,8 +75,10 @@ public class RecommendService extends BaseService<RecImpressionRepository, RecIm
                             LutDownloadService downloadService,
                             LutService lutService,
                             LutCategoryService lutCategoryService,
+                            RecommendCustomerRepository customerRepository,
                             RecommendProperties properties) {
-        this(repository, queryExecutor, userProfileService, lutIndexService, subscriptionService, downloadService, lutService, lutCategoryService, properties, Clock.system(DEFAULT_ZONE));
+        this(repository, queryExecutor, userProfileService, lutIndexService, subscriptionService, downloadService,
+                lutService, lutCategoryService, customerRepository, properties, Clock.system(DEFAULT_ZONE));
     }
 
     public RecommendService(RecImpressionRepository repository,
@@ -72,6 +91,21 @@ public class RecommendService extends BaseService<RecImpressionRepository, RecIm
                             LutCategoryService lutCategoryService,
                             RecommendProperties properties,
                             Clock clock) {
+        this(repository, queryExecutor, userProfileService, lutIndexService, subscriptionService, downloadService,
+                lutService, lutCategoryService, null, properties, clock);
+    }
+
+    public RecommendService(RecImpressionRepository repository,
+                            QueryExecutor queryExecutor,
+                            UserProfileService userProfileService,
+                            LutIndexService lutIndexService,
+                            SubscriptionService subscriptionService,
+                            LutDownloadService downloadService,
+                            LutService lutService,
+                            LutCategoryService lutCategoryService,
+                            RecommendCustomerRepository customerRepository,
+                            RecommendProperties properties,
+                            Clock clock) {
         super(repository, queryExecutor);
         this.userProfileService = userProfileService;
         this.lutIndexService = lutIndexService;
@@ -79,6 +113,7 @@ public class RecommendService extends BaseService<RecImpressionRepository, RecIm
         this.downloadService = downloadService;
         this.lutService = lutService;
         this.lutCategoryService = lutCategoryService;
+        this.customerRepository = customerRepository;
         this.properties = properties != null ? properties : new RecommendProperties();
         this.clock = clock;
     }
@@ -105,54 +140,206 @@ public class RecommendService extends BaseService<RecImpressionRepository, RecIm
                 ? userProfileService.profileOf(actualUserId, null)
                 : userProfileService.profileOf(null, actualAnonId);
 
-        String strategy = (profile != null && profile.strategy() != null) ? profile.strategy() : "POPULAR";
+        // 3. Rank
+        Ranking ranking = rank(actualUserId, actualAnonId, profile, limit);
 
-        // 3. Index & Candidates
-        LutVectorIndex ix = lutIndexService.current();
-        if (ix == null || ix.size() == 0) {
-            return new RecommendResult(null, strategy, List.of());
+        if (ranking.items().isEmpty()) {
+            return new RecommendResult(null, ranking.strategy(), List.of());
         }
 
-        // 4. Premium limited check
+        // 4. Insert rec_impression
+        List<Integer> finalIds = ranking.items().stream().map(Lut::getId).toList();
+        RecImpression imp = new RecImpression();
+        imp.setUserId(actualUserId);
+        imp.setAnonId(actualAnonId);
+        imp.setPlacement("FOR_YOU");
+        imp.setVariant(properties.getVariant() != null ? properties.getVariant() : "cbf-full");
+        imp.setStrategy(ranking.strategy());
+        imp.setLutIds(finalIds);
+        imp.setCreatedTime(now);
+
+        RecImpression saved = repository.insertReturning(imp);
+        Long impressionId = saved != null ? saved.getId() : null;
+
+        long elapsedMs = System.currentTimeMillis() - startTime;
+        log.debug("for-you {} LUT, {} ms", ranking.items().size(), elapsedMs);
+
+        return new RecommendResult(impressionId, ranking.strategy(), ranking.items());
+    }
+
+    public TryProfileResult tryProfile(TryProfileRequest request) {
+        // Validate request according to §5.5 & §5.6
+        if (request == null || ((request.getUserId() == null || request.getUserId() <= 0)
+                && (request.getAnonId() == null || request.getAnonId().isBlank()))) {
+            throw new AppException(ErrorCode.BAD_REQUEST, "Chọn một khách hàng hoặc nhập mã ẩn danh");
+        }
+
+        Integer actualUserId = null;
+        String actualAnonId = null;
+        CustomerOption customer = null;
+
+        if (request.getUserId() != null && request.getUserId() > 0) {
+            if (customerRepository == null) {
+                throw new AppException(ErrorCode.INTERNAL_ERROR, "Customer repository chưa được cấu hình");
+            }
+            customer = customerRepository.findById(request.getUserId());
+            if (customer == null) {
+                throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy khách hàng");
+            }
+            actualUserId = request.getUserId();
+        } else {
+            String anonId = request.getAnonId();
+            if (!EventService.isValidUuid(anonId)) {
+                throw new AppException(ErrorCode.BAD_REQUEST, "Mã ẩn danh không hợp lệ");
+            }
+            actualAnonId = anonId.trim().toLowerCase(Locale.ROOT);
+        }
+
+        int defaultLimit = properties.getForYouLimit() > 0 ? properties.getForYouLimit() : 12;
+        int maxLimit = properties.getForYouMaxLimit() > 0 ? properties.getForYouMaxLimit() : 24;
+        int limit = defaultLimit;
+        if (request.getLimit() != null && request.getLimit() > 0) {
+            limit = Math.min(request.getLimit(), maxLimit);
+        }
+
+        // Profile: compute fresh (no cache read/write)
+        UserProfile profile = userProfileService.computeFresh(actualUserId, actualAnonId);
+        RecommendProfile summaryProfile = userProfileService.summary(profile);
+
+        // Rank
+        Ranking ranking = rank(actualUserId, actualAnonId, profile, limit);
+
+        // Add contributions to items
+        boolean isPopular = "POPULAR".equalsIgnoreCase(ranking.strategy());
+        if (!isPopular) {
+            for (Lut lut : ranking.items()) {
+                RankedItem ri = ranking.ranked().get(lut.getId());
+                if (ri != null && ri.contributions() != null) {
+                    Map<String, Double> contMap = new LinkedHashMap<>();
+                    for (String key : List.of("tag", "color", "category", "style", "text", "creator")) {
+                        Double val = ri.contributions().get(key);
+                        contMap.put(key, val != null ? StatsCalculator.round4(val) : 0.0);
+                    }
+                    lut.setContributions(contMap);
+                }
+            }
+        } else {
+            for (Lut lut : ranking.items()) {
+                lut.setScore(null);
+                lut.setContributions(null);
+            }
+        }
+
+        // Color terms
+        List<ColorTerm> colorTerms = new ArrayList<>();
+        if (profile != null && profile.mixed() != null && profile.mixed().color() != null) {
+            double[] colorVec = profile.mixed().color();
+            String[] colorKeys = {
+                    "brightness", "contrast", "saturation", "warmth", "tint",
+                    "shadowA", "shadowB", "highlightA", "highlightB", "isMono"
+            };
+            for (int i = 0; i < colorKeys.length && i < colorVec.length; i++) {
+                colorTerms.add(new ColorTerm(colorKeys[i], StatsCalculator.round4(colorVec[i])));
+            }
+        }
+
+        // Category names
+        Map<String, String> allCategoryNames = new HashMap<>();
+        List<LutCategory> pubCats = lutCategoryService.listPublic();
+        if (pubCats != null) {
+            for (LutCategory c : pubCats) {
+                if (c.getSlug() != null && c.getName() != null) {
+                    allCategoryNames.put(c.getSlug(), c.getName());
+                }
+            }
+        }
+
+        Set<String> neededSlugs = new LinkedHashSet<>();
+        if (summaryProfile != null) {
+            if (summaryProfile.getPreference() != null) {
+                neededSlugs.addAll(summaryProfile.getPreference());
+            }
+            if (summaryProfile.getTopStyles() != null) {
+                for (var term : summaryProfile.getTopStyles()) {
+                    if (term.getKey() != null) {
+                        neededSlugs.add(term.getKey());
+                    }
+                }
+            }
+            if (summaryProfile.getTopCategories() != null) {
+                for (var term : summaryProfile.getTopCategories()) {
+                    if (term.getKey() != null) {
+                        neededSlugs.add(term.getKey());
+                    }
+                }
+            }
+        }
+        if (ranking.items() != null) {
+            for (Lut item : ranking.items()) {
+                if (item.getStyle() != null && !item.getStyle().isBlank()) {
+                    neededSlugs.add(item.getStyle());
+                }
+            }
+        }
+
+        Map<String, String> categoryNames = new LinkedHashMap<>();
+        for (String slug : neededSlugs) {
+            String name = allCategoryNames.get(slug);
+            if (name != null) {
+                categoryNames.put(slug, name);
+            }
+        }
+
+        Integer premiumQuota = ranking.premiumLimited()
+                ? Recommender.premiumQuota(limit, properties.getPremiumMaxRatio())
+                : null;
+
+        return TryProfileResult.builder()
+                .customer(customer)
+                .anonId(actualAnonId)
+                .strategy(ranking.strategy())
+                .premiumLimited(ranking.premiumLimited())
+                .premiumQuota(premiumQuota)
+                .profile(summaryProfile)
+                .color(colorTerms)
+                .categoryNames(categoryNames)
+                .items(ranking.items())
+                .build();
+    }
+
+    private Ranking rank(Integer userId, String anonId, UserProfile profile, int limit) {
+        String strategy = (profile != null && profile.strategy() != null) ? profile.strategy() : "POPULAR";
+
+        LutVectorIndex ix = lutIndexService.current();
+        if (ix == null || ix.size() == 0) {
+            return new Ranking(strategy, List.of(), true, Map.of());
+        }
+
         boolean premiumLimited = true;
-        if (actualUserId != null && subscriptionService != null) {
+        if (userId != null && userId > 0 && subscriptionService != null) {
             LocalDate today = LocalDate.now(clock);
-            if (subscriptionService.findActiveByUserId(actualUserId, today) != null) {
+            if (subscriptionService.findActiveByUserId(userId, today) != null) {
                 premiumLimited = false;
             }
         }
 
-        // 5. Ranking
-        Set<Integer> excluded = Recommender.excludedIds(profile);
-        List<ItemVector> candidates = ix.items().stream()
-                .filter(iv -> !excluded.contains(iv.id()))
-                .toList();
-
-        if (candidates.isEmpty()) {
-            return new RecommendResult(null, strategy, List.of());
-        }
-
-        Map<Integer, Integer> recentDownloads;
-        List<RankedItem> rankedItems;
-
+        Map<Integer, Integer> recentDownloads = Map.of();
         if ("POPULAR".equalsIgnoreCase(strategy)) {
             int popDays = properties.getPopularDays() > 0 ? properties.getPopularDays() : 30;
-            recentDownloads = downloadService.recentDownloadCounts(now.minusDays(popDays));
-            rankedItems = Recommender.rankPopular(candidates, recentDownloads, limit, premiumLimited, properties);
-        } else {
-            recentDownloads = Map.of();
-            rankedItems = Recommender.rankByProfile(profile.mixed(), candidates, limit, premiumLimited, properties);
+            recentDownloads = downloadService.recentDownloadCounts(LocalDateTime.now(clock).minusDays(popDays));
         }
+
+        List<RankedItem> rankedItems = Recommender.recommend(
+                profile, ix.items(), recentDownloads, limit, premiumLimited, properties);
 
         if (rankedItems.isEmpty()) {
-            return new RecommendResult(null, strategy, List.of());
+            return new Ranking(strategy, List.of(), premiumLimited, Map.of());
         }
 
-        // 6. Fetch LUT details preserving order
         List<Integer> orderedIds = rankedItems.stream().map(RankedItem::id).toList();
         List<Lut> items = lutService.listPublishedByIds(orderedIds);
         if (items.isEmpty()) {
-            return new RecommendResult(null, strategy, List.of());
+            return new Ranking(strategy, List.of(), premiumLimited, Map.of());
         }
 
         Map<Integer, RankedItem> rankedMap = new HashMap<>(rankedItems.size());
@@ -190,25 +377,10 @@ public class RecommendService extends BaseService<RecImpressionRepository, RecIm
             }
         }
 
-        // 7. Insert rec_impression
-        List<Integer> finalIds = items.stream().map(Lut::getId).toList();
-        RecImpression imp = new RecImpression();
-        imp.setUserId(actualUserId);
-        imp.setAnonId(actualAnonId);
-        imp.setPlacement("FOR_YOU");
-        imp.setVariant(properties.getVariant() != null ? properties.getVariant() : "cbf-full");
-        imp.setStrategy(strategy);
-        imp.setLutIds(finalIds);
-        imp.setCreatedTime(now);
-
-        RecImpression saved = repository.insertReturning(imp);
-        Long impressionId = saved != null ? saved.getId() : null;
-
-        long elapsedMs = System.currentTimeMillis() - startTime;
-        log.debug("for-you {} LUT, {} ms", items.size(), elapsedMs);
-
-        return new RecommendResult(impressionId, strategy, items);
+        return new Ranking(strategy, items, premiumLimited, rankedMap);
     }
+
+    private record Ranking(String strategy, List<Lut> items, boolean premiumLimited, Map<Integer, RankedItem> ranked) {}
 
     public Page<Lut> related(Integer userId, String anonId, String slug, Integer page, Integer limit) {
         Integer actualUserId = (userId != null && userId > 0) ? userId : null;
