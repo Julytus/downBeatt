@@ -1,4 +1,19 @@
+import type { LutDTO } from "@/lib/types/lut";
+
 export type RecommendEventType = "VIEW" | "PREVIEW" | "SEARCH" | "FILTER_STYLE";
+
+export type RecommendStrategy = "PROFILE" | "PREFERENCE" | "POPULAR";
+
+export type ForYouLutDTO = LutDTO & {
+  reason?: string;
+  score?: number;
+};
+
+export interface ForYouDTO {
+  impressionId?: number;
+  strategy: RecommendStrategy;
+  items: ForYouLutDTO[];
+}
 
 export interface RecommendEventRequest {
   anonId: string;

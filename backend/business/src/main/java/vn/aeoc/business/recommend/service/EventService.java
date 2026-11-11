@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.aeoc.base.constant.ErrorCode;
+import vn.aeoc.base.exception.AppException;
 import vn.aeoc.base.service.BaseService;
 import vn.aeoc.base.util.QueryExecutor;
 import vn.aeoc.business.account.event.UserSignalChangedEvent;
@@ -132,10 +134,13 @@ public class EventService extends BaseService<UserEventRepository, UserEvent, Lo
         Long impressionId = (body.getImpressionId() != null && body.getImpressionId() > 0) ? body.getImpressionId() : null;
 
         // 7. Dedup
-        int dedupMinutes = properties != null ? properties.getEventDedupMinutes() : 30;
-        LocalDateTime since = now.minusMinutes(dedupMinutes);
-        if (repository.existsRecent(actualUserId, actualAnonId, type, finalLutId, finalValue, since)) {
-            return false;
+        boolean skipDedup = "VIEW".equals(type) && impressionId != null && impressionId > 0;
+        if (!skipDedup) {
+            int dedupMinutes = properties != null ? properties.getEventDedupMinutes() : 30;
+            LocalDateTime since = now.minusMinutes(dedupMinutes);
+            if (repository.existsRecent(actualUserId, actualAnonId, type, finalLutId, finalValue, since)) {
+                return false;
+            }
         }
 
         // 8. INSERT
@@ -149,6 +154,42 @@ public class EventService extends BaseService<UserEventRepository, UserEvent, Lo
         toInsert.setImpressionId(impressionId);
         toInsert.setCreatedTime(now);
         repository.insert(toInsert);
+        return true;
+    }
+
+    @Transactional
+    public boolean dismiss(Integer userId, UserEvent body) {
+        return dismiss(userId, body, LocalDateTime.now(clock));
+    }
+
+    @Transactional
+    public boolean dismiss(Integer userId, UserEvent body, LocalDateTime now) {
+        if (body == null || body.getLutId() == null || !lutService.isPublished(body.getLutId())) {
+            throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy LUT");
+        }
+        if (userId == null || userId <= 0) {
+            return false;
+        }
+        if (repository.existsDismiss(userId, body.getLutId())) {
+            return false;
+        }
+
+        Long impressionId = (body.getImpressionId() != null && body.getImpressionId() > 0)
+                ? body.getImpressionId()
+                : null;
+
+        UserEvent event = new UserEvent();
+        event.setId(null);
+        event.setUserId(userId);
+        event.setAnonId(null);
+        event.setEventType("DISMISS");
+        event.setLutId(body.getLutId());
+        event.setValue(null);
+        event.setImpressionId(impressionId);
+        event.setCreatedTime(now);
+        repository.insert(event);
+
+        publisher.publishEvent(new UserSignalChangedEvent(userId, null, "không quan tâm"));
         return true;
     }
 

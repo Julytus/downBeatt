@@ -84,7 +84,9 @@ public class UserProfileService {
                 return cached;
             }
             UserProfile fresh = computeUser(userId, now, currentIndex);
-            cache.put(cacheKey, fresh);
+            if (!"POPULAR".equalsIgnoreCase(fresh.strategy())) {
+                cache.put(cacheKey, fresh);
+            }
             return fresh;
         }
 
@@ -97,7 +99,9 @@ public class UserProfileService {
                 return cached;
             }
             UserProfile fresh = computeAnon(cleanAnon, now, currentIndex);
-            cache.put(cacheKey, fresh);
+            if (!"POPULAR".equalsIgnoreCase(fresh.strategy())) {
+                cache.put(cacheKey, fresh);
+            }
             return fresh;
         }
 

@@ -70,6 +70,9 @@ export interface LutApiDTO {
   publishedTime: string;
   categories: string[];
   tags: string[];
+  reason?: string;
+  score?: number;
+  similarity?: number;
 }
 
 export interface LutDTO {

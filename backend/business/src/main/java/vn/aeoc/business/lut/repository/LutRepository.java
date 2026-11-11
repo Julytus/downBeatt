@@ -220,13 +220,26 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
                 pageable);
     }
 
+    public List<Lut> similarPublishedAll(Integer baseId) {
+        List<Field<?>> fields = new ArrayList<>(publicFields());
+        fields.add(LUT_SIMILARITY.SCORE.as("similarity"));
+        Table<?> joinedTable = LUT.join(LUT_SIMILARITY)
+                .on(LUT_SIMILARITY.SIMILAR_LUT_ID.eq(LUT.ID).and(LUT_SIMILARITY.LUT_ID.eq(baseId)))
+                .leftJoin(CREATOR).on(CREATOR.ID.eq(LUT.CREATOR_ID));
+        return getListByCriteriaWithJoin(
+                fields,
+                joinedTable,
+                published(),
+                List.of(LUT_SIMILARITY.SCORE.desc(), LUT.DOWNLOAD_COUNT.desc(), LUT.ID.asc()));
+    }
+
     public Long countSimilarPublished(Integer baseId) {
         return getCountWithCriteria(published().and(DSL.exists(selectOne().from(LUT_SIMILARITY)
                 .where(LUT_SIMILARITY.LUT_ID.eq(baseId).and(LUT_SIMILARITY.SIMILAR_LUT_ID.eq(LUT.ID))))));
     }
 
     public List<Lut> listPublishedForIndex() {
-        return dslContext.select(LUT.ID, LUT.TITLE, LUT.DESCRIPTION, LUT.CREATOR_ID, LUT.STYLE, LUT.DOWNLOAD_COUNT, LUT.SLUG)
+        return dslContext.select(LUT.ID, LUT.TITLE, LUT.DESCRIPTION, LUT.CREATOR_ID, LUT.STYLE, LUT.DOWNLOAD_COUNT, LUT.SLUG, LUT.IS_PREMIUM, LUT.PUBLISHED_TIME)
                 .from(LUT)
                 .where(published())
                 .fetchInto(Lut.class);

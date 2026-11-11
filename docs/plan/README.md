@@ -25,7 +25,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | done (10/11/2026) |
 | 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | done (10/11/2026) |
 | 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | done (11/11/2026) |
-| 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | chưa làm |
+| 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | done (11/11/2026) |
 | 2.4 | 2. Hệ gợi ý | `quan-tri-goi-y` | 2.3 | chưa làm |
 | 3.1 | 3. Đánh giá | `danh-gia-goi-y` | 2.3 | chưa làm |
 | 3.2 | 3. Đánh giá | thu thập D2 / D3 (người dùng thử) | 2.3 | chưa làm |
@@ -216,30 +216,32 @@ Thiết kế: §6.2, §7.4, §7.5.1, §5.5 (`event`, `merge-anon`, `clear-histor
 - [x] E2E + review + tài liệu
   - E2E (28/28) + review xong (11/11/2026); tài liệu: `docs/chuc-nang/ho-so-nguoi-dung.md`
 
-### 2.3 `xep-hang-goi-y` — chưa làm
+### 2.3 `xep-hang-goi-y` — done (11/11/2026) ([plan/xep-hang-goi-y.md](../../plan/xep-hang-goi-y.md))
 
 Thiết kế: §7.5.2 đến §7.5.4, §7.6, §7.7, §5.5 (`for-you`, `dismiss`), §9.3 (khối "Dành cho bạn"), UT-10 đến UT-12, API-01, API-02, API-05, API-06, API-10, UI-01 đến UI-04. Bảng: `rec_impression`, resource `RECOMMEND`.
 
-- [ ] Chốt vấn đề mở #6 (LUT Premium tối đa 1/3 danh sách cho gói Miễn phí và khách vãng lai)
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] Migration `rec_impression`, resource `RECOMMEND`
-  - [ ] `Recommender` (§7.6.2)
-    - [ ] Ứng viên: LUT `PUBLISHED`, loại LUT đã tải và đã dismiss
-    - [ ] score(u, i) = Σ w_b · sim_b(P_u, x_i) trên toàn kho, lấy top 100
-    - [ ] MMR: λ · score − (1 − λ) · max sim(i, j ∈ S), λ = 0.7, K = 12
-    - [ ] Quota Premium 1/3 cho gói Miễn phí / vãng lai, bỏ qua LUT Premium khi đủ quota
-    - [ ] Hoà điểm: `download_count` giảm dần, rồi id
-  - [ ] Cold-start mức 3 (§7.5.2, §7.5.4): phổ biến 30 ngày xen kẽ phong cách; kho chưa có lượt tải thì xếp theo mới nhất, xen kẽ phong cách
-  - [ ] Câu giải thích (§7.6.4): khối đóng góp lớn nhất + LUT neo + động từ theo sự kiện mạnh nhất
-  - [ ] `related` thêm phần cá nhân hoá: 0.8 · sim(c, j) + 0.2 · score(u, j) khi có hồ sơ
-  - [ ] API `recommend/public/for-you` (ghi `rec_impression`, trả `impressionId`, `strategy`), `recommend/dismiss`
-  - [ ] Unit test UT-10 (dismiss), UT-11 (quota Premium), **UT-12 (ví dụ tính tay §7.7: thứ tự D, B, E, C, khớp 3 chữ số)**
-- [ ] Frontend
-  - [ ] Khối "Dành cho bạn" / "Phổ biến tuần này" ở `/luts`: 12 thẻ cuộn ngang, câu giải thích, skeleton, lỗi thì ẩn
-  - [ ] "Không quan tâm" (chỉ khi đăng nhập), hoàn tác 5 giây rồi mới gửi API
-  - [ ] Gắn `impressionId` vào sự kiện VIEW khi bấm thẻ từ khối gợi ý
-- [ ] E2E (API-01, API-02, API-05, API-06, API-10, UI-01 đến UI-04) + review + tài liệu
+- [x] Chốt vấn đề mở #6 (LUT Premium tối đa 1/3 danh sách cho gói Miễn phí và khách vãng lai): floor(K × 0.34), 4 trên 12; gói Pro / Studio không giới hạn (11/11/2026)
+- [x] Plan → duyệt (11/11/2026)
+- [x] Backend
+  - [x] Migration `rec_impression` (V12)
+    - resource `RECOMMEND` dời sang lát 2.4 `quan-tri-goi-y` (plan §11 câu 5): API lát này chỉ dành cho khách, chưa có trang quản trị
+  - [x] `Recommender` (§7.6.2)
+    - [x] Ứng viên: LUT `PUBLISHED`, loại LUT đã tải và đã dismiss
+    - [x] score(u, i) = Σ w_b · sim_b(P_u, x_i) trên toàn kho, lấy top 100
+    - [x] MMR: λ · score − (1 − λ) · max sim(i, j ∈ S), λ = 0.7, K = 12
+    - [x] Quota Premium 1/3 cho gói Miễn phí / vãng lai, bỏ qua LUT Premium khi đủ quota
+    - [x] Hoà điểm: `download_count` giảm dần, rồi id
+  - [x] Cold-start mức 3 (§7.5.2, §7.5.4): phổ biến 30 ngày xen kẽ phong cách; kho chưa có lượt tải thì xếp theo mới nhất, xen kẽ phong cách
+  - [x] Câu giải thích (§7.6.4): khối đóng góp lớn nhất + LUT neo + động từ theo sự kiện mạnh nhất
+  - [x] `related` thêm phần cá nhân hoá: 0.8 · sim(c, j) + 0.2 · score(u, j) khi có hồ sơ
+  - [x] API `recommend/public/for-you` (ghi `rec_impression`, trả `impressionId`, `strategy`), `recommend/dismiss`
+  - [x] Unit test UT-10 (dismiss), UT-11 (quota Premium), **UT-12 (ví dụ tính tay §7.7: thứ tự D, B, E, C, khớp 3 chữ số)**
+- [x] Frontend
+  - [x] Khối "Dành cho bạn" / "Phổ biến tuần này" ở `/luts`: 12 thẻ cuộn ngang, câu giải thích, skeleton, lỗi thì ẩn
+  - [x] "Không quan tâm" (chỉ khi đăng nhập), hoàn tác 5 giây rồi mới gửi API
+  - [x] Gắn `impressionId` vào sự kiện VIEW khi bấm thẻ từ khối gợi ý
+- [x] E2E (API-01, API-02, API-05, API-06, API-10, UI-01 đến UI-04) + review + tài liệu
+  - E2E (22/22) + review xong (11/11/2026); tài liệu: `docs/chuc-nang/xep-hang-goi-y.md`
 
 ### 2.4 `quan-tri-goi-y` — chưa làm
 

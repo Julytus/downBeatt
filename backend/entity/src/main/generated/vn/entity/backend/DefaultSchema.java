@@ -25,6 +25,7 @@ import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.PaymentOrder;
 import vn.entity.backend.tables.Permission;
 import vn.entity.backend.tables.Plan;
+import vn.entity.backend.tables.RecImpression;
 import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
@@ -118,6 +119,11 @@ public class DefaultSchema extends SchemaImpl {
     public final Plan PLAN = Plan.PLAN;
 
     /**
+     * The table <code>rec_impression</code>.
+     */
+    public final RecImpression REC_IMPRESSION = RecImpression.REC_IMPRESSION;
+
+    /**
      * The table <code>refresh_token</code>.
      */
     public final RefreshToken REFRESH_TOKEN = RefreshToken.REFRESH_TOKEN;
@@ -182,6 +188,7 @@ public class DefaultSchema extends SchemaImpl {
             PaymentOrder.PAYMENT_ORDER,
             Permission.PERMISSION,
             Plan.PLAN,
+            RecImpression.REC_IMPRESSION,
             RefreshToken.REFRESH_TOKEN,
             Resource.RESOURCE,
             Role.ROLE,

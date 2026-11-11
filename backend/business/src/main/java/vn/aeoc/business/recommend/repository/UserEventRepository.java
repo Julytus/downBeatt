@@ -44,6 +44,15 @@ public class UserEventRepository extends AbsMysqlRepository<UserEventRecord, Use
         return exists(cond);
     }
 
+    public boolean existsDismiss(Integer userId, Integer lutId) {
+        if (userId == null || lutId == null) {
+            return false;
+        }
+        return exists(USER_EVENT.USER_ID.eq(userId)
+                .and(USER_EVENT.EVENT_TYPE.eq("DISMISS"))
+                .and(USER_EVENT.LUT_ID.eq(lutId)));
+    }
+
     public int mergeAnon(Integer userId, String anonId) {
         if (userId == null || anonId == null) {
             return 0;

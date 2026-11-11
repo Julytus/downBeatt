@@ -153,5 +153,13 @@ recommend:
   profile-cache-minutes: 5
   preference-max: 12
   event-cleanup-cron: "0 30 0 * * *"
+  mmr-lambda: 0.7
+  candidate-top: 100
+  premium-max-ratio: 0.34
+  related-personal-ratio: 0.2
+  popular-days: 30
+  for-you-limit: 12
+  for-you-max-limit: 24
+  variant: cbf-full
 
 

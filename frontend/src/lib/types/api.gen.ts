@@ -116,6 +116,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recommend/public/for-you": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["forYou"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recommend/public/event": {
         parameters: {
             query?: never;
@@ -142,6 +158,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["mergeAnon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["dismiss"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1068,6 +1100,103 @@ export interface components {
             /** Format: double */
             weight?: number;
         };
+        RecImpression: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            anonId?: string;
+            placement?: string;
+            variant?: string;
+            strategy?: string;
+            lutIds?: number[];
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: int32 */
+            limit?: number;
+        };
+        ApiResponseRecommendResult: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecommendResult"];
+            errors?: Record<string, never>;
+        };
+        Lut: {
+            /** Format: int32 */
+            id?: number;
+            slug?: string;
+            title?: string;
+            description?: string;
+            /** Format: int32 */
+            creatorId?: number;
+            creatorName?: string;
+            style?: string;
+            /** Format: int32 */
+            isPremium?: number;
+            status?: string;
+            coverUrl?: string;
+            previewType?: string;
+            beforeUrl?: string;
+            afterUrl?: string;
+            previewVideoUrl?: string;
+            fileKey?: string;
+            /** Format: int32 */
+            fileSizeKb?: number;
+            /** Format: int32 */
+            lutSize?: number;
+            /** Format: int32 */
+            downloadCount?: number;
+            /** Format: date-time */
+            publishedTime?: string;
+            /** Format: int32 */
+            createdBy?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: date-time */
+            updatedTime?: string;
+            categories?: string[];
+            tags?: string[];
+            colorFeature?: components["schemas"]["LutColorFeature"];
+            featureError?: string;
+            /** Format: double */
+            similarity?: number;
+            reason?: string;
+            /** Format: double */
+            score?: number;
+        };
+        LutColorFeature: {
+            /** Format: int32 */
+            lutId?: number;
+            /** Format: double */
+            brightness?: number;
+            /** Format: double */
+            contrast?: number;
+            /** Format: double */
+            saturation?: number;
+            /** Format: double */
+            warmth?: number;
+            /** Format: double */
+            tint?: number;
+            /** Format: double */
+            shadowA?: number;
+            /** Format: double */
+            shadowB?: number;
+            /** Format: double */
+            highlightA?: number;
+            /** Format: double */
+            highlightB?: number;
+            /** Format: int32 */
+            isMono?: number;
+            /** Format: date-time */
+            computedTime?: string;
+        };
+        RecommendResult: {
+            /** Format: int64 */
+            impressionId?: number;
+            strategy?: string;
+            items?: components["schemas"]["Lut"][];
+        };
         ApiResponseBoolean: {
             /** Format: int32 */
             code?: number;
@@ -1154,72 +1283,6 @@ export interface components {
             message?: string;
             result?: components["schemas"]["Lut"];
             errors?: Record<string, never>;
-        };
-        Lut: {
-            /** Format: int32 */
-            id?: number;
-            slug?: string;
-            title?: string;
-            description?: string;
-            /** Format: int32 */
-            creatorId?: number;
-            creatorName?: string;
-            style?: string;
-            /** Format: int32 */
-            isPremium?: number;
-            status?: string;
-            coverUrl?: string;
-            previewType?: string;
-            beforeUrl?: string;
-            afterUrl?: string;
-            previewVideoUrl?: string;
-            fileKey?: string;
-            /** Format: int32 */
-            fileSizeKb?: number;
-            /** Format: int32 */
-            lutSize?: number;
-            /** Format: int32 */
-            downloadCount?: number;
-            /** Format: date-time */
-            publishedTime?: string;
-            /** Format: int32 */
-            createdBy?: number;
-            /** Format: date-time */
-            createdTime?: string;
-            /** Format: date-time */
-            updatedTime?: string;
-            categories?: string[];
-            tags?: string[];
-            colorFeature?: components["schemas"]["LutColorFeature"];
-            featureError?: string;
-            /** Format: double */
-            similarity?: number;
-        };
-        LutColorFeature: {
-            /** Format: int32 */
-            lutId?: number;
-            /** Format: double */
-            brightness?: number;
-            /** Format: double */
-            contrast?: number;
-            /** Format: double */
-            saturation?: number;
-            /** Format: double */
-            warmth?: number;
-            /** Format: double */
-            tint?: number;
-            /** Format: double */
-            shadowA?: number;
-            /** Format: double */
-            shadowB?: number;
-            /** Format: double */
-            highlightA?: number;
-            /** Format: double */
-            highlightB?: number;
-            /** Format: int32 */
-            isMono?: number;
-            /** Format: date-time */
-            computedTime?: string;
         };
         ApiResponseListLut: {
             /** Format: int32 */
@@ -1643,6 +1706,30 @@ export interface operations {
             };
         };
     };
+    forYou: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["RecImpression"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecommendResult"];
+                };
+            };
+        };
+    };
     recordEvent: {
         parameters: {
             query?: never;
@@ -1687,6 +1774,30 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseInteger"];
+                };
+            };
+        };
+    };
+    dismiss: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserEvent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseBoolean"];
                 };
             };
         };
@@ -2560,6 +2671,7 @@ export interface operations {
                 slug: string;
                 page?: number;
                 limit?: number;
+                anonId?: string;
             };
             header?: never;
             path?: never;

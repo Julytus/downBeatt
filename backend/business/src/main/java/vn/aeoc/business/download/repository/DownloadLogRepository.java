@@ -46,4 +46,16 @@ public class DownloadLogRepository extends AbsMysqlRepository<DownloadLogRecord,
                         r.get(maxTimeField)
                 ));
     }
+
+    public java.util.Map<Integer, Integer> countByLutSince(LocalDateTime since) {
+        if (since == null) {
+            return java.util.Map.of();
+        }
+        var countField = DSL.count().as("c");
+        return dslContext.select(DOWNLOAD_LOG.LUT_ID, countField)
+                .from(DOWNLOAD_LOG)
+                .where(DOWNLOAD_LOG.CREATED_TIME.ge(since))
+                .groupBy(DOWNLOAD_LOG.LUT_ID)
+                .fetchMap(DOWNLOAD_LOG.LUT_ID, countField);
+    }
 }

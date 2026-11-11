@@ -4,9 +4,10 @@ import { BookmarkCheck, ChevronRight, CirclePlus, Download, ExternalLink, Loader
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useLutDownload } from "@/hooks/use-lut-download";
 import { useSaveToCollection } from "@/hooks/use-save-to-collection";
+import { useViewerKey } from "@/hooks/use-viewer-key";
 import { LutGrid } from "@/components/shop/luts/lut-grid";
 import { ShopButton } from "@/components/shop/ui/shop-button";
-import { trackEvent } from "@/lib/recommend/track";
+import { takeImpression, trackEvent } from "@/lib/recommend/track";
 import { canDownloadPremium, useShopSession } from "@/lib/stores/shop-session";
 import { myCollectionsQueryOptions } from "@/lib/tanstack/options/collection";
 import { createInfiniteRelatedLutsQueryOptions, lutCategoriesQueryOptions } from "@/lib/tanstack/options/luts";
@@ -33,7 +34,7 @@ export function LutDetail({ lut }: { lut: LutDTO }) {
   useEffect(() => {
     if (lut.id && viewTrackedIdRef.current !== lut.id) {
       viewTrackedIdRef.current = lut.id;
-      trackEvent("VIEW", { lutId: lut.id });
+      trackEvent("VIEW", { lutId: lut.id, impressionId: takeImpression(lut.id) });
     }
   }, [lut.id]);
 
@@ -173,7 +174,11 @@ export function LutDetail({ lut }: { lut: LutDTO }) {
 }
 
 function RelatedLuts({ slug }: { slug: string }) {
-  const query = useInfiniteQuery(createInfiniteRelatedLutsQueryOptions(slug));
+  const { key: viewerKey, ready } = useViewerKey();
+  const query = useInfiniteQuery({
+    ...createInfiniteRelatedLutsQueryOptions(slug, viewerKey),
+    enabled: ready
+  });
   const items = useMemo(() => query.data?.pages.flatMap((p) => p.items) ?? [], [query.data]);
   const { fetchNextPage, refetch } = query;
   const loadMore = useCallback(() => void fetchNextPage(), [fetchNextPage]);

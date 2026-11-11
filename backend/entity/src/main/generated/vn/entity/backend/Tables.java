@@ -18,6 +18,7 @@ import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.PaymentOrder;
 import vn.entity.backend.tables.Permission;
 import vn.entity.backend.tables.Plan;
+import vn.entity.backend.tables.RecImpression;
 import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
@@ -102,6 +103,11 @@ public class Tables {
      * The table <code>plan</code>.
      */
     public static final Plan PLAN = Plan.PLAN;
+
+    /**
+     * The table <code>rec_impression</code>.
+     */
+    public static final RecImpression REC_IMPRESSION = RecImpression.REC_IMPRESSION;
 
     /**
      * The table <code>refresh_token</code>.

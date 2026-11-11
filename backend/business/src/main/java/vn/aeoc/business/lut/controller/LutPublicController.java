@@ -44,15 +44,6 @@ public class LutPublicController extends BaseController {
         return Mapper.map(lutService.get(slug), ApiResponse::okEntity);
     }
 
-    @GetMapping("/lut/public/related")
-    public ResponseEntity<ApiResponse<Page<Lut>>> related(
-            @RequestParam String slug,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer limit
-    ) {
-        return Mapper.map(lutService.related(slug, page, limit), ApiResponse::okEntity);
-    }
-
     @GetMapping("/lut/public/suggest")
     public ResponseEntity<ApiResponse<List<Lut>>> suggest(
             @RequestParam(required = false) String q,

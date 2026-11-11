@@ -6,6 +6,7 @@ import vn.aeoc.business.recommend.config.RecommendProperties;
 import vn.aeoc.entity.data.mysql.lut.Lut;
 import vn.aeoc.entity.data.mysql.lut.LutColorFeature;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class LutVectorIndex {
@@ -38,6 +39,12 @@ public class LutVectorIndex {
     private final Map<Integer, String> slugs;
     private final Set<String> styleSet;
 
+    private final Map<Integer, String> titles;
+    private final Map<Integer, Boolean> isPremiums;
+    private final Map<Integer, LocalDateTime> publishedTimes;
+    private final Map<Integer, ItemVector> itemMap;
+    private final List<ItemVector> itemList;
+
     private LutVectorIndex(RecommendProperties properties,
                            List<Integer> ids,
                            Map<String, Double> tagIdfMap,
@@ -53,7 +60,12 @@ public class LutVectorIndex {
                            Map<Integer, Integer> creatorIds,
                            Map<Integer, Integer> downloadCounts,
                            Map<Integer, String> slugs,
-                           Set<String> styleSet) {
+                           Set<String> styleSet,
+                           Map<Integer, String> titles,
+                           Map<Integer, Boolean> isPremiums,
+                           Map<Integer, LocalDateTime> publishedTimes,
+                           Map<Integer, ItemVector> itemMap,
+                           List<ItemVector> itemList) {
         this.properties = properties;
         this.ids = Collections.unmodifiableList(ids);
         this.idSet = new HashSet<>(ids);
@@ -71,6 +83,11 @@ public class LutVectorIndex {
         this.downloadCounts = Collections.unmodifiableMap(downloadCounts);
         this.slugs = Collections.unmodifiableMap(slugs);
         this.styleSet = Collections.unmodifiableSet(styleSet);
+        this.titles = Collections.unmodifiableMap(titles);
+        this.isPremiums = Collections.unmodifiableMap(isPremiums);
+        this.publishedTimes = Collections.unmodifiableMap(publishedTimes);
+        this.itemMap = Collections.unmodifiableMap(itemMap);
+        this.itemList = Collections.unmodifiableList(itemList);
     }
 
     public static LutVectorIndex build(List<Lut> luts, RecommendProperties props) {
@@ -88,10 +105,17 @@ public class LutVectorIndex {
         Map<Integer, Integer> downloadCounts = new HashMap<>(N);
         Map<Integer, String> slugs = new HashMap<>(N);
         Set<String> styleSet = new LinkedHashSet<>();
+        Map<Integer, String> titles = new HashMap<>(N);
+        Map<Integer, Boolean> isPremiums = new HashMap<>(N);
+        Map<Integer, LocalDateTime> publishedTimes = new HashMap<>(N);
 
         for (Lut lut : luts) {
             Integer id = lut.getId();
             ids.add(id);
+            titles.put(id, lut.getTitle());
+            boolean prem = lut.getIsPremium() != null && lut.getIsPremium() == 1;
+            isPremiums.put(id, prem);
+            publishedTimes.put(id, lut.getPublishedTime());
             styles.put(id, lut.getStyle());
             creatorIds.put(id, lut.getCreatorId());
             downloadCounts.put(id, lut.getDownloadCount() != null ? lut.getDownloadCount() : 0);
@@ -277,12 +301,33 @@ public class LutVectorIndex {
             colorZMap.put(lut.getId(), z);
         }
 
+        Map<Integer, ItemVector> itemMap = new HashMap<>(N);
+        List<ItemVector> itemList = new ArrayList<>(N);
+        for (Integer id : ids) {
+            ItemVector iv = new ItemVector(
+                    id,
+                    styles.get(id),
+                    creatorIds.get(id),
+                    Boolean.TRUE.equals(isPremiums.get(id)),
+                    downloadCounts.getOrDefault(id, 0),
+                    publishedTimes.get(id),
+                    tagVectors.getOrDefault(id, Collections.emptyMap()),
+                    categoryVectors.getOrDefault(id, Collections.emptyMap()),
+                    textVectors.getOrDefault(id, Collections.emptyMap()),
+                    colorZMap.get(id) != null ? Arrays.copyOf(colorZMap.get(id), colorZMap.get(id).length) : new double[10]
+            );
+            itemMap.put(id, iv);
+            itemList.add(iv);
+        }
+
         return new LutVectorIndex(
                 props, ids, tagIdfMap, categoryIdfMap, textIdfMap,
                 tagVectors, categoryVectors, textVectors,
                 colorZMap, colorMean, colorStd,
                 styles, creatorIds, downloadCounts,
-                slugs, styleSet
+                slugs, styleSet,
+                titles, isPremiums, publishedTimes,
+                itemMap, itemList
         );
     }
 
@@ -399,6 +444,29 @@ public class LutVectorIndex {
 
     public String slug(Integer id) {
         return slugs.get(id);
+    }
+
+    public ItemVector item(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        return itemMap.get(id);
+    }
+
+    public List<ItemVector> items() {
+        return itemList;
+    }
+
+    public String title(Integer id) {
+        return titles.get(id);
+    }
+
+    public boolean isPremium(Integer id) {
+        return Boolean.TRUE.equals(isPremiums.get(id));
+    }
+
+    public LocalDateTime publishedTime(Integer id) {
+        return publishedTimes.get(id);
     }
 
     public RecommendProperties getProperties() {

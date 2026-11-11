@@ -97,6 +97,6 @@ export const savePreferenceMutationOptions = mutationOptions({
   mutationFn: (categorySlugs: string[]) => savePreference(categorySlugs),
   meta: {
     successMessage: "Đã lưu sở thích màu",
-    invalidatesQuery: [["account-preference"]]
+    invalidatesQuery: [["account-preference"], ["recommend", "for-you"]]
   }
 });

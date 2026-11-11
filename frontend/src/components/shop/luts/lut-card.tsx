@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { CirclePlus, Download, Loader2, Play, Star, X } from "lucide-react";
+import { CirclePlus, Download, EyeOff, Loader2, Play, Star, X } from "lucide-react";
 import { memo, useState } from "react";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -38,6 +38,8 @@ interface LutCardProps {
   onDownload?: (lut: LutDTO) => void;
   onAddToCollection?: (lut: LutDTO) => void;
   onRemove?: (lut: LutDTO) => void;
+  onDismiss?: (lut: LutDTO) => void;
+  onOpen?: (lut: LutDTO) => void;
   /** Đang xin link tải LUT này */
   downloading?: boolean;
 }
@@ -47,6 +49,8 @@ export const LutCard = memo(function LutCard({
   onDownload,
   onAddToCollection,
   onRemove,
+  onDismiss,
+  onOpen,
   downloading = false
 }: LutCardProps) {
   const isVideo = lut.previewType === "video" && !!lut.previewVideoUrl;
@@ -110,7 +114,7 @@ export const LutCard = memo(function LutCard({
           aria-label="Premium"
           className={cn(
             "pointer-events-none absolute top-3 z-20 flex size-5 items-center justify-center rounded-full bg-(--sh-pink) text-white",
-            onRemove ? "right-10" : "right-3"
+            onRemove || onDismiss ? "right-10" : "right-3"
           )}
         >
           <Star className="size-3 fill-white" />
@@ -138,12 +142,34 @@ export const LutCard = memo(function LutCard({
         </div>
       )}
 
+      {onDismiss && (
+        <div className="absolute top-2 right-2 z-20 pointer-events-auto transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 [@media(hover:none)]:opacity-100">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ShopButton
+                variant="overlay"
+                size="icon-sm"
+                aria-label={`Không quan tâm ${lut.title}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDismiss(lut);
+                }}
+              >
+                <EyeOff className="size-4" />
+              </ShopButton>
+            </TooltipTrigger>
+            <TooltipContent>Không quan tâm</TooltipContent>
+          </Tooltip>
+        </div>
+      )}
+
       {/* Lớp tối + thông tin, hiện khi rê chuột hoặc focus bằng bàn phím */}
       <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 transition-opacity duration-200 group-focus-within:opacity-100 group-hover:opacity-100" />
       <Link
         to="/luts/$slug"
         params={{ slug: lut.slug }}
         aria-label={`Xem LUT ${lut.title}`}
+        onClick={() => onOpen?.(lut)}
         className="absolute inset-0 z-10 rounded-[8px] outline-none focus-visible:ring-2 focus-visible:ring-(--sh-pink) focus-visible:ring-inset"
       />
       <div className="pointer-events-none absolute inset-x-3 bottom-3 z-20 flex items-end justify-between gap-3 opacity-0 transition-opacity duration-200 group-focus-within:opacity-100 group-hover:opacity-100">

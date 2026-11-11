@@ -38,4 +38,6 @@ public class Lut {
     private LutColorFeature colorFeature;
     private String featureError;
     private Double similarity;
+    private String reason;
+    private Double score;
 }

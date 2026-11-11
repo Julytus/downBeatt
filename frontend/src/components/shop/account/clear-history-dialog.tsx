@@ -38,8 +38,7 @@ export function ClearHistoryDialog({ open, onOpenChange }: ClearHistoryDialogPro
             Xoá lịch sử gợi ý?
           </AlertDialogTitle>
           <AlertDialogDescription className="text-sm leading-relaxed text-(--sh-muted)">
-            DownBeat sẽ quên các LUT bạn đã xem, xem trước, từ khoá đã tìm và phong cách đã lọc.
-            Lượt tải, bộ sưu tập và sở thích màu vẫn được giữ.
+            DownBeat sẽ quên các LUT bạn đã xem, xem trước, đã ẩn khỏi gợi ý, từ khoá đã tìm và phong cách đã lọc. Lượt tải, bộ sưu tập và sở thích màu vẫn được giữ.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="mt-4 gap-2 sm:gap-2">

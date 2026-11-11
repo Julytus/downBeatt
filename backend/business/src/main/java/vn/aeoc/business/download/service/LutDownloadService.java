@@ -157,6 +157,13 @@ public class LutDownloadService extends BaseService<DownloadLogRepository, Downl
         return repository.downloadSignals(userId, since);
     }
 
+    public java.util.Map<Integer, Integer> recentDownloadCounts(LocalDateTime since) {
+        if (since == null) {
+            return java.util.Map.of();
+        }
+        return repository.countByLutSince(since);
+    }
+
     private void runInTransaction(Runnable runnable) {
         if (transactionTemplate != null) {
             transactionTemplate.executeWithoutResult(status -> runnable.run());

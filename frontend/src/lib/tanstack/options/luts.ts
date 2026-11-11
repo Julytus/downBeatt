@@ -31,18 +31,18 @@ export const createLutQueryOptions = (slug: string) =>
     staleTime: 60_000
   });
 
-export const createInfiniteRelatedLutsQueryOptions = (slug: string) =>
+export const createInfiniteRelatedLutsQueryOptions = (slug: string, viewerKey?: string) =>
   infiniteQueryOptions({
-    queryKey: ["luts", "related", slug],
+    queryKey: ["luts", "related", slug, viewerKey],
     queryFn: ({ pageParam }) =>
       getRelatedLuts(slug, { page: pageParam, limit: LUTS_PAGE_SIZE }),
     initialPageParam: 1,
     getNextPageParam: nextPage
   });
 
-export const createRelatedLutsQueryOptions = (slug: string, limit = 4) =>
+export const createRelatedLutsQueryOptions = (slug: string, limit = 4, viewerKey?: string) =>
   queryOptions({
-    queryKey: ["luts", "related", slug, limit],
+    queryKey: ["luts", "related", slug, limit, viewerKey],
     queryFn: () => getRelatedLuts(slug, { page: 1, limit }),
     staleTime: 60_000
   });
