@@ -100,6 +100,134 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recommend/try-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["tryProfile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/rebuild": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["rebuild"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/public/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["getProfile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/public/for-you": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["forYou"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/public/event": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["recordEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/merge-anon": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["mergeAnon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["dismiss"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/clear-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["clearHistory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/permission/update": {
         parameters: {
             query?: never;
@@ -452,6 +580,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/account/preference": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPreference"];
+        put?: never;
+        post: operations["savePreference"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/user/info": {
         parameters: {
             query?: never;
@@ -524,6 +668,86 @@ export interface paths {
             cookie?: never;
         };
         get: operations["get_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/eval/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["evalList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/eval/get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["evalGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["customers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["config"];
         put?: never;
         post?: never;
         delete?: never;
@@ -936,6 +1160,233 @@ export interface components {
             result?: components["schemas"]["Resource"];
             errors?: Record<string, never>;
         };
+        TryProfileRequest: {
+            /** Format: int32 */
+            userId?: number;
+            anonId?: string;
+            /** Format: int32 */
+            limit?: number;
+        };
+        ApiResponseTryProfileResult: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["TryProfileResult"];
+            errors?: Record<string, never>;
+        };
+        ColorTerm: {
+            key?: string;
+            /** Format: double */
+            value?: number;
+        };
+        CustomerOption: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            email?: string;
+        };
+        Lut: {
+            /** Format: int32 */
+            id?: number;
+            slug?: string;
+            title?: string;
+            description?: string;
+            /** Format: int32 */
+            creatorId?: number;
+            creatorName?: string;
+            style?: string;
+            /** Format: int32 */
+            isPremium?: number;
+            status?: string;
+            coverUrl?: string;
+            previewType?: string;
+            beforeUrl?: string;
+            afterUrl?: string;
+            previewVideoUrl?: string;
+            fileKey?: string;
+            /** Format: int32 */
+            fileSizeKb?: number;
+            /** Format: int32 */
+            lutSize?: number;
+            /** Format: int32 */
+            downloadCount?: number;
+            /** Format: date-time */
+            publishedTime?: string;
+            /** Format: int32 */
+            createdBy?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: date-time */
+            updatedTime?: string;
+            categories?: string[];
+            tags?: string[];
+            colorFeature?: components["schemas"]["LutColorFeature"];
+            featureError?: string;
+            /** Format: double */
+            similarity?: number;
+            reason?: string;
+            /** Format: double */
+            score?: number;
+            contributions?: {
+                [key: string]: number;
+            };
+        };
+        LutColorFeature: {
+            /** Format: int32 */
+            lutId?: number;
+            /** Format: double */
+            brightness?: number;
+            /** Format: double */
+            contrast?: number;
+            /** Format: double */
+            saturation?: number;
+            /** Format: double */
+            warmth?: number;
+            /** Format: double */
+            tint?: number;
+            /** Format: double */
+            shadowA?: number;
+            /** Format: double */
+            shadowB?: number;
+            /** Format: double */
+            highlightA?: number;
+            /** Format: double */
+            highlightB?: number;
+            /** Format: int32 */
+            isMono?: number;
+            /** Format: date-time */
+            computedTime?: string;
+        };
+        ProfileTerm: {
+            key?: string;
+            /** Format: double */
+            weight?: number;
+        };
+        RecommendProfile: {
+            strategy?: string;
+            /** Format: double */
+            alpha?: number;
+            /** Format: int32 */
+            positiveLutCount?: number;
+            preference?: string[];
+            topStyles?: components["schemas"]["ProfileTerm"][];
+            topCategories?: components["schemas"]["ProfileTerm"][];
+            topTags?: components["schemas"]["ProfileTerm"][];
+            signals?: components["schemas"]["UserSignal"][];
+        };
+        TryProfileResult: {
+            customer?: components["schemas"]["CustomerOption"];
+            anonId?: string;
+            strategy?: string;
+            premiumLimited?: boolean;
+            /** Format: int32 */
+            premiumQuota?: number;
+            profile?: components["schemas"]["RecommendProfile"];
+            color?: components["schemas"]["ColorTerm"][];
+            categoryNames?: {
+                [key: string]: string;
+            };
+            items?: components["schemas"]["Lut"][];
+        };
+        UserSignal: {
+            type?: string;
+            /** Format: int32 */
+            lutId?: number;
+            slug?: string;
+            value?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            days?: number;
+            /** Format: double */
+            weight?: number;
+        };
+        ApiResponseRebuildResult: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RebuildResult"];
+            errors?: Record<string, never>;
+        };
+        FeatureFailure: {
+            /** Format: int32 */
+            id?: number;
+            title?: string;
+            error?: string;
+        };
+        RebuildResult: {
+            /** Format: int32 */
+            featureMissing?: number;
+            /** Format: int32 */
+            featureComputed?: number;
+            featureFailed?: components["schemas"]["FeatureFailure"][];
+            /** Format: int32 */
+            lutCount?: number;
+            /** Format: int32 */
+            similarityRows?: number;
+            /** Format: int64 */
+            elapsedMs?: number;
+            /** Format: date-time */
+            builtTime?: string;
+            reason?: string;
+        };
+        UserEvent: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            anonId?: string;
+            /** Format: int32 */
+            lutId?: number;
+            value?: string;
+            /** Format: int64 */
+            impressionId?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            type?: string;
+        };
+        ApiResponseRecommendProfile: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecommendProfile"];
+            errors?: Record<string, never>;
+        };
+        RecImpression: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            anonId?: string;
+            placement?: string;
+            variant?: string;
+            strategy?: string;
+            lutIds?: number[];
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: int32 */
+            limit?: number;
+        };
+        ApiResponseRecommendResult: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecommendResult"];
+            errors?: Record<string, never>;
+        };
+        RecommendResult: {
+            /** Format: int64 */
+            impressionId?: number;
+            strategy?: string;
+            items?: components["schemas"]["Lut"][];
+        };
+        ApiResponseBoolean: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: boolean;
+            errors?: Record<string, never>;
+        };
         Permission: {
             /** Format: int32 */
             id?: number;
@@ -1016,70 +1467,6 @@ export interface components {
             result?: components["schemas"]["Lut"];
             errors?: Record<string, never>;
         };
-        Lut: {
-            /** Format: int32 */
-            id?: number;
-            slug?: string;
-            title?: string;
-            description?: string;
-            /** Format: int32 */
-            creatorId?: number;
-            creatorName?: string;
-            style?: string;
-            /** Format: int32 */
-            isPremium?: number;
-            status?: string;
-            coverUrl?: string;
-            previewType?: string;
-            beforeUrl?: string;
-            afterUrl?: string;
-            previewVideoUrl?: string;
-            fileKey?: string;
-            /** Format: int32 */
-            fileSizeKb?: number;
-            /** Format: int32 */
-            lutSize?: number;
-            /** Format: int32 */
-            downloadCount?: number;
-            /** Format: date-time */
-            publishedTime?: string;
-            /** Format: int32 */
-            createdBy?: number;
-            /** Format: date-time */
-            createdTime?: string;
-            /** Format: date-time */
-            updatedTime?: string;
-            categories?: string[];
-            tags?: string[];
-            colorFeature?: components["schemas"]["LutColorFeature"];
-            featureError?: string;
-        };
-        LutColorFeature: {
-            /** Format: int32 */
-            lutId?: number;
-            /** Format: double */
-            brightness?: number;
-            /** Format: double */
-            contrast?: number;
-            /** Format: double */
-            saturation?: number;
-            /** Format: double */
-            warmth?: number;
-            /** Format: double */
-            tint?: number;
-            /** Format: double */
-            shadowA?: number;
-            /** Format: double */
-            shadowB?: number;
-            /** Format: double */
-            highlightA?: number;
-            /** Format: double */
-            highlightB?: number;
-            /** Format: int32 */
-            isMono?: number;
-            /** Format: date-time */
-            computedTime?: string;
-        };
         ApiResponseListLut: {
             /** Format: int32 */
             code?: number;
@@ -1151,6 +1538,24 @@ export interface components {
             result?: string;
             errors?: Record<string, never>;
         };
+        UserPreference: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            /** Format: int32 */
+            categoryId?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            categorySlugs?: string[];
+        };
+        ApiResponseUserPreference: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["UserPreference"];
+            errors?: Record<string, never>;
+        };
         ApiResponsePageRole: {
             /** Format: int32 */
             code?: number;
@@ -1178,6 +1583,132 @@ export interface components {
             /** Format: int32 */
             page?: number;
             items?: components["schemas"]["Resource"][];
+        };
+        ApiResponseRecommendStats: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecommendStats"];
+            errors?: Record<string, never>;
+        };
+        PositionStat: {
+            /** Format: int32 */
+            position?: number;
+            /** Format: int64 */
+            impressions?: number;
+            /** Format: int64 */
+            clicks?: number;
+            /** Format: double */
+            ctr?: number;
+        };
+        RecommendStats: {
+            from?: string;
+            to?: string;
+            summary?: components["schemas"]["StatsRow"];
+            byVariant?: components["schemas"]["StatsRow"][];
+            byPosition?: components["schemas"]["PositionStat"][];
+        };
+        StatsRow: {
+            variant?: string;
+            strategy?: string;
+            /** Format: int64 */
+            impressions?: number;
+            /** Format: int64 */
+            clicked?: number;
+            /** Format: double */
+            ctr?: number;
+            /** Format: int64 */
+            downloaded?: number;
+            /** Format: double */
+            downloadRate?: number;
+            /** Format: int64 */
+            dismissals?: number;
+            /** Format: double */
+            dismissRate?: number;
+        };
+        ApiResponsePageRecEvalRun: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["PageRecEvalRun"];
+            errors?: Record<string, never>;
+        };
+        PageRecEvalRun: {
+            /** Format: int64 */
+            total?: number;
+            /** Format: int32 */
+            page?: number;
+            items?: components["schemas"]["RecEvalRun"][];
+        };
+        RecEvalRun: {
+            /** Format: int32 */
+            id?: number;
+            batchCode?: string;
+            dataset?: string;
+            algorithm?: string;
+            params?: {
+                [key: string]: Record<string, never>;
+            };
+            metrics?: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
+            /** Format: int32 */
+            userCount?: number;
+            /** Format: date-time */
+            createdTime?: string;
+        };
+        ApiResponseRecEvalRun: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecEvalRun"];
+            errors?: Record<string, never>;
+        };
+        ApiResponseListCustomerOption: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["CustomerOption"][];
+            errors?: Record<string, never>;
+        };
+        ApiResponseRecommendConfig: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecommendConfig"];
+            errors?: Record<string, never>;
+        };
+        IndexStatus: {
+            /** Format: int32 */
+            lutCount?: number;
+            /** Format: int32 */
+            similarityRows?: number;
+            /** Format: date-time */
+            builtTime?: string;
+            /** Format: int64 */
+            elapsedMs?: number;
+            reason?: string;
+            lastError?: string;
+            /** Format: date-time */
+            lastErrorTime?: string;
+        };
+        RecommendConfig: {
+            variant?: string;
+            weights?: {
+                [key: string]: number;
+            };
+            normalizedWeights?: {
+                [key: string]: number;
+            };
+            eventWeights?: {
+                [key: string]: number;
+            };
+            params?: {
+                [key: string]: Record<string, never>;
+            };
+            index?: components["schemas"]["IndexStatus"];
         };
         ApiResponseListPlan: {
             /** Format: int32 */
@@ -1448,6 +1979,194 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseInteger"];
+                };
+            };
+        };
+    };
+    tryProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["TryProfileRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseTryProfileResult"];
+                };
+            };
+        };
+    };
+    rebuild: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRebuildResult"];
+                };
+            };
+        };
+    };
+    getProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserEvent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecommendProfile"];
+                };
+            };
+        };
+    };
+    forYou: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["RecImpression"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecommendResult"];
+                };
+            };
+        };
+    };
+    recordEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserEvent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseBoolean"];
+                };
+            };
+        };
+    };
+    mergeAnon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserEvent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseInteger"];
+                };
+            };
+        };
+    };
+    dismiss: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserEvent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseBoolean"];
+                };
+            };
+        };
+    };
+    clearHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserEvent"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -1982,6 +2701,50 @@ export interface operations {
             };
         };
     };
+    getPreference: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseUserPreference"];
+                };
+            };
+        };
+    };
+    savePreference: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserPreference"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseUserPreference"];
+                };
+            };
+        };
+    };
     getMyInfo: {
         parameters: {
             query?: never;
@@ -2096,6 +2859,119 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseResource"];
+                };
+            };
+        };
+    };
+    stats: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecommendStats"];
+                };
+            };
+        };
+    };
+    evalList: {
+        parameters: {
+            query?: {
+                algorithm?: string;
+                batch?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePageRecEvalRun"];
+                };
+            };
+        };
+    };
+    evalGet: {
+        parameters: {
+            query?: {
+                id?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecEvalRun"];
+                };
+            };
+        };
+    };
+    customers: {
+        parameters: {
+            query?: {
+                keyword?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListCustomerOption"];
+                };
+            };
+        };
+    };
+    config: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecommendConfig"];
                 };
             };
         };
@@ -2261,6 +3137,7 @@ export interface operations {
                 slug: string;
                 page?: number;
                 limit?: number;
+                anonId?: string;
             };
             header?: never;
             path?: never;

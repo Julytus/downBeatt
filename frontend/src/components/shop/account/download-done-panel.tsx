@@ -4,6 +4,7 @@ import { Loader2, Star } from "lucide-react";
 import { ShopButton } from "@/components/shop/ui/shop-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLutDownload } from "@/hooks/use-lut-download";
+import { useViewerKey } from "@/hooks/use-viewer-key";
 import { createRelatedLutsQueryOptions } from "@/lib/tanstack/options/luts";
 import type { LutDTO } from "@/lib/types/lut";
 
@@ -14,7 +15,11 @@ interface DownloadDonePanelProps {
 }
 
 function RelatedLutsSection({ slug, onClose }: { slug: string; onClose: () => void }) {
-  const { data, isLoading, isError } = useQuery(createRelatedLutsQueryOptions(slug, 4));
+  const { key: viewerKey, ready } = useViewerKey();
+  const { data, isLoading, isError } = useQuery({
+    ...createRelatedLutsQueryOptions(slug, 4, viewerKey),
+    enabled: ready
+  });
 
   if (isError) return null;
 

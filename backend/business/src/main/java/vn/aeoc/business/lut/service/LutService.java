@@ -82,6 +82,13 @@ public class LutService extends BaseService<LutRepository, Lut, Integer> {
         return result;
     }
 
+    public List<Lut> similarAll(String slug) {
+        Lut base = requirePublished(slug);
+        List<Lut> items = repository.similarPublishedAll(base.getId());
+        enrich(items);
+        return items;
+    }
+
     public List<Lut> listPublishedForIndex() {
         List<Lut> items = repository.listPublishedForIndex();
         if (items == null || items.isEmpty()) {
@@ -125,6 +132,13 @@ public class LutService extends BaseService<LutRepository, Lut, Integer> {
             return false;
         }
         return repository.isPublished(id);
+    }
+
+    public boolean existsPublishedStyle(String style) {
+        if (style == null || style.isBlank()) {
+            return false;
+        }
+        return repository.existsPublishedStyle(style.trim());
     }
 
     private Lut requirePublished(String slug) {

@@ -16,7 +16,8 @@ export type ShopDialog =
   | { type: "collection"; lut: LutDTO }
   | { type: "upgrade"; lut: LutDTO }
   | { type: "checkout"; plan: Exclude<PlanCode, "free">; cycle: BillingCycle; sourceLutId?: number }
-  | { type: "downloaded"; lut: LutDTO; fileName: string };
+  | { type: "downloaded"; lut: LutDTO; fileName: string }
+  | { type: "preference"; mode: "onboarding" | "edit"; next?: { then: "download" | "collection"; lut: LutDTO } };
 
 interface ShopDialogState {
   dialog: ShopDialog | null;

@@ -17,9 +17,12 @@ import vn.entity.backend.tables.LutCategoryMap;
 import vn.entity.backend.tables.LutSimilarity;
 import vn.entity.backend.tables.LutTag;
 import vn.entity.backend.tables.PaymentOrder;
+import vn.entity.backend.tables.RecEvalRun;
+import vn.entity.backend.tables.RecImpression;
 import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.UserApp;
+import vn.entity.backend.tables.UserEvent;
 
 
 /**
@@ -45,6 +48,14 @@ public class Indexes {
     public static final Index LUT_TAG_IDX_LUT_TAG_TAG = Internal.createIndex(DSL.name("idx_lut_tag_tag"), LutTag.LUT_TAG, new OrderField[] { LutTag.LUT_TAG.TAG }, false);
     public static final Index PAYMENT_ORDER_IDX_PAYMENT_ORDER_STATUS_CREATED = Internal.createIndex(DSL.name("idx_payment_order_status_created"), PaymentOrder.PAYMENT_ORDER, new OrderField[] { PaymentOrder.PAYMENT_ORDER.STATUS, PaymentOrder.PAYMENT_ORDER.CREATED_TIME }, false);
     public static final Index PAYMENT_ORDER_IDX_PAYMENT_ORDER_USER_CREATED = Internal.createIndex(DSL.name("idx_payment_order_user_created"), PaymentOrder.PAYMENT_ORDER, new OrderField[] { PaymentOrder.PAYMENT_ORDER.USER_ID, PaymentOrder.PAYMENT_ORDER.CREATED_TIME }, false);
+    public static final Index REC_EVAL_RUN_IDX_REC_EVAL_RUN_ALGORITHM = Internal.createIndex(DSL.name("idx_rec_eval_run_algorithm"), RecEvalRun.REC_EVAL_RUN, new OrderField[] { RecEvalRun.REC_EVAL_RUN.ALGORITHM, RecEvalRun.REC_EVAL_RUN.BATCH_CODE }, false);
+    public static final Index REC_EVAL_RUN_IDX_REC_EVAL_RUN_BATCH = Internal.createIndex(DSL.name("idx_rec_eval_run_batch"), RecEvalRun.REC_EVAL_RUN, new OrderField[] { RecEvalRun.REC_EVAL_RUN.BATCH_CODE, RecEvalRun.REC_EVAL_RUN.ID }, false);
+    public static final Index REC_IMPRESSION_IDX_REC_IMPRESSION_CREATED = Internal.createIndex(DSL.name("idx_rec_impression_created"), RecImpression.REC_IMPRESSION, new OrderField[] { RecImpression.REC_IMPRESSION.CREATED_TIME }, false);
+    public static final Index REC_IMPRESSION_IDX_REC_IMPRESSION_USER = Internal.createIndex(DSL.name("idx_rec_impression_user"), RecImpression.REC_IMPRESSION, new OrderField[] { RecImpression.REC_IMPRESSION.USER_ID, RecImpression.REC_IMPRESSION.CREATED_TIME }, false);
+    public static final Index USER_EVENT_IDX_USER_EVENT_ANON = Internal.createIndex(DSL.name("idx_user_event_anon"), UserEvent.USER_EVENT, new OrderField[] { UserEvent.USER_EVENT.ANON_ID, UserEvent.USER_EVENT.CREATED_TIME }, false);
+    public static final Index USER_EVENT_IDX_USER_EVENT_CREATED = Internal.createIndex(DSL.name("idx_user_event_created"), UserEvent.USER_EVENT, new OrderField[] { UserEvent.USER_EVENT.CREATED_TIME }, false);
+    public static final Index USER_EVENT_IDX_USER_EVENT_LUT = Internal.createIndex(DSL.name("idx_user_event_lut"), UserEvent.USER_EVENT, new OrderField[] { UserEvent.USER_EVENT.LUT_ID, UserEvent.USER_EVENT.EVENT_TYPE }, false);
+    public static final Index USER_EVENT_IDX_USER_EVENT_USER = Internal.createIndex(DSL.name("idx_user_event_user"), UserEvent.USER_EVENT, new OrderField[] { UserEvent.USER_EVENT.USER_ID, UserEvent.USER_EVENT.CREATED_TIME }, false);
     public static final Index REFRESH_TOKEN_REFRESH_TOKEN_USER_INDEX = Internal.createIndex(DSL.name("refresh_token_user_index"), RefreshToken.REFRESH_TOKEN, new OrderField[] { RefreshToken.REFRESH_TOKEN.USER_ID }, false);
     public static final Index RESOURCE_RESOURCE_URI_INDEX = Internal.createIndex(DSL.name("resource_uri_index"), Resource.RESOURCE, new OrderField[] { Resource.RESOURCE.URI }, false);
     public static final Index USER_APP_USER_APP_ROLE_INDEX = Internal.createIndex(DSL.name("user_app_role_index"), UserApp.USER_APP, new OrderField[] { UserApp.USER_APP.ROLE_ID }, false);

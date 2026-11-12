@@ -1,5 +1,6 @@
 import { isAxiosError } from "axios";
 import axiosInstance from "@/lib/axios/instance";
+import { getAnonId } from "@/lib/recommend/anon-id";
 import type { LutDownloadDTO } from "@/lib/types/account";
 import type { ApiResponse, PagedResult } from "@/lib/types/common";
 import type {
@@ -86,7 +87,8 @@ export async function getRelatedLuts(
   const params: Record<string, unknown> = {
     slug,
     page: paging.page ?? 1,
-    limit: paging.limit ?? 12
+    limit: paging.limit ?? 12,
+    anonId: getAnonId()
   };
   const res = await axiosInstance.get<ApiResponse<PagedResult<LutApiDTO>>>("/lut/public/related", {
     params

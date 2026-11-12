@@ -24,11 +24,15 @@ import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.PaymentOrder;
 import vn.entity.backend.tables.Permission;
 import vn.entity.backend.tables.Plan;
+import vn.entity.backend.tables.RecEvalRun;
+import vn.entity.backend.tables.RecImpression;
 import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.Subscription;
 import vn.entity.backend.tables.UserApp;
+import vn.entity.backend.tables.UserEvent;
+import vn.entity.backend.tables.UserPreference;
 import vn.entity.backend.tables.records.CollectionItemRecord;
 import vn.entity.backend.tables.records.CollectionRecord;
 import vn.entity.backend.tables.records.CreatorRecord;
@@ -43,11 +47,15 @@ import vn.entity.backend.tables.records.ModuleRecord;
 import vn.entity.backend.tables.records.PaymentOrderRecord;
 import vn.entity.backend.tables.records.PermissionRecord;
 import vn.entity.backend.tables.records.PlanRecord;
+import vn.entity.backend.tables.records.RecEvalRunRecord;
+import vn.entity.backend.tables.records.RecImpressionRecord;
 import vn.entity.backend.tables.records.RefreshTokenRecord;
 import vn.entity.backend.tables.records.ResourceRecord;
 import vn.entity.backend.tables.records.RoleRecord;
 import vn.entity.backend.tables.records.SubscriptionRecord;
 import vn.entity.backend.tables.records.UserAppRecord;
+import vn.entity.backend.tables.records.UserEventRecord;
+import vn.entity.backend.tables.records.UserPreferenceRecord;
 
 
 /**
@@ -86,6 +94,8 @@ public class Keys {
     public static final UniqueKey<PermissionRecord> KEY_PERMISSION_PRIMARY = Internal.createUniqueKey(Permission.PERMISSION, DSL.name("KEY_permission_PRIMARY"), new TableField[] { Permission.PERMISSION.ID }, true);
     public static final UniqueKey<PlanRecord> KEY_PLAN_CODE = Internal.createUniqueKey(Plan.PLAN, DSL.name("KEY_plan_code"), new TableField[] { Plan.PLAN.CODE }, true);
     public static final UniqueKey<PlanRecord> KEY_PLAN_PRIMARY = Internal.createUniqueKey(Plan.PLAN, DSL.name("KEY_plan_PRIMARY"), new TableField[] { Plan.PLAN.ID }, true);
+    public static final UniqueKey<RecEvalRunRecord> KEY_REC_EVAL_RUN_PRIMARY = Internal.createUniqueKey(RecEvalRun.REC_EVAL_RUN, DSL.name("KEY_rec_eval_run_PRIMARY"), new TableField[] { RecEvalRun.REC_EVAL_RUN.ID }, true);
+    public static final UniqueKey<RecImpressionRecord> KEY_REC_IMPRESSION_PRIMARY = Internal.createUniqueKey(RecImpression.REC_IMPRESSION, DSL.name("KEY_rec_impression_PRIMARY"), new TableField[] { RecImpression.REC_IMPRESSION.ID }, true);
     public static final UniqueKey<RefreshTokenRecord> KEY_REFRESH_TOKEN_PRIMARY = Internal.createUniqueKey(RefreshToken.REFRESH_TOKEN, DSL.name("KEY_refresh_token_PRIMARY"), new TableField[] { RefreshToken.REFRESH_TOKEN.ID }, true);
     public static final UniqueKey<RefreshTokenRecord> KEY_REFRESH_TOKEN_REFRESH_TOKEN_HASH_UINDEX = Internal.createUniqueKey(RefreshToken.REFRESH_TOKEN, DSL.name("KEY_refresh_token_refresh_token_hash_uindex"), new TableField[] { RefreshToken.REFRESH_TOKEN.TOKEN_HASH }, true);
     public static final UniqueKey<ResourceRecord> KEY_RESOURCE_PRIMARY = Internal.createUniqueKey(Resource.RESOURCE, DSL.name("KEY_resource_PRIMARY"), new TableField[] { Resource.RESOURCE.ID }, true);
@@ -97,6 +107,9 @@ public class Keys {
     public static final UniqueKey<UserAppRecord> KEY_USER_APP_PRIMARY = Internal.createUniqueKey(UserApp.USER_APP, DSL.name("KEY_user_app_PRIMARY"), new TableField[] { UserApp.USER_APP.ID }, true);
     public static final UniqueKey<UserAppRecord> KEY_USER_APP_USER_APP_EMAIL_UINDEX = Internal.createUniqueKey(UserApp.USER_APP, DSL.name("KEY_user_app_user_app_email_uindex"), new TableField[] { UserApp.USER_APP.EMAIL }, true);
     public static final UniqueKey<UserAppRecord> KEY_USER_APP_USER_APP_PHONE_UINDEX = Internal.createUniqueKey(UserApp.USER_APP, DSL.name("KEY_user_app_user_app_phone_uindex"), new TableField[] { UserApp.USER_APP.PHONE }, true);
+    public static final UniqueKey<UserEventRecord> KEY_USER_EVENT_PRIMARY = Internal.createUniqueKey(UserEvent.USER_EVENT, DSL.name("KEY_user_event_PRIMARY"), new TableField[] { UserEvent.USER_EVENT.ID }, true);
+    public static final UniqueKey<UserPreferenceRecord> KEY_USER_PREFERENCE_PRIMARY = Internal.createUniqueKey(UserPreference.USER_PREFERENCE, DSL.name("KEY_user_preference_PRIMARY"), new TableField[] { UserPreference.USER_PREFERENCE.ID }, true);
+    public static final UniqueKey<UserPreferenceRecord> KEY_USER_PREFERENCE_UK_USER_PREFERENCE = Internal.createUniqueKey(UserPreference.USER_PREFERENCE, DSL.name("KEY_user_preference_uk_user_preference"), new TableField[] { UserPreference.USER_PREFERENCE.USER_ID, UserPreference.USER_PREFERENCE.CATEGORY_ID }, true);
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -120,10 +133,15 @@ public class Keys {
     public static final ForeignKey<PaymentOrderRecord, UserAppRecord> FK_PAYMENT_ORDER_USER = Internal.createForeignKey(PaymentOrder.PAYMENT_ORDER, DSL.name("fk_payment_order_user"), new TableField[] { PaymentOrder.PAYMENT_ORDER.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
     public static final ForeignKey<PermissionRecord, ResourceRecord> PERMISSION_RESOURCE_FK = Internal.createForeignKey(Permission.PERMISSION, DSL.name("permission_resource_fk"), new TableField[] { Permission.PERMISSION.RESOURCE_ID }, Keys.KEY_RESOURCE_PRIMARY, new TableField[] { Resource.RESOURCE.ID }, true);
     public static final ForeignKey<PermissionRecord, RoleRecord> PERMISSION_ROLE_FK = Internal.createForeignKey(Permission.PERMISSION, DSL.name("permission_role_fk"), new TableField[] { Permission.PERMISSION.ROLE_ID }, Keys.KEY_ROLE_PRIMARY, new TableField[] { Role.ROLE.ID }, true);
+    public static final ForeignKey<RecImpressionRecord, UserAppRecord> FK_REC_IMPRESSION_USER = Internal.createForeignKey(RecImpression.REC_IMPRESSION, DSL.name("fk_rec_impression_user"), new TableField[] { RecImpression.REC_IMPRESSION.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
     public static final ForeignKey<RefreshTokenRecord, UserAppRecord> REFRESH_TOKEN_USER_FK = Internal.createForeignKey(RefreshToken.REFRESH_TOKEN, DSL.name("refresh_token_user_fk"), new TableField[] { RefreshToken.REFRESH_TOKEN.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
     public static final ForeignKey<ResourceRecord, ModuleRecord> RESOURCE_MODULE_FK = Internal.createForeignKey(Resource.RESOURCE, DSL.name("resource_module_fk"), new TableField[] { Resource.RESOURCE.MODULE_ID }, Keys.KEY_MODULE_PRIMARY, new TableField[] { Module.MODULE.ID }, true);
     public static final ForeignKey<SubscriptionRecord, PaymentOrderRecord> FK_SUBSCRIPTION_ORDER = Internal.createForeignKey(Subscription.SUBSCRIPTION, DSL.name("fk_subscription_order"), new TableField[] { Subscription.SUBSCRIPTION.ORDER_ID }, Keys.KEY_PAYMENT_ORDER_PRIMARY, new TableField[] { PaymentOrder.PAYMENT_ORDER.ID }, true);
     public static final ForeignKey<SubscriptionRecord, PlanRecord> FK_SUBSCRIPTION_PLAN = Internal.createForeignKey(Subscription.SUBSCRIPTION, DSL.name("fk_subscription_plan"), new TableField[] { Subscription.SUBSCRIPTION.PLAN_ID }, Keys.KEY_PLAN_PRIMARY, new TableField[] { Plan.PLAN.ID }, true);
     public static final ForeignKey<SubscriptionRecord, UserAppRecord> FK_SUBSCRIPTION_USER = Internal.createForeignKey(Subscription.SUBSCRIPTION, DSL.name("fk_subscription_user"), new TableField[] { Subscription.SUBSCRIPTION.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
     public static final ForeignKey<UserAppRecord, RoleRecord> USER_APP_ROLE_FK = Internal.createForeignKey(UserApp.USER_APP, DSL.name("user_app_role_fk"), new TableField[] { UserApp.USER_APP.ROLE_ID }, Keys.KEY_ROLE_PRIMARY, new TableField[] { Role.ROLE.ID }, true);
+    public static final ForeignKey<UserEventRecord, LutRecord> FK_USER_EVENT_LUT = Internal.createForeignKey(UserEvent.USER_EVENT, DSL.name("fk_user_event_lut"), new TableField[] { UserEvent.USER_EVENT.LUT_ID }, Keys.KEY_LUT_PRIMARY, new TableField[] { Lut.LUT.ID }, true);
+    public static final ForeignKey<UserEventRecord, UserAppRecord> FK_USER_EVENT_USER = Internal.createForeignKey(UserEvent.USER_EVENT, DSL.name("fk_user_event_user"), new TableField[] { UserEvent.USER_EVENT.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
+    public static final ForeignKey<UserPreferenceRecord, LutCategoryRecord> FK_USER_PREFERENCE_CATEGORY = Internal.createForeignKey(UserPreference.USER_PREFERENCE, DSL.name("fk_user_preference_category"), new TableField[] { UserPreference.USER_PREFERENCE.CATEGORY_ID }, Keys.KEY_LUT_CATEGORY_PRIMARY, new TableField[] { LutCategory.LUT_CATEGORY.ID }, true);
+    public static final ForeignKey<UserPreferenceRecord, UserAppRecord> FK_USER_PREFERENCE_USER = Internal.createForeignKey(UserPreference.USER_PREFERENCE, DSL.name("fk_user_preference_user"), new TableField[] { UserPreference.USER_PREFERENCE.USER_ID }, Keys.KEY_USER_APP_PRIMARY, new TableField[] { UserApp.USER_APP.ID }, true);
 }

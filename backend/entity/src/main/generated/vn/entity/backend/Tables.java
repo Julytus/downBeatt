@@ -18,11 +18,15 @@ import vn.entity.backend.tables.Module;
 import vn.entity.backend.tables.PaymentOrder;
 import vn.entity.backend.tables.Permission;
 import vn.entity.backend.tables.Plan;
+import vn.entity.backend.tables.RecEvalRun;
+import vn.entity.backend.tables.RecImpression;
 import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
 import vn.entity.backend.tables.Role;
 import vn.entity.backend.tables.Subscription;
 import vn.entity.backend.tables.UserApp;
+import vn.entity.backend.tables.UserEvent;
+import vn.entity.backend.tables.UserPreference;
 
 
 /**
@@ -102,6 +106,16 @@ public class Tables {
     public static final Plan PLAN = Plan.PLAN;
 
     /**
+     * The table <code>rec_eval_run</code>.
+     */
+    public static final RecEvalRun REC_EVAL_RUN = RecEvalRun.REC_EVAL_RUN;
+
+    /**
+     * The table <code>rec_impression</code>.
+     */
+    public static final RecImpression REC_IMPRESSION = RecImpression.REC_IMPRESSION;
+
+    /**
      * The table <code>refresh_token</code>.
      */
     public static final RefreshToken REFRESH_TOKEN = RefreshToken.REFRESH_TOKEN;
@@ -125,4 +139,14 @@ public class Tables {
      * The table <code>user_app</code>.
      */
     public static final UserApp USER_APP = UserApp.USER_APP;
+
+    /**
+     * The table <code>user_event</code>.
+     */
+    public static final UserEvent USER_EVENT = UserEvent.USER_EVENT;
+
+    /**
+     * The table <code>user_preference</code>.
+     */
+    public static final UserPreference USER_PREFERENCE = UserPreference.USER_PREFERENCE;
 }

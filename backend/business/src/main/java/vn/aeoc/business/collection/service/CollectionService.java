@@ -2,6 +2,7 @@ package vn.aeoc.business.collection.service;
 
 import org.jooq.exception.IntegrityConstraintViolationException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +10,7 @@ import vn.aeoc.base.constant.ErrorCode;
 import vn.aeoc.base.exception.AppException;
 import vn.aeoc.base.service.BaseService;
 import vn.aeoc.base.util.QueryExecutor;
+import vn.aeoc.business.account.event.UserSignalChangedEvent;
 import vn.aeoc.business.billing.service.SubscriptionService;
 import vn.aeoc.business.collection.repository.CollectionRepository;
 import vn.aeoc.business.collection.repository.CollectionRepository.PublishedItem;
@@ -16,8 +18,10 @@ import vn.aeoc.business.lut.service.LutService;
 import vn.aeoc.entity.data.mysql.collection.CollectionItem;
 import vn.aeoc.entity.data.mysql.collection.LutCollection;
 import vn.aeoc.entity.data.mysql.lut.Lut;
+import vn.aeoc.entity.data.mysql.recommend.UserSignal;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -25,17 +29,27 @@ public class CollectionService extends BaseService<CollectionRepository, LutColl
 
     private final LutService lutService;
     private final SubscriptionService subscriptionService;
+    private final ApplicationEventPublisher publisher;
     private final int freeLimit;
 
     public CollectionService(CollectionRepository repository,
                              QueryExecutor queryExecutor,
                              LutService lutService,
                              SubscriptionService subscriptionService,
+                             ApplicationEventPublisher publisher,
                              @Value("${collection.free-limit:3}") int freeLimit) {
         super(repository, queryExecutor);
         this.lutService = lutService;
         this.subscriptionService = subscriptionService;
+        this.publisher = publisher;
         this.freeLimit = freeLimit;
+    }
+
+    public List<UserSignal> favoriteSignals(Integer userId, LocalDateTime since) {
+        if (userId == null) {
+            return List.of();
+        }
+        return repository.favoriteSignals(userId, since);
     }
 
     public List<LutCollection> myList(Integer userId, Integer lutId) {
@@ -153,6 +167,7 @@ public class CollectionService extends BaseService<CollectionRepository, LutColl
         Integer newId = created != null ? created.getId() : null;
         if (body.getLutId() != null && newId != null) {
             repository.addItem(newId, body.getLutId());
+            publisher.publishEvent(new UserSignalChangedEvent(userId, "tạo bộ kèm LUT"));
         }
 
         LutCollection fresh = newId != null ? repository.getOwned(newId, userId) : null;
@@ -190,6 +205,7 @@ public class CollectionService extends BaseService<CollectionRepository, LutColl
             throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy bộ sưu tập");
         }
         repository.delete(id);
+        publisher.publishEvent(new UserSignalChangedEvent(userId, "xoá bộ sưu tập"));
         return id;
     }
 
@@ -210,6 +226,7 @@ public class CollectionService extends BaseService<CollectionRepository, LutColl
         if (affected == 1) {
             repository.touch(collection.getId());
         }
+        publisher.publishEvent(new UserSignalChangedEvent(userId, "thêm LUT vào bộ sưu tập"));
 
         LutCollection fresh = repository.getOwned(collection.getId(), userId);
         return populateCollection(fresh != null ? fresh : collection, true);
@@ -231,6 +248,7 @@ public class CollectionService extends BaseService<CollectionRepository, LutColl
                 repository.touch(collection.getId());
             }
         }
+        publisher.publishEvent(new UserSignalChangedEvent(userId, "bỏ LUT khỏi bộ sưu tập"));
 
         LutCollection fresh = repository.getOwned(collection.getId(), userId);
         return populateCollection(fresh != null ? fresh : collection, false);

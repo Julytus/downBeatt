@@ -10,7 +10,9 @@ import vn.aeoc.base.util.QueryExecutor;
 import vn.aeoc.business.lut.repository.LutCategoryRepository;
 import vn.aeoc.entity.data.mysql.lut.LutCategory;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class LutCategoryService extends BaseService<LutCategoryRepository, LutCategory, Integer> {
@@ -35,5 +37,12 @@ public class LutCategoryService extends BaseService<LutCategoryRepository, LutCa
             throw new AppException(ErrorCode.DATA_NOT_FOUND, "Không tìm thấy danh mục");
         }
         return category;
+    }
+
+    public Map<String, Integer> activeIdsBySlugs(Collection<String> slugs) {
+        if (slugs == null || slugs.isEmpty()) {
+            return Map.of();
+        }
+        return repository.activeIdsBySlugs(slugs);
     }
 }

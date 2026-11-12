@@ -173,6 +173,13 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
         return exists(published().and(LUT.ID.eq(id)));
     }
 
+    public boolean existsPublishedStyle(String style) {
+        if (style == null || style.isBlank()) {
+            return false;
+        }
+        return exists(published().and(LUT.STYLE.eq(style.trim())));
+    }
+
     /** Điểm = 10·[cùng style] + số danh mục đang hiện mà hai LUT cùng thuộc. */
     public List<Lut> relatedPublished(Lut base, Pageable pageable) {
         var mine = LUT_CATEGORY_MAP.as("mine");
@@ -213,13 +220,26 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
                 pageable);
     }
 
+    public List<Lut> similarPublishedAll(Integer baseId) {
+        List<Field<?>> fields = new ArrayList<>(publicFields());
+        fields.add(LUT_SIMILARITY.SCORE.as("similarity"));
+        Table<?> joinedTable = LUT.join(LUT_SIMILARITY)
+                .on(LUT_SIMILARITY.SIMILAR_LUT_ID.eq(LUT.ID).and(LUT_SIMILARITY.LUT_ID.eq(baseId)))
+                .leftJoin(CREATOR).on(CREATOR.ID.eq(LUT.CREATOR_ID));
+        return getListByCriteriaWithJoin(
+                fields,
+                joinedTable,
+                published(),
+                List.of(LUT_SIMILARITY.SCORE.desc(), LUT.DOWNLOAD_COUNT.desc(), LUT.ID.asc()));
+    }
+
     public Long countSimilarPublished(Integer baseId) {
         return getCountWithCriteria(published().and(DSL.exists(selectOne().from(LUT_SIMILARITY)
                 .where(LUT_SIMILARITY.LUT_ID.eq(baseId).and(LUT_SIMILARITY.SIMILAR_LUT_ID.eq(LUT.ID))))));
     }
 
     public List<Lut> listPublishedForIndex() {
-        return dslContext.select(LUT.ID, LUT.TITLE, LUT.DESCRIPTION, LUT.CREATOR_ID, LUT.STYLE, LUT.DOWNLOAD_COUNT)
+        return dslContext.select(LUT.ID, LUT.TITLE, LUT.DESCRIPTION, LUT.CREATOR_ID, LUT.STYLE, LUT.DOWNLOAD_COUNT, LUT.SLUG, LUT.IS_PREMIUM, LUT.PUBLISHED_TIME)
                 .from(LUT)
                 .where(published())
                 .fetchInto(Lut.class);
@@ -496,5 +516,16 @@ public class LutRepository extends AbsMysqlRepository<LutRecord, Lut, Integer> {
                 .set(LUT.DOWNLOAD_COUNT, LUT.DOWNLOAD_COUNT.plus(1))
                 .where(LUT.ID.eq(id))
                 .execute();
+    }
+
+    public List<Integer> idsMissingFeature() {
+        return dslContext.select(LUT.ID)
+                .from(LUT)
+                .leftJoin(LUT_COLOR_FEATURE).on(LUT_COLOR_FEATURE.LUT_ID.eq(LUT.ID))
+                .where(LUT.FILE_KEY.isNotNull()
+                        .and(LUT.FILE_KEY.ne(""))
+                        .and(LUT_COLOR_FEATURE.ID.isNull()))
+                .orderBy(LUT.ID.asc())
+                .fetch(LUT.ID);
     }
 }

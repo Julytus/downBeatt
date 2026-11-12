@@ -1,0 +1,20 @@
+spring:
+  main:
+    web-application-type: none
+
+recommend:
+  build-on-startup: false
+
+lut:
+  feature:
+    compute-on-startup: false
+
+eval:
+  seeds: 42
+  luts: 300
+  users: 500
+  k-values: 5,10,20
+  algorithms: random,popular,popular-dd,cbf-tag,cbf-full
+  random-repeats: 20
+  phase: test
+  dataset: D1-sim

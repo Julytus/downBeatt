@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect } from "react";
+import { ForYouSection } from "@/components/shop/luts/for-you/for-you-section";
 import { LutBrowser } from "@/components/shop/luts/lut-browser";
 import { LutsDiscover } from "@/components/shop/luts/luts-discover";
 import { LutsFaq } from "@/components/shop/luts/luts-faq";
 import { LutsHero } from "@/components/shop/luts/luts-hero";
-import { lutsSearchSchema, type LutsSearch } from "@/lib/search/luts";
+import { hasActiveFilters, lutsSearchSchema, type LutsSearch } from "@/lib/search/luts";
 
 export const Route = createFileRoute("/_shop/luts/")({
   validateSearch: lutsSearchSchema,
@@ -28,6 +29,7 @@ function LutsPage() {
     <>
       <LutsHero q={search.q} onSearch={(q) => onSearchChange({ ...search, q: q || undefined })} />
       <hr className="mt-8 mb-8 border-(--sh-border)" />
+      {!hasActiveFilters(search) && <ForYouSection />}
       <LutBrowser search={search} onSearchChange={onSearchChange} />
       <LutsDiscover />
       <LutsFaq />

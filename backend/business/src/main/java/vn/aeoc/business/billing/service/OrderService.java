@@ -18,6 +18,9 @@ import vn.aeoc.business.lut.service.LutService;
 import vn.aeoc.entity.data.mysql.billing.PaymentOrder;
 import vn.aeoc.entity.data.mysql.billing.Plan;
 import vn.aeoc.entity.data.mysql.billing.Subscription;
+import vn.aeoc.entity.data.mysql.recommend.UserSignal;
+
+import java.util.List;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -248,5 +251,12 @@ public class OrderService extends BaseService<PaymentOrderRepository, PaymentOrd
             }
         }
         return order;
+    }
+
+    public List<UserSignal> purchaseSignals(Integer userId, LocalDateTime since) {
+        if (userId == null) {
+            return List.of();
+        }
+        return repository.purchaseSignals(userId, since);
     }
 }

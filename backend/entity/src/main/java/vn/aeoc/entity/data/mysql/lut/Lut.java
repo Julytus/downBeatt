@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -38,4 +39,7 @@ public class Lut {
     private LutColorFeature colorFeature;
     private String featureError;
     private Double similarity;
+    private String reason;
+    private Double score;
+    private Map<String, Double> contributions;
 }

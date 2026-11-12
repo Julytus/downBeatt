@@ -18,6 +18,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminTaiNguyenRouteImport } from './routes/admin/tai-nguyen'
 import { Route as AdminPhanQuyenRouteImport } from './routes/admin/phan-quyen'
 import { Route as AdminModuleRouteImport } from './routes/admin/module'
+import { Route as AdminGoiYRouteImport } from './routes/admin/goi-y'
 import { Route as AdminDacTrungMauRouteImport } from './routes/admin/dac-trung-mau'
 import { Route as AdminChucVuRouteImport } from './routes/admin/chuc-vu'
 import { Route as PlainPricingRouteImport } from './routes/_plain/pricing'
@@ -72,6 +73,11 @@ const AdminPhanQuyenRoute = AdminPhanQuyenRouteImport.update({
 const AdminModuleRoute = AdminModuleRouteImport.update({
   id: '/module',
   path: '/module',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminGoiYRoute = AdminGoiYRouteImport.update({
+  id: '/goi-y',
+  path: '/goi-y',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminDacTrungMauRoute = AdminDacTrungMauRouteImport.update({
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PlainPricingRoute
   '/admin/chuc-vu': typeof AdminChucVuRoute
   '/admin/dac-trung-mau': typeof AdminDacTrungMauRoute
+  '/admin/goi-y': typeof AdminGoiYRoute
   '/admin/module': typeof AdminModuleRoute
   '/admin/phan-quyen': typeof AdminPhanQuyenRoute
   '/admin/tai-nguyen': typeof AdminTaiNguyenRoute
@@ -169,6 +176,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PlainPricingRoute
   '/admin/chuc-vu': typeof AdminChucVuRoute
   '/admin/dac-trung-mau': typeof AdminDacTrungMauRoute
+  '/admin/goi-y': typeof AdminGoiYRoute
   '/admin/module': typeof AdminModuleRoute
   '/admin/phan-quyen': typeof AdminPhanQuyenRoute
   '/admin/tai-nguyen': typeof AdminTaiNguyenRoute
@@ -194,6 +202,7 @@ export interface FileRoutesById {
   '/_plain/pricing': typeof PlainPricingRoute
   '/admin/chuc-vu': typeof AdminChucVuRoute
   '/admin/dac-trung-mau': typeof AdminDacTrungMauRoute
+  '/admin/goi-y': typeof AdminGoiYRoute
   '/admin/module': typeof AdminModuleRoute
   '/admin/phan-quyen': typeof AdminPhanQuyenRoute
   '/admin/tai-nguyen': typeof AdminTaiNguyenRoute
@@ -217,6 +226,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/admin/chuc-vu'
     | '/admin/dac-trung-mau'
+    | '/admin/goi-y'
     | '/admin/module'
     | '/admin/phan-quyen'
     | '/admin/tai-nguyen'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/admin/chuc-vu'
     | '/admin/dac-trung-mau'
+    | '/admin/goi-y'
     | '/admin/module'
     | '/admin/phan-quyen'
     | '/admin/tai-nguyen'
@@ -261,6 +272,7 @@ export interface FileRouteTypes {
     | '/_plain/pricing'
     | '/admin/chuc-vu'
     | '/admin/dac-trung-mau'
+    | '/admin/goi-y'
     | '/admin/module'
     | '/admin/phan-quyen'
     | '/admin/tai-nguyen'
@@ -346,6 +358,13 @@ declare module '@tanstack/react-router' {
       path: '/module'
       fullPath: '/admin/module'
       preLoaderRoute: typeof AdminModuleRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/goi-y': {
+      id: '/admin/goi-y'
+      path: '/goi-y'
+      fullPath: '/admin/goi-y'
+      preLoaderRoute: typeof AdminGoiYRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/dac-trung-mau': {
@@ -487,6 +506,7 @@ const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
 interface AdminRouteChildren {
   AdminChucVuRoute: typeof AdminChucVuRoute
   AdminDacTrungMauRoute: typeof AdminDacTrungMauRoute
+  AdminGoiYRoute: typeof AdminGoiYRoute
   AdminModuleRoute: typeof AdminModuleRoute
   AdminPhanQuyenRoute: typeof AdminPhanQuyenRoute
   AdminTaiNguyenRoute: typeof AdminTaiNguyenRoute
@@ -498,6 +518,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminChucVuRoute: AdminChucVuRoute,
   AdminDacTrungMauRoute: AdminDacTrungMauRoute,
+  AdminGoiYRoute: AdminGoiYRoute,
   AdminModuleRoute: AdminModuleRoute,
   AdminPhanQuyenRoute: AdminPhanQuyenRoute,
   AdminTaiNguyenRoute: AdminTaiNguyenRoute,

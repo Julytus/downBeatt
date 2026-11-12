@@ -24,10 +24,10 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | done (10/11/2026) |
 | 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | done (10/11/2026) |
 | 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | done (10/11/2026) |
-| 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | chưa làm |
-| 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | chưa làm |
-| 2.4 | 2. Hệ gợi ý | `quan-tri-goi-y` | 2.3 | chưa làm |
-| 3.1 | 3. Đánh giá | `danh-gia-goi-y` | 2.3 | chưa làm |
+| 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | done (11/11/2026) |
+| 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | done (11/11/2026) |
+| 2.4 | 2. Hệ gợi ý | `quan-tri-goi-y` | 2.3 | done (11/11/2026) |
+| 3.1 | 3. Đánh giá | `danh-gia-goi-y` (phần 1; đề xuất tách thêm `tinh-chinh-goi-y`, `kiem-dinh-goi-y`) | 2.3 | phần 1 done (12/11/2026); phần 2, 3 chưa làm |
 | 3.2 | 3. Đánh giá | thu thập D2 / D3 (người dùng thử) | 2.3 | chưa làm |
 | 4.1 | 4. Quản trị số liệu | `dashboard-admin` | 1.4, 1.5 | chưa làm |
 | 5.1 | 5. Plugin (tuỳ chọn) | `kho-plugin` | 3.1 | chưa làm |
@@ -160,7 +160,7 @@ Thiết kế: §4.6, §5.4 (collection), §6.7.
 - [x] E2E + review + tài liệu
   - E2E (31/31) + review xong; tài liệu: `docs/chuc-nang/bo-suu-tap.md`
 
-## Giai đoạn 2. Hệ gợi ý theo nội dung
+## Giai đoạn 2. Hệ gợi ý theo nội dung — done
 
 Bốn lát dưới đây thay cho lát `goi-y-lut` của thiết kế. Đặc trưng màu từ file .cube (§7.2.4) đã nằm ở lát 1.2. Mọi tham số lấy từ `recommend.*` (Phụ lục B) qua một đối tượng cấu hình, để trình đánh giá ở 3.1 chạy được nhiều cấu hình mà không sửa mã.
 
@@ -188,98 +188,107 @@ Thiết kế: §7.1, §7.2, §7.3, §7.8 (`LutVectorIndex`, `SimilarityService`)
 - [x] E2E (related trả LUT cùng gu, LUT bị ẩn biến khỏi related) + review: 12/12 test xanh
 - [x] Tài liệu `docs/chuc-nang/chi-muc-tuong-dong.md`
 
-### 2.2 `ho-so-nguoi-dung` — chưa làm
+### 2.2 `ho-so-nguoi-dung` — done (11/11/2026) ([plan/ho-so-nguoi-dung.md](../../plan/ho-so-nguoi-dung.md))
 
 Thiết kế: §6.2, §7.4, §7.5.1, §5.5 (`event`, `merge-anon`, `clear-history`), §5.3 (`preference`), §9.3 (bước chọn phong cách, ghi sự kiện), UT-07 đến UT-09, API-03, API-04, API-07 đến API-09. Bảng: `user_preference`, `user_event`.
 
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] Migration `user_preference`, `user_event`
-  - [ ] Thu tín hiệu
-    - [ ] `account/preference` GET / POST, thay toàn bộ, tối đa 12, slug sai trả `PREFERENCE_INVALID`
-    - [ ] `recommend/public/event`: VIEW, PREVIEW, SEARCH, FILTER_STYLE; luôn trả 200; chống ghi lặp 30 phút; chuẩn hoá từ khoá
-    - [ ] `merge-anon` (UPDATE `user_id` theo `anon_id`), `clear-history` (chỉ xoá `user_event`), tác vụ 00:30 xoá sự kiện > 180 ngày
-  - [ ] `UserProfileService` (§7.4)
-    - [ ] Đọc 5 nguồn: `user_event`, `collection_item` (4), `download_log` (5), `payment_order.source_lut_id` đơn PAID (6), `user_preference`
-    - [ ] Gộp theo cặp (LUT, loại): c = w · (1 + ln(số lần)) · 0.5^(số ngày / 30); giới hạn 180 ngày, 200 cặp
-    - [ ] Hồ sơ hành vi H_u: khối rời rạc chia cho Σ|c| (DISMISS kéo ra xa); khối màu chỉ trung bình tín hiệu dương
-    - [ ] SEARCH vào khối thẻ + văn bản, FILTER_STYLE vào khối phong cách
-    - [ ] Hồ sơ khai báo E_u (§7.5.1): phong cách one-hot trung bình, danh mục multi-hot IDF, thẻ / màu / văn bản **mượn trọng tâm** các LUT thuộc danh mục đã chọn
-    - [ ] Trộn P_u = α·E_u + (1 − α)·H_u, α = k / (k + n), k = 5; xác định strategy `PROFILE / PREFERENCE / POPULAR`
-    - [ ] Nhận thời điểm tham chiếu làm tham số (cho 3.1); cache Caffeine 5 phút, xoá khi tải / lưu bộ sưu tập / dismiss / lưu sở thích
-  - [ ] Unit test UT-07 (suy giảm 30 ngày còn một nửa), UT-08 (chỉ khai báo: α = 1, PREFERENCE), UT-09 (5 LUT: α = 0.5)
-- [ ] Frontend
-  - [ ] `anonId` trong localStorage (bọc try/catch), gửi sự kiện không chờ: VIEW, PREVIEW (kéo thanh / video 3 giây), SEARCH (chờ 1 giây), FILTER_STYLE
-  - [ ] Gọi `merge-anon` sau đăng nhập / đăng ký
-  - [ ] Bước 2 "Chọn phong cách" (ảnh mẫu, 1 đến 5 phong cách, Bỏ qua) + mục "Sở thích màu", "Xoá lịch sử gợi ý" trong menu tài khoản
-- [ ] E2E + review + tài liệu
+- [x] Plan → duyệt (10/11/2026)
+- [x] Backend
+  - [x] Migration `user_preference`, `user_event`
+  - [x] Thu tín hiệu
+    - [x] `account/preference` GET / POST, thay toàn bộ, tối đa 12, slug sai trả `PREFERENCE_INVALID`
+    - [x] `recommend/public/event`: VIEW, PREVIEW, SEARCH, FILTER_STYLE; luôn trả 200; chống ghi lặp 30 phút; chuẩn hoá từ khoá
+    - [x] `merge-anon` (UPDATE `user_id` theo `anon_id`), `clear-history` (chỉ xoá `user_event`), tác vụ 00:30 xoá sự kiện > 180 ngày
+  - [x] `UserProfileService` (§7.4)
+    - [x] Đọc 5 nguồn: `user_event`, `collection_item` (4), `download_log` (5), `payment_order.source_lut_id` đơn PAID (6), `user_preference`
+    - [x] Gộp theo cặp (LUT, loại): c = w · (1 + ln(số lần)) · 0.5^(số ngày / 30); giới hạn 180 ngày, 200 cặp
+    - [x] Hồ sơ hành vi H_u: khối rời rạc chia cho Σ|c| (DISMISS kéo ra xa); khối màu chỉ trung bình tín hiệu dương
+    - [x] SEARCH vào khối thẻ + văn bản, FILTER_STYLE vào khối phong cách
+    - [x] Hồ sơ khai báo E_u (§7.5.1): phong cách one-hot trung bình, danh mục multi-hot IDF, thẻ / màu / văn bản **mượn trọng tâm** các LUT thuộc danh mục đã chọn
+    - [x] Trộn P_u = α·E_u + (1 − α)·H_u, α = k / (k + n), k = 5; xác định strategy `PROFILE / PREFERENCE / POPULAR`
+    - [x] Nhận thời điểm tham chiếu làm tham số (cho 3.1); cache Caffeine 5 phút, xoá khi tải / lưu bộ sưu tập / dismiss / lưu sở thích
+      - Xoá cache khi dismiss: chỗ phát sự kiện thuộc lát 2.3 (`xep-hang-goi-y`); listener đã sẵn.
+  - [x] Unit test UT-07 (suy giảm 30 ngày còn một nửa), UT-08 (chỉ khai báo: α = 1, PREFERENCE), UT-09 (5 LUT: α = 0.5)
+- [x] Frontend
+  - [x] `anonId` trong localStorage (bọc try/catch), gửi sự kiện không chờ: VIEW, PREVIEW (kéo thanh / video 3 giây), SEARCH (chờ 1 giây), FILTER_STYLE
+  - [x] Gọi `merge-anon` sau đăng nhập / đăng ký
+  - [x] Bước 2 "Chọn phong cách" (ảnh mẫu, 1 đến 5 phong cách, Bỏ qua) + mục "Sở thích màu", "Xoá lịch sử gợi ý" trong menu tài khoản
+- [x] E2E + review + tài liệu
+  - E2E (28/28) + review xong (11/11/2026); tài liệu: `docs/chuc-nang/ho-so-nguoi-dung.md`
 
-### 2.3 `xep-hang-goi-y` — chưa làm
+### 2.3 `xep-hang-goi-y` — done (11/11/2026) ([plan/xep-hang-goi-y.md](../../plan/xep-hang-goi-y.md))
 
 Thiết kế: §7.5.2 đến §7.5.4, §7.6, §7.7, §5.5 (`for-you`, `dismiss`), §9.3 (khối "Dành cho bạn"), UT-10 đến UT-12, API-01, API-02, API-05, API-06, API-10, UI-01 đến UI-04. Bảng: `rec_impression`, resource `RECOMMEND`.
 
-- [ ] Chốt vấn đề mở #6 (LUT Premium tối đa 1/3 danh sách cho gói Miễn phí và khách vãng lai)
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] Migration `rec_impression`, resource `RECOMMEND`
-  - [ ] `Recommender` (§7.6.2)
-    - [ ] Ứng viên: LUT `PUBLISHED`, loại LUT đã tải và đã dismiss
-    - [ ] score(u, i) = Σ w_b · sim_b(P_u, x_i) trên toàn kho, lấy top 100
-    - [ ] MMR: λ · score − (1 − λ) · max sim(i, j ∈ S), λ = 0.7, K = 12
-    - [ ] Quota Premium 1/3 cho gói Miễn phí / vãng lai, bỏ qua LUT Premium khi đủ quota
-    - [ ] Hoà điểm: `download_count` giảm dần, rồi id
-  - [ ] Cold-start mức 3 (§7.5.2, §7.5.4): phổ biến 30 ngày xen kẽ phong cách; kho chưa có lượt tải thì xếp theo mới nhất, xen kẽ phong cách
-  - [ ] Câu giải thích (§7.6.4): khối đóng góp lớn nhất + LUT neo + động từ theo sự kiện mạnh nhất
-  - [ ] `related` thêm phần cá nhân hoá: 0.8 · sim(c, j) + 0.2 · score(u, j) khi có hồ sơ
-  - [ ] API `recommend/public/for-you` (ghi `rec_impression`, trả `impressionId`, `strategy`), `recommend/dismiss`
-  - [ ] Unit test UT-10 (dismiss), UT-11 (quota Premium), **UT-12 (ví dụ tính tay §7.7: thứ tự D, B, E, C, khớp 3 chữ số)**
-- [ ] Frontend
-  - [ ] Khối "Dành cho bạn" / "Phổ biến tuần này" ở `/luts`: 12 thẻ cuộn ngang, câu giải thích, skeleton, lỗi thì ẩn
-  - [ ] "Không quan tâm" (chỉ khi đăng nhập), hoàn tác 5 giây rồi mới gửi API
-  - [ ] Gắn `impressionId` vào sự kiện VIEW khi bấm thẻ từ khối gợi ý
-- [ ] E2E (API-01, API-02, API-05, API-06, API-10, UI-01 đến UI-04) + review + tài liệu
+- [x] Chốt vấn đề mở #6 (LUT Premium tối đa 1/3 danh sách cho gói Miễn phí và khách vãng lai): floor(K × 0.34), 4 trên 12; gói Pro / Studio không giới hạn (11/11/2026)
+- [x] Plan → duyệt (11/11/2026)
+- [x] Backend
+  - [x] Migration `rec_impression` (V12)
+    - resource `RECOMMEND` dời sang lát 2.4 `quan-tri-goi-y` (plan §11 câu 5): API lát này chỉ dành cho khách, chưa có trang quản trị
+  - [x] `Recommender` (§7.6.2)
+    - [x] Ứng viên: LUT `PUBLISHED`, loại LUT đã tải và đã dismiss
+    - [x] score(u, i) = Σ w_b · sim_b(P_u, x_i) trên toàn kho, lấy top 100
+    - [x] MMR: λ · score − (1 − λ) · max sim(i, j ∈ S), λ = 0.7, K = 12
+    - [x] Quota Premium 1/3 cho gói Miễn phí / vãng lai, bỏ qua LUT Premium khi đủ quota
+    - [x] Hoà điểm: `download_count` giảm dần, rồi id
+  - [x] Cold-start mức 3 (§7.5.2, §7.5.4): phổ biến 30 ngày xen kẽ phong cách; kho chưa có lượt tải thì xếp theo mới nhất, xen kẽ phong cách
+  - [x] Câu giải thích (§7.6.4): khối đóng góp lớn nhất + LUT neo + động từ theo sự kiện mạnh nhất
+  - [x] `related` thêm phần cá nhân hoá: 0.8 · sim(c, j) + 0.2 · score(u, j) khi có hồ sơ
+  - [x] API `recommend/public/for-you` (ghi `rec_impression`, trả `impressionId`, `strategy`), `recommend/dismiss`
+  - [x] Unit test UT-10 (dismiss), UT-11 (quota Premium), **UT-12 (ví dụ tính tay §7.7: thứ tự D, B, E, C, khớp 3 chữ số)**
+- [x] Frontend
+  - [x] Khối "Dành cho bạn" / "Phổ biến tuần này" ở `/luts`: 12 thẻ cuộn ngang, câu giải thích, skeleton, lỗi thì ẩn
+  - [x] "Không quan tâm" (chỉ khi đăng nhập), hoàn tác 5 giây rồi mới gửi API
+  - [x] Gắn `impressionId` vào sự kiện VIEW khi bấm thẻ từ khối gợi ý
+- [x] E2E (API-01, API-02, API-05, API-06, API-10, UI-01 đến UI-04) + review + tài liệu
+  - E2E (22/22) + review xong (11/11/2026); tài liệu: `docs/chuc-nang/xep-hang-goi-y.md`
 
-### 2.4 `quan-tri-goi-y` — chưa làm
+### 2.4 `quan-tri-goi-y` — done (11/11/2026) ([plan/quan-tri-goi-y.md](../../plan/quan-tri-goi-y.md))
 
 Thiết kế: §5.6 (recommend), §9.4 `/admin/goi-y`, API-11, UI-06.
 
-- [ ] Plan → duyệt
-- [ ] Backend
-  - [ ] `GET /recommend/config` (trọng số, tham số đang dùng), `POST /recommend/rebuild`
-  - [ ] `GET /recommend/stats?from=&to=`: CTR, tỉ lệ tải, tỉ lệ bỏ qua theo vị trí và biến thể (từ `rec_impression` + `user_event.impression_id`)
-  - [ ] API "Thử hồ sơ": hồ sơ một khách (phong cách, thẻ, màu nổi bật) + 12 gợi ý kèm điểm từng khối
-  - [ ] Khách hàng gọi bị 403 (API-11)
-- [ ] Frontend: `/admin/goi-y` ba thẻ "Cấu hình", "Đánh giá" (để trống tới 3.1), "Trực tuyến"; công cụ "Thử hồ sơ"; nút "Tính lại chỉ mục"
-- [ ] E2E + review + tài liệu
+- [x] Plan → duyệt (11/11/2026)
+- [x] Backend
+  - [x] `GET /recommend/config` (trọng số, tham số đang dùng), `POST /recommend/rebuild`
+  - [x] `GET /recommend/stats?from=&to=`: CTR, tỉ lệ tải, tỉ lệ bỏ qua theo vị trí và biến thể (từ `rec_impression` + `user_event.impression_id`)
+  - [x] API "Thử hồ sơ": hồ sơ một khách (phong cách, thẻ, màu nổi bật) + 12 gợi ý kèm điểm từng khối
+  - [x] Khách hàng gọi bị 403 (API-11)
+- [x] Frontend: `/admin/goi-y` ba thẻ "Cấu hình", "Đánh giá" (để trống tới 3.1), "Trực tuyến"; công cụ "Thử hồ sơ"; nút "Tính lại chỉ mục"
+- [x] E2E + review + tài liệu
+  - E2E 19/19 + review xong (11/11/2026); tài liệu: `docs/chuc-nang/quan-tri-goi-y.md`
 
 ## Giai đoạn 3. Đánh giá thuật toán
 
-### 3.1 `danh-gia-goi-y` — chưa làm
+### 3.1 `danh-gia-goi-y` — phần 1 done (12/11/2026) ([plan/danh-gia-goi-y.md](../../plan/danh-gia-goi-y.md), phần 1 của 3)
 
-Thiết kế: chương 8, UT-13. Bảng: `rec_eval_run`, schema riêng `downbeat_eval`.
+Thiết kế: chương 8, UT-13. Bảng: `rec_eval_run`, schema riêng `downbeat_eval` (đã chốt bỏ: D1 sinh trong bộ nhớ, plan §11 câu 2). Tách 3 lát: `danh-gia-goi-y` (D1, chia dữ liệu, chỉ số, 5 thuật toán, API, thẻ "Đánh giá") → `tinh-chinh-goi-y` (tinh chỉnh, biến thể, cold-start) → `kiem-dinh-goi-y` (5 hạt giống, Wilcoxon, bảng báo cáo).
 
-- [ ] Plan → duyệt
-- [ ] Dữ liệu
-  - [ ] Kho đánh giá khoảng 300 LUT sinh tham số trong `downbeat_eval` (`tools/seed`)
-  - [ ] Bộ mô phỏng người dùng D1 theo hạt giống cố định
+- [x] Plan → duyệt (12/11/2026, phần 1 `danh-gia-goi-y`)
+- [x] Dữ liệu
+  - [x] Kho đánh giá 300 LUT sinh tham số (sinh trong bộ nhớ bằng `CatalogGenerator` + `CubeWriter`, không dùng `downbeat_eval` / `tools/seed`, plan §11 câu 2)
+  - [x] Bộ mô phỏng người dùng D1 theo hạt giống cố định
 - [ ] Backend
-  - [ ] Migration `rec_eval_run`, profile `eval`
-  - [ ] Chia dữ liệu theo thời gian (§8.3): phần dựng hồ sơ / kiểm định / kiểm tra theo t0 từng người
+  - [x] Migration `rec_eval_run`, profile `eval`
+  - [x] Chia dữ liệu theo thời gian (§8.3): phần dựng hồ sơ / kiểm định / kiểm tra theo t0 từng người
   - [ ] Chỉ số Precision / Recall / NDCG / ILD / Coverage và chỉ số cold-start (UT-13)
-  - [ ] `EvalRunner` gọi đúng `Recommender` và `UserProfileService` thật (không viết lại thuật toán)
-  - [ ] Các thuật toán so sánh (§8.5)
-    - [ ] B1 Ngẫu nhiên (20 lần, lấy trung bình)
-    - [ ] B2 Phổ biến (chỉ đếm lượt tải trước t0) và B2-dd (phổ biến xen kẽ phong cách)
-    - [ ] B3 CBF chỉ thẻ (cùng hồ sơ, suy giảm, cold-start, MMR)
-    - [ ] M CBF đủ 6 khối (thuật toán đề xuất)
-  - [ ] Biến thể bỏ bớt: M-mau, M-the, M-giam, M-mmr, M-kb, M-tron, M-mac-dinh
-  - [ ] Tinh chỉnh trên tập kiểm định: 500 bộ trọng số khối ngẫu nhiên, λ ∈ {0.5 … 1.0}, chu kỳ bán rã ∈ {7, 14, 30, 60, ∞}, k ∈ {2, 5, 10}; B3 cũng được tinh chỉnh
-  - [ ] Chạy 5 hạt giống, K = 5 / 10 / 20
-  - [ ] Kiểm định thống kê (Wilcoxon), in bảng Markdown cho báo cáo
-  - [ ] `GET /recommend/eval/list`
-- [ ] Frontend: thẻ "Đánh giá" ở `/admin/goi-y` (bảng các lần chạy, chọn hai lần để so sánh)
-- [ ] Kết quả: bảng theo mẫu §8.8 đưa vào báo cáo
-- [ ] E2E + review + tài liệu
+    - [x] 8 chỉ số P / R / NDCG / HitRate / ILD / phong cách / Coverage / Novelty (phần 1)
+    - [ ] Chỉ số cold-start (dời sang `tinh-chinh-goi-y`)
+  - [x] `EvalRunner` gọi đúng `Recommender` và `UserProfileService` thật (không viết lại thuật toán)
+  - [x] Các thuật toán so sánh (§8.5)
+    - [x] B1 Ngẫu nhiên (20 lần, lấy trung bình)
+    - [x] B2 Phổ biến (chỉ đếm lượt tải trước t0) và B2-dd (phổ biến xen kẽ phong cách)
+    - [x] B3 CBF chỉ thẻ (cùng hồ sơ, suy giảm, cold-start, MMR)
+    - [x] M CBF đủ 6 khối (thuật toán đề xuất)
+  - [ ] Biến thể bỏ bớt: M-mau, M-the, M-giam, M-mmr, M-kb, M-tron, M-mac-dinh (lát `tinh-chinh-goi-y`)
+  - [ ] Tinh chỉnh trên tập kiểm định: 500 bộ trọng số khối ngẫu nhiên, λ ∈ {0.5 … 1.0}, chu kỳ bán rã ∈ {7, 14, 30, 60, ∞}, k ∈ {2, 5, 10}; B3 cũng được tinh chỉnh (lát `tinh-chinh-goi-y`)
+  - [ ] Chạy 5 hạt giống, K = 5 / 10 / 20 (phần 1 đã có K = 5 / 10 / 20 và `eval.seeds` nhiều hạt giống; chạy 5 hạt giống chính thức ở `kiem-dinh-goi-y`)
+  - [ ] Kiểm định thống kê (Wilcoxon), in bảng Markdown cho báo cáo (phần 1 đã in bảng mỗi hạt giống; Wilcoxon ở `kiem-dinh-goi-y`)
+  - [x] `GET /recommend/eval/list` (+ `eval/get`)
+- [x] Frontend: thẻ "Đánh giá" ở `/admin/goi-y` (bảng các lần chạy, chọn hai lần để so sánh)
+- [ ] Kết quả: bảng theo mẫu §8.8 đưa vào báo cáo (sau `kiem-dinh-goi-y`)
+- [x] E2E + review + tài liệu (phần 1)
+  - [x] E2E 13/13 + review BE/FE (12/11/2026)
+  - [x] Tài liệu (`/doc-chuc-nang danh-gia-goi-y`, [docs/chuc-nang/danh-gia-goi-y.md](../chuc-nang/danh-gia-goi-y.md))
 
 ### 3.2 Thu thập D2 / D3 — chưa làm (không phải lát code)
 

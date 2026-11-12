@@ -8,8 +8,10 @@ import org.springframework.stereotype.Repository;
 import vn.aeoc.base.repo.AbsMysqlRepository;
 import vn.aeoc.business.lut.constant.LutStatus;
 import vn.aeoc.entity.data.mysql.collection.LutCollection;
+import vn.aeoc.entity.data.mysql.recommend.UserSignal;
 import vn.entity.backend.tables.records.CollectionRecord;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -127,5 +129,28 @@ public class CollectionRepository extends AbsMysqlRepository<CollectionRecord, L
                 .where(COLLECTION_ITEM.COLLECTION_ID.in(collectionIds)
                         .and(COLLECTION_ITEM.LUT_ID.eq(lutId)))
                 .fetchSet(COLLECTION_ITEM.COLLECTION_ID);
+    }
+
+    public List<UserSignal> favoriteSignals(Integer userId, LocalDateTime since) {
+        if (userId == null) {
+            return List.of();
+        }
+        var countField = DSL.count().as("count");
+        var maxTimeField = DSL.max(COLLECTION_ITEM.CREATED_TIME).as("last_time");
+
+        return dslContext.select(COLLECTION_ITEM.LUT_ID, countField, maxTimeField)
+                .from(COLLECTION_ITEM)
+                .join(COLLECTION).on(COLLECTION.ID.eq(COLLECTION_ITEM.COLLECTION_ID))
+                .where(COLLECTION.USER_ID.eq(userId)
+                        .and(COLLECTION_ITEM.CREATED_TIME.ge(since)))
+                .groupBy(COLLECTION_ITEM.LUT_ID)
+                .fetch(r -> new UserSignal(
+                        "FAVORITE",
+                        r.get(COLLECTION_ITEM.LUT_ID),
+                        null,
+                        null,
+                        r.get(countField),
+                        r.get(maxTimeField)
+                ));
     }
 }

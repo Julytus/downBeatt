@@ -2,8 +2,10 @@ package vn.aeoc.business.billing.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.aeoc.business.account.event.UserSignalChangedEvent;
 import vn.aeoc.business.billing.repository.PaymentOrderRepository;
 import vn.aeoc.business.billing.repository.PlanRepository;
 import vn.aeoc.business.billing.repository.SubscriptionRepository;
@@ -26,22 +28,26 @@ public class PaymentActivationService {
     private final PaymentOrderRepository paymentOrderRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final PlanRepository planRepository;
+    private final ApplicationEventPublisher publisher;
     private final Clock clock;
 
     @Autowired
     public PaymentActivationService(PaymentOrderRepository paymentOrderRepository,
                                     SubscriptionRepository subscriptionRepository,
-                                    PlanRepository planRepository) {
-        this(paymentOrderRepository, subscriptionRepository, planRepository, Clock.system(DEFAULT_ZONE));
+                                    PlanRepository planRepository,
+                                    ApplicationEventPublisher publisher) {
+        this(paymentOrderRepository, subscriptionRepository, planRepository, publisher, Clock.system(DEFAULT_ZONE));
     }
 
     public PaymentActivationService(PaymentOrderRepository paymentOrderRepository,
                                     SubscriptionRepository subscriptionRepository,
                                     PlanRepository planRepository,
+                                    ApplicationEventPublisher publisher,
                                     Clock clock) {
         this.paymentOrderRepository = paymentOrderRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.planRepository = planRepository;
+        this.publisher = publisher;
         this.clock = clock;
     }
 
@@ -63,6 +69,10 @@ public class PaymentActivationService {
                 log.warn("Nhận tiền cho đơn {} đã {}, cần hoàn tiền tay", current.getCode(), current.getStatus());
             }
             return;
+        }
+
+        if (order.getSourceLutId() != null && publisher != null) {
+            publisher.publishEvent(new UserSignalChangedEvent(order.getUserId(), "kích hoạt đơn có source_lut_id"));
         }
 
         Subscription activeSub = subscriptionRepository.findActiveForUpdate(order.getUserId());
