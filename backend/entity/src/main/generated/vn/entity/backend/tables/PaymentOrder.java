@@ -176,7 +176,7 @@ public class PaymentOrder extends TableImpl<PaymentOrderRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.PAYMENT_ORDER_IDX_PAYMENT_ORDER_STATUS_CREATED, Indexes.PAYMENT_ORDER_IDX_PAYMENT_ORDER_USER_CREATED);
+        return Arrays.asList(Indexes.PAYMENT_ORDER_IDX_PAYMENT_ORDER_STATUS_CREATED, Indexes.PAYMENT_ORDER_IDX_PAYMENT_ORDER_STATUS_PAID, Indexes.PAYMENT_ORDER_IDX_PAYMENT_ORDER_USER_CREATED);
     }
 
     @Override

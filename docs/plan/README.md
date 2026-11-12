@@ -29,7 +29,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 2.4 | 2. Hệ gợi ý | `quan-tri-goi-y` | 2.3 | done (11/11/2026) |
 | 3.1 | 3. Đánh giá | `danh-gia-goi-y` (phần 1; đề xuất tách thêm `tinh-chinh-goi-y`, `kiem-dinh-goi-y`) | 2.3 | done (12/11/2026): phần 1 `danh-gia-goi-y`, phần 2 `tinh-chinh-goi-y`, phần 3 `kiem-dinh-goi-y` |
 | 3.2 | 3. Đánh giá | thu thập D2 / D3 (người dùng thử) | 2.3 | chưa làm |
-| 4.1 | 4. Quản trị số liệu | `dashboard-admin` | 1.4, 1.5 | chưa làm |
+| 4.1 | 4. Quản trị số liệu | `dashboard-admin` | 1.4, 1.5 | done (12/11/2026) |
 | 5.1 | 5. Plugin (tuỳ chọn) | `kho-plugin` | 3.1 | chưa làm |
 | 5.2 | 5. Plugin (tuỳ chọn) | `goi-y-plugin` | 5.1 | chưa làm |
 | 6.1 | 6. Báo cáo, bảo vệ | hoàn thiện báo cáo và demo | tất cả | chưa làm |
@@ -306,16 +306,16 @@ Thiết kế: chương 8, UT-13. Bảng: `rec_eval_run`, schema riêng `downbeat
 - [ ] Thu D2 (hành vi thật) và khảo sát D3 (cảm nhận)
 - [ ] Chạy `EvalRunner` trên D2, viết phân tích; không đủ người thì ghi rõ hạn chế, chỉ dùng D1
 
-## Giai đoạn 4. Quản trị số liệu
+## Giai đoạn 4. Quản trị số liệu — done
 
-### 4.1 `dashboard-admin` — chưa làm
+### 4.1 `dashboard-admin` — done (12/11/2026) ([plan/dashboard-admin.md](../../plan/dashboard-admin.md))
 
 Thiết kế: §5.6 (dashboard), §9.4 `/admin`. Resource: `DASHBOARD`.
 
-- [ ] Plan → duyệt
-- [ ] Backend: migration resource; `GET /dashboard/summary?from=&to=` (doanh thu theo ngày / tháng, đơn PAID, khách mới, gói đang dùng, top 10 LUT, tỉ lệ Premium trong lượt tải)
-- [ ] Frontend: `/admin` thành bảng số liệu (biểu đồ, thẻ số)
-- [ ] E2E + review + tài liệu
+- [x] Plan → duyệt (12/11/2026)
+- [x] Backend: migration resource; `GET /dashboard/summary?from=&to=` (doanh thu theo ngày / tháng, đơn PAID, khách mới, gói đang dùng, top 10 LUT, tỉ lệ Premium trong lượt tải)
+- [x] Frontend: `/admin` thành bảng số liệu (biểu đồ, thẻ số)
+- [x] E2E + review + tài liệu (16/16 Playwright, 6 JUnit, 12/11/2026)
 
 ## Giai đoạn 5. Plugin (tuỳ chọn)
 
