@@ -151,4 +151,31 @@ public final class EvalMetrics {
         }
         return sum / (double) k;
     }
+
+    public static double newLutHit(List<Integer> l, Set<Integer> newIds, int k) {
+        if (l == null || l.isEmpty() || newIds == null || newIds.isEmpty() || k <= 0) {
+            return 0.0;
+        }
+        int size = Math.min(k, l.size());
+        for (int i = 0; i < size; i++) {
+            if (newIds.contains(l.get(i))) {
+                return 1.0;
+            }
+        }
+        return 0.0;
+    }
+
+    public static double newLutRecall(List<Integer> l, Set<Integer> relNew, int k) {
+        if (l == null || l.isEmpty() || relNew == null || relNew.isEmpty() || k <= 0) {
+            return 0.0;
+        }
+        int size = Math.min(k, l.size());
+        int hits = 0;
+        for (int i = 0; i < size; i++) {
+            if (relNew.contains(l.get(i))) {
+                hits++;
+            }
+        }
+        return (double) hits / (double) relNew.size();
+    }
 }

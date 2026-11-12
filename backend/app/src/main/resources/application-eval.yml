@@ -14,7 +14,13 @@ eval:
   luts: 300
   users: 500
   k-values: 5,10,20
-  algorithms: random,popular,popular-dd,cbf-tag,cbf-full
+  algorithms: random,popular,popular-dd,cbf-tag,cbf-full,m-mau,m-the,m-giam,m-mmr,m-kb,m-tron,m-mac-dinh
   random-repeats: 20
   phase: test
   dataset: D1-sim
+  tune: true
+  tune-trials: 500
+  exclude-seen: true
+  new-lut-days: 14
+  scenarios: standard,cold-user
+  cold-user-events: 0,1,3,5

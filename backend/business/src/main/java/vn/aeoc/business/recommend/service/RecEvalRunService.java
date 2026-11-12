@@ -20,13 +20,27 @@ public class RecEvalRunService extends BaseService<RecEvalRunRepository, RecEval
         super(repository, queryExecutor);
     }
 
+    public Page<RecEvalRun> list(String algorithm, String scenario, String batch, Integer page, Integer limit) {
+        int p = (page == null || page <= 0) ? 1 : page;
+        int l = (limit == null || limit <= 0) ? 20 : (limit > 100 ? 100 : limit);
+        Pageable pageable = new Pageable().setPage(p).setLimit(l);
+        String trimmedAlgo = (algorithm != null && !algorithm.trim().isEmpty()) ? algorithm.trim() : null;
+        String trimmedScenario = (scenario != null && !scenario.trim().isEmpty()) ? scenario.trim() : null;
+        String trimmedBatch = (batch != null && !batch.trim().isEmpty()) ? batch.trim() : null;
+        return pageQuery(pageable,
+                () -> repository.list(trimmedAlgo, trimmedScenario, trimmedBatch, pageable),
+                () -> repository.count(trimmedAlgo, trimmedScenario, trimmedBatch));
+    }
+
     public Page<RecEvalRun> list(String algorithm, String batch, Integer page, Integer limit) {
         int p = (page == null || page <= 0) ? 1 : page;
         int l = (limit == null || limit <= 0) ? 20 : (limit > 100 ? 100 : limit);
         Pageable pageable = new Pageable().setPage(p).setLimit(l);
+        String trimmedAlgo = (algorithm != null && !algorithm.trim().isEmpty()) ? algorithm.trim() : null;
+        String trimmedBatch = (batch != null && !batch.trim().isEmpty()) ? batch.trim() : null;
         return pageQuery(pageable,
-                () -> repository.list(algorithm, batch, pageable),
-                () -> repository.count(algorithm, batch));
+                () -> repository.list(trimmedAlgo, trimmedBatch, pageable),
+                () -> repository.count(trimmedAlgo, trimmedBatch));
     }
 
     public RecEvalRun get(Integer id) {

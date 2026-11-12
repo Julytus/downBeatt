@@ -160,7 +160,14 @@ export const EVAL_ALGORITHMS = [
   "popular",
   "popular-dd",
   "cbf-tag",
-  "cbf-full"
+  "cbf-full",
+  "m-mau",
+  "m-the",
+  "m-giam",
+  "m-mmr",
+  "m-kb",
+  "m-tron",
+  "m-mac-dinh"
 ] as const;
 
 export type EvalAlgorithm = (typeof EVAL_ALGORITHMS)[number];
@@ -170,8 +177,36 @@ export const EVAL_ALGORITHM_LABELS: Record<string, string> = {
   popular: "B2 Phổ biến",
   "popular-dd": "B2-dd Phổ biến xen kẽ",
   "cbf-tag": "B3 CBF chỉ thẻ",
-  "cbf-full": "M CBF đủ đặc trưng"
+  "cbf-full": "M CBF đủ đặc trưng",
+  "m-mau": "M-mau Bỏ khối màu",
+  "m-the": "M-the Bỏ khối thẻ",
+  "m-giam": "M-giam Bỏ suy giảm thời gian",
+  "m-mmr": "M-mmr Bỏ MMR",
+  "m-kb": "M-kb Bỏ sở thích khai báo",
+  "m-tron": "M-tron Sự kiện cùng trọng số",
+  "m-mac-dinh": "M-mac-dinh Tham số mặc định"
 };
+
+export interface EvalScenarioOption {
+  value: string;
+  label: string;
+}
+
+export const EVAL_SCENARIO_OPTIONS: EvalScenarioOption[] = [
+  { value: "standard", label: "Đánh giá chính" },
+  { value: "cold-user-0", label: "Người mới · 0 sự kiện" },
+  { value: "cold-user-1", label: "Người mới · 1 sự kiện" },
+  { value: "cold-user-3", label: "Người mới · 3 sự kiện" },
+  { value: "cold-user-5", label: "Người mới · 5 sự kiện" },
+  { value: "all", label: "Tất cả kịch bản" }
+];
+
+export function evalScenarioLabel(code: string): string {
+  if (code === "standard") return "Đánh giá chính";
+  const match = code.match(/^cold-user-(\d+)$/);
+  if (match) return `Người mới · ${match[1]} sự kiện`;
+  return code;
+}
 
 export type EvalMetricKey = keyof EvalMetricSetDTO;
 
@@ -180,6 +215,7 @@ export interface EvalMetricDef {
   header: (k: number | string) => string;
   digits: number;
   tooltip: string;
+  optional?: boolean;
 }
 
 export const EVAL_METRICS: EvalMetricDef[] = [
@@ -230,6 +266,20 @@ export const EVAL_METRICS: EvalMetricDef[] = [
     header: (k) => `Novelty@${k}`,
     digits: 2,
     tooltip: "Mức ít phổ biến của các LUT được gợi ý"
+  },
+  {
+    key: "newLutHit",
+    header: (k) => `LUT mới@${k}`,
+    digits: 4,
+    tooltip: "Tỉ lệ người dùng có ít nhất một LUT mới trong K gợi ý đầu",
+    optional: true
+  },
+  {
+    key: "newLutRecall",
+    header: (k) => `R LUT mới@${k}`,
+    digits: 4,
+    tooltip: "Tỉ lệ LUT mới liên quan được gợi ý, chỉ tính người có LUT mới liên quan",
+    optional: true
   }
 ];
 

@@ -58,13 +58,14 @@ export async function tryProfile(payload: TryProfileRequest): Promise<TryProfile
   return res.data.result;
 }
 
-/** GET /recommend/eval/list?algorithm=&batch=&page=&limit= — danh sách lần chạy đánh giá (plan §5.1) */
+/** GET /recommend/eval/list?algorithm=&scenario=&batch=&page=&limit= — danh sách lần chạy đánh giá (plan §5.1) */
 export async function listEvalRuns(params: EvalListParams = {}): Promise<EvalListResponseDTO> {
   const queryParams: Record<string, unknown> = {
     page: params.page ?? 1,
     limit: params.limit ?? 20
   };
   if (params.algorithm?.trim()) queryParams.algorithm = params.algorithm.trim();
+  if (params.scenario?.trim()) queryParams.scenario = params.scenario.trim();
   if (params.batch?.trim()) queryParams.batch = params.batch.trim();
 
   const res = await axiosInstance.get<ApiResponse<EvalListResponseDTO>>("/recommend/eval/list", {

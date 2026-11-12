@@ -27,7 +27,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | done (11/11/2026) |
 | 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | done (11/11/2026) |
 | 2.4 | 2. Hệ gợi ý | `quan-tri-goi-y` | 2.3 | done (11/11/2026) |
-| 3.1 | 3. Đánh giá | `danh-gia-goi-y` (phần 1; đề xuất tách thêm `tinh-chinh-goi-y`, `kiem-dinh-goi-y`) | 2.3 | phần 1 done (12/11/2026); phần 2, 3 chưa làm |
+| 3.1 | 3. Đánh giá | `danh-gia-goi-y` (phần 1; đề xuất tách thêm `tinh-chinh-goi-y`, `kiem-dinh-goi-y`) | 2.3 | phần 1 done (12/11/2026); phần 2 `tinh-chinh-goi-y` done (12/11/2026); phần 3 chưa làm |
 | 3.2 | 3. Đánh giá | thu thập D2 / D3 (người dùng thử) | 2.3 | chưa làm |
 | 4.1 | 4. Quản trị số liệu | `dashboard-admin` | 1.4, 1.5 | chưa làm |
 | 5.1 | 5. Plugin (tuỳ chọn) | `kho-plugin` | 3.1 | chưa làm |
@@ -259,28 +259,29 @@ Thiết kế: §5.6 (recommend), §9.4 `/admin/goi-y`, API-11, UI-06.
 
 ## Giai đoạn 3. Đánh giá thuật toán
 
-### 3.1 `danh-gia-goi-y` — phần 1 done (12/11/2026) ([plan/danh-gia-goi-y.md](../../plan/danh-gia-goi-y.md), phần 1 của 3)
+### 3.1 `danh-gia-goi-y` — phần 1 + phần 2 `tinh-chinh-goi-y` done (12/11/2026) ([plan/danh-gia-goi-y.md](../../plan/danh-gia-goi-y.md), phần 1 của 3)
 
 Thiết kế: chương 8, UT-13. Bảng: `rec_eval_run`, schema riêng `downbeat_eval` (đã chốt bỏ: D1 sinh trong bộ nhớ, plan §11 câu 2). Tách 3 lát: `danh-gia-goi-y` (D1, chia dữ liệu, chỉ số, 5 thuật toán, API, thẻ "Đánh giá") → `tinh-chinh-goi-y` (tinh chỉnh, biến thể, cold-start) → `kiem-dinh-goi-y` (5 hạt giống, Wilcoxon, bảng báo cáo).
 
 - [x] Plan → duyệt (12/11/2026, phần 1 `danh-gia-goi-y`)
+- [x] Plan phần 2 `tinh-chinh-goi-y` → duyệt ([plan/tinh-chinh-goi-y.md](../../plan/tinh-chinh-goi-y.md), 12/11/2026)
 - [x] Dữ liệu
   - [x] Kho đánh giá 300 LUT sinh tham số (sinh trong bộ nhớ bằng `CatalogGenerator` + `CubeWriter`, không dùng `downbeat_eval` / `tools/seed`, plan §11 câu 2)
   - [x] Bộ mô phỏng người dùng D1 theo hạt giống cố định
 - [ ] Backend
   - [x] Migration `rec_eval_run`, profile `eval`
   - [x] Chia dữ liệu theo thời gian (§8.3): phần dựng hồ sơ / kiểm định / kiểm tra theo t0 từng người
-  - [ ] Chỉ số Precision / Recall / NDCG / ILD / Coverage và chỉ số cold-start (UT-13)
+  - [x] Chỉ số Precision / Recall / NDCG / ILD / Coverage và chỉ số cold-start (UT-13)
     - [x] 8 chỉ số P / R / NDCG / HitRate / ILD / phong cách / Coverage / Novelty (phần 1)
-    - [ ] Chỉ số cold-start (dời sang `tinh-chinh-goi-y`)
+    - [x] Chỉ số cold-start: kịch bản người mới n = 0 / 1 / 3 / 5 + 2 chỉ số LUT mới (`tinh-chinh-goi-y`, 12/11/2026)
   - [x] `EvalRunner` gọi đúng `Recommender` và `UserProfileService` thật (không viết lại thuật toán)
   - [x] Các thuật toán so sánh (§8.5)
     - [x] B1 Ngẫu nhiên (20 lần, lấy trung bình)
     - [x] B2 Phổ biến (chỉ đếm lượt tải trước t0) và B2-dd (phổ biến xen kẽ phong cách)
     - [x] B3 CBF chỉ thẻ (cùng hồ sơ, suy giảm, cold-start, MMR)
     - [x] M CBF đủ 6 khối (thuật toán đề xuất)
-  - [ ] Biến thể bỏ bớt: M-mau, M-the, M-giam, M-mmr, M-kb, M-tron, M-mac-dinh (lát `tinh-chinh-goi-y`)
-  - [ ] Tinh chỉnh trên tập kiểm định: 500 bộ trọng số khối ngẫu nhiên, λ ∈ {0.5 … 1.0}, chu kỳ bán rã ∈ {7, 14, 30, 60, ∞}, k ∈ {2, 5, 10}; B3 cũng được tinh chỉnh (lát `tinh-chinh-goi-y`)
+  - [x] Biến thể bỏ bớt: M-mau, M-the, M-giam, M-mmr, M-kb, M-tron, M-mac-dinh (`tinh-chinh-goi-y`, 12/11/2026)
+  - [x] Tinh chỉnh trên tập kiểm định: 500 bộ trọng số khối ngẫu nhiên, λ ∈ {0.5 … 1.0}, chu kỳ bán rã ∈ {7, 14, 30, 60, ∞}, k ∈ {2, 5, 10}; B3 cũng được tinh chỉnh (`tinh-chinh-goi-y`, 12/11/2026)
   - [ ] Chạy 5 hạt giống, K = 5 / 10 / 20 (phần 1 đã có K = 5 / 10 / 20 và `eval.seeds` nhiều hạt giống; chạy 5 hạt giống chính thức ở `kiem-dinh-goi-y`)
   - [ ] Kiểm định thống kê (Wilcoxon), in bảng Markdown cho báo cáo (phần 1 đã in bảng mỗi hạt giống; Wilcoxon ở `kiem-dinh-goi-y`)
   - [x] `GET /recommend/eval/list` (+ `eval/get`)
@@ -289,6 +290,9 @@ Thiết kế: chương 8, UT-13. Bảng: `rec_eval_run`, schema riêng `downbeat
 - [x] E2E + review + tài liệu (phần 1)
   - [x] E2E 13/13 + review BE/FE (12/11/2026)
   - [x] Tài liệu (`/doc-chuc-nang danh-gia-goi-y`, [docs/chuc-nang/danh-gia-goi-y.md](../chuc-nang/danh-gia-goi-y.md))
+- [x] E2E + review + tài liệu (phần 2 `tinh-chinh-goi-y`)
+  - [x] E2E 13/13 + hồi quy phần 1 13/13 + review BE/FE, 0 vòng sửa (12/11/2026)
+  - [x] Tài liệu (`/doc-chuc-nang tinh-chinh-goi-y`, [docs/chuc-nang/tinh-chinh-goi-y.md](../chuc-nang/tinh-chinh-goi-y.md))
 
 ### 3.2 Thu thập D2 / D3 — chưa làm (không phải lát code)
 

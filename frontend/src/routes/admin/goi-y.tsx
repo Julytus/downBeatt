@@ -20,8 +20,20 @@ import type { FeatureFailureDTO } from "@/lib/types/recommend";
 
 const RESOURCE_CODE = "RECOMMEND";
 
+const VALID_SCENARIOS = [
+  "standard",
+  "all",
+  "cold-user-0",
+  "cold-user-1",
+  "cold-user-3",
+  "cold-user-5"
+] as const;
+
+export type ValidScenario = (typeof VALID_SCENARIOS)[number];
+
 const searchSchema = z.object({
   tab: z.enum(["cau-hinh", "danh-gia", "truc-tuyen", "thu-ho-so"]).catch("cau-hinh"),
+  scen: z.enum(VALID_SCENARIOS).catch("standard"),
   algo: z.string().optional().catch(undefined),
   k: z.coerce
     .number()
@@ -146,11 +158,22 @@ function GoiYPage() {
         </TabsContent>
         <TabsContent value="danh-gia" className="w-full min-w-0">
           <EvalTab
+            scen={search.scen}
             algo={search.algo}
             k={search.k}
             page={search.page}
             a={search.a}
             b={search.b}
+            onScenarioChange={(scen) =>
+              navigate({
+                search: (prev) => ({
+                  ...prev,
+                  scen: scen as ValidScenario,
+                  page: 1
+                }),
+                replace: true
+              })
+            }
             onAlgoChange={(algo) =>
               navigate({
                 search: (prev) => ({

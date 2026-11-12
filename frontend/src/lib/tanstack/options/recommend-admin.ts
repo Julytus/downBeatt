@@ -70,11 +70,18 @@ export const tryProfileMutationOptions: MutationOptions<
 
 export const createEvalRunsQueryOptions = (params: EvalListParams = {}) => {
   const algorithm = params.algorithm?.trim() ?? "";
+  const scenario = params.scenario?.trim() ?? "";
   const page = params.page ?? 1;
   const limit = params.limit ?? 20;
   return queryOptions({
-    queryKey: [...RECOMMEND_ADMIN_QUERY_KEY, "eval", "list", algorithm, page, limit] as const,
-    queryFn: () => listEvalRuns({ algorithm: algorithm || undefined, page, limit }),
+    queryKey: [...RECOMMEND_ADMIN_QUERY_KEY, "eval", "list", algorithm, scenario, page, limit] as const,
+    queryFn: () =>
+      listEvalRuns({
+        algorithm: algorithm || undefined,
+        scenario: scenario || undefined,
+        page,
+        limit
+      }),
     placeholderData: keepPreviousData
   });
 };
