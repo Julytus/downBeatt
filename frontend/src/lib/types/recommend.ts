@@ -229,3 +229,83 @@ export interface EvalListParams {
 
 export type EvalListResponseDTO = PagedResult<RecEvalRunDTO>;
 
+/* ==================== Types cho Kiểm định gợi ý (plan §5, §8) ==================== */
+
+export interface EvalBatchDTO {
+  batchCode: string;
+  dataset: string;
+  seeds: number[];
+  runCount: number;
+  scenarios: string[];
+  lutCount: number;
+  simUserCount: number;
+  hasTests: boolean;
+  createdTime: string;
+}
+
+export interface EvalBatchListParams {
+  page?: number;
+  limit?: number;
+}
+
+export type EvalBatchListResponseDTO = PagedResult<EvalBatchDTO>;
+
+export interface EvalMetricStatDTO {
+  mean: number;
+  std?: number;
+}
+
+export interface EvalAlgorithmSummaryDTO {
+  algorithm: string;
+  seedCount: number;
+  metrics: Record<string, Partial<Record<string, EvalMetricStatDTO>>>;
+}
+
+export interface EvalScenarioSummaryDTO {
+  scenario: string;
+  userCounts: number[];
+  rows: EvalAlgorithmSummaryDTO[];
+}
+
+export interface EvalTestDTO {
+  scenario: string;
+  metric: string;
+  k: number;
+  algorithmA: string;
+  algorithmB: string;
+  seedCount: number;
+  pairCount: number;
+  nonZeroCount: number;
+  meanA: number;
+  meanB: number;
+  meanDiff: number;
+  ciLow: number;
+  ciHigh: number;
+  relChange?: number;
+  wPlus: number;
+  z: number;
+  pValue: number;
+  pHolm: number;
+  conclusion: string;
+  params: Record<string, unknown>;
+}
+
+export interface EvalSummaryDTO {
+  batchCode: string;
+  dataset: string;
+  seeds: number[];
+  lutCount: number;
+  simUserCount: number;
+  kValues: number[];
+  newLutDays?: number;
+  scenarios: EvalScenarioSummaryDTO[];
+  tests: EvalTestDTO[];
+}
+
+export interface EvalReportDTO {
+  batchCode: string;
+  fileName: string;
+  markdown: string;
+}
+
+

@@ -10,7 +10,9 @@ lut:
     compute-on-startup: false
 
 eval:
-  seeds: 42
+  seeds: 42,7,123,2026,4242
+  bootstrap: 1000
+  alpha: 0.05
   luts: 300
   users: 500
   k-values: 5,10,20

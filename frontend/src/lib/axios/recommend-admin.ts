@@ -2,8 +2,12 @@ import axiosInstance from "@/lib/axios/instance";
 import type { ApiResponse } from "@/lib/types/common";
 import type {
   CustomerOptionDTO,
+  EvalBatchListParams,
+  EvalBatchListResponseDTO,
   EvalListParams,
   EvalListResponseDTO,
+  EvalReportDTO,
+  EvalSummaryDTO,
   RebuildResultDTO,
   RecEvalRunDTO,
   RecommendConfigDTO,
@@ -81,4 +85,41 @@ export async function getEvalRun(id: number): Promise<RecEvalRunDTO> {
   });
   return res.data.result;
 }
+
+/** GET /recommend/eval/batches?page=&limit= — danh sách lô đánh giá (plan §5.1) */
+export async function listEvalBatches(
+  params: EvalBatchListParams = {}
+): Promise<EvalBatchListResponseDTO> {
+  const queryParams: Record<string, unknown> = {
+    page: params.page ?? 1,
+    limit: params.limit ?? 20
+  };
+  if (params.page !== undefined) queryParams.page = params.page;
+  if (params.limit !== undefined) queryParams.limit = params.limit;
+
+  const res = await axiosInstance.get<ApiResponse<EvalBatchListResponseDTO>>(
+    "/recommend/eval/batches",
+    { params: queryParams }
+  );
+  return res.data.result;
+}
+
+/** GET /recommend/eval/summary?batch= — tổng hợp số đo và kiểm định của lô (plan §5.2) */
+export async function getEvalSummary(batch: string): Promise<EvalSummaryDTO> {
+  const res = await axiosInstance.get<ApiResponse<EvalSummaryDTO>>(
+    "/recommend/eval/summary",
+    { params: { batch } }
+  );
+  return res.data.result;
+}
+
+/** GET /recommend/eval/report?batch= — nội dung Markdown báo cáo (plan §5.3) */
+export async function getEvalReport(batch: string): Promise<EvalReportDTO> {
+  const res = await axiosInstance.get<ApiResponse<EvalReportDTO>>(
+    "/recommend/eval/report",
+    { params: { batch } }
+  );
+  return res.data.result;
+}
+
 

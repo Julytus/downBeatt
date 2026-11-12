@@ -4,7 +4,10 @@ import { AxiosError } from "axios";
 import {
   getRecommendConfig,
   getRecommendStats,
+  getEvalReport,
   getEvalRun,
+  getEvalSummary,
+  listEvalBatches,
   listEvalRuns,
   rebuildRecommendIndex,
   searchRecommendCustomers,
@@ -12,6 +15,7 @@ import {
 } from "@/lib/axios/recommend-admin";
 import type { ErrorResponse } from "@/lib/types/common";
 import type {
+  EvalBatchListParams,
   EvalListParams,
   RebuildResultDTO,
   RecommendStatsParams,
@@ -97,4 +101,34 @@ export const createEvalRunQueryOptions = (id: number) =>
       return failureCount < 3;
     }
   });
+
+export const createEvalBatchesQueryOptions = (params: EvalBatchListParams = {}) => {
+  const page = params.page ?? 1;
+  const limit = params.limit ?? 20;
+  return queryOptions({
+    queryKey: [...RECOMMEND_ADMIN_QUERY_KEY, "eval", "batches", page, limit] as const,
+    queryFn: () => listEvalBatches({ page, limit }),
+    placeholderData: keepPreviousData
+  });
+};
+
+export const createEvalSummaryQueryOptions = (batch?: string) =>
+  queryOptions({
+    queryKey: [...RECOMMEND_ADMIN_QUERY_KEY, "eval", "summary", batch ?? ""] as const,
+    queryFn: () => getEvalSummary(batch!),
+    enabled: !!batch,
+    retry: (failureCount, error) => {
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    }
+  });
+
+export const createEvalReportQueryOptions = (batch: string) =>
+  queryOptions({
+    queryKey: [...RECOMMEND_ADMIN_QUERY_KEY, "eval", "report", batch] as const,
+    queryFn: () => getEvalReport(batch)
+  });
+
 

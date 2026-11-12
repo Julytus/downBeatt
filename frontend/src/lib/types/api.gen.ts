@@ -692,6 +692,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recommend/eval/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["evalSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/eval/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["evalReport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recommend/eval/list": {
         parameters: {
             query?: never;
@@ -716,6 +748,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["evalGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/eval/batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["evalBatches"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1626,6 +1674,98 @@ export interface components {
             /** Format: double */
             dismissRate?: number;
         };
+        AlgorithmSummary: {
+            algorithm?: string;
+            /** Format: int32 */
+            seedCount?: number;
+            metrics?: {
+                [key: string]: {
+                    [key: string]: components["schemas"]["MetricStat"];
+                };
+            };
+        };
+        ApiResponseRecEvalSummary: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecEvalSummary"];
+            errors?: Record<string, never>;
+        };
+        MetricStat: {
+            /** Format: double */
+            mean?: number;
+            /** Format: double */
+            std?: number;
+        };
+        RecEvalSummary: {
+            batchCode?: string;
+            dataset?: string;
+            seeds?: number[];
+            /** Format: int32 */
+            lutCount?: number;
+            /** Format: int32 */
+            simUserCount?: number;
+            /** Format: int32 */
+            newLutDays?: number;
+            scenarios?: components["schemas"]["ScenarioSummary"][];
+            tests?: components["schemas"]["RecEvalTest"][];
+            kValues?: number[];
+        };
+        RecEvalTest: {
+            scenario?: string;
+            metric?: string;
+            /** Format: int32 */
+            k?: number;
+            algorithmA?: string;
+            algorithmB?: string;
+            /** Format: int32 */
+            seedCount?: number;
+            /** Format: int32 */
+            pairCount?: number;
+            /** Format: int32 */
+            nonZeroCount?: number;
+            /** Format: double */
+            meanA?: number;
+            /** Format: double */
+            meanB?: number;
+            /** Format: double */
+            meanDiff?: number;
+            /** Format: double */
+            ciLow?: number;
+            /** Format: double */
+            ciHigh?: number;
+            /** Format: double */
+            relChange?: number;
+            /** Format: double */
+            wPlus?: number;
+            /** Format: double */
+            z?: number;
+            /** Format: double */
+            pValue?: number;
+            /** Format: double */
+            pHolm?: number;
+            conclusion?: string;
+            params?: {
+                [key: string]: Record<string, never>;
+            };
+        };
+        ScenarioSummary: {
+            scenario?: string;
+            userCounts?: number[];
+            rows?: components["schemas"]["AlgorithmSummary"][];
+        };
+        ApiResponseRecEvalReport: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecEvalReport"];
+            errors?: Record<string, never>;
+        };
+        RecEvalReport: {
+            batchCode?: string;
+            fileName?: string;
+            markdown?: string;
+        };
         ApiResponsePageRecEvalRun: {
             /** Format: int32 */
             code?: number;
@@ -1666,6 +1806,35 @@ export interface components {
             message?: string;
             result?: components["schemas"]["RecEvalRun"];
             errors?: Record<string, never>;
+        };
+        ApiResponsePageRecEvalBatch: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["PageRecEvalBatch"];
+            errors?: Record<string, never>;
+        };
+        PageRecEvalBatch: {
+            /** Format: int64 */
+            total?: number;
+            /** Format: int32 */
+            page?: number;
+            items?: components["schemas"]["RecEvalBatch"][];
+        };
+        RecEvalBatch: {
+            batchCode?: string;
+            dataset?: string;
+            seeds?: number[];
+            /** Format: int32 */
+            runCount?: number;
+            scenarios?: string[];
+            /** Format: int32 */
+            lutCount?: number;
+            /** Format: int32 */
+            simUserCount?: number;
+            hasTests?: boolean;
+            /** Format: date-time */
+            createdTime?: string;
         };
         ApiResponseListCustomerOption: {
             /** Format: int32 */
@@ -2887,6 +3056,50 @@ export interface operations {
             };
         };
     };
+    evalSummary: {
+        parameters: {
+            query?: {
+                batch?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecEvalSummary"];
+                };
+            };
+        };
+    };
+    evalReport: {
+        parameters: {
+            query?: {
+                batch?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecEvalReport"];
+                };
+            };
+        };
+    };
     evalList: {
         parameters: {
             query?: {
@@ -2931,6 +3144,29 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseRecEvalRun"];
+                };
+            };
+        };
+    };
+    evalBatches: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePageRecEvalBatch"];
                 };
             };
         };

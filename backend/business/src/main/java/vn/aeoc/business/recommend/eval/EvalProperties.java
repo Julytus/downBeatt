@@ -20,7 +20,7 @@ public class EvalProperties {
 
     public static final Set<String> ALLOWED_SCENARIOS = Set.of("standard", "cold-user");
 
-    private List<Long> seeds = new ArrayList<>(List.of(42L));
+    private List<Long> seeds = new ArrayList<>(List.of(42L, 7L, 123L, 2026L, 4242L));
     private int luts = 300;
     private int users = 500;
     private List<Integer> kValues = new ArrayList<>(List.of(5, 10, 20));
@@ -34,10 +34,18 @@ public class EvalProperties {
     private int newLutDays = 14;
     private List<String> scenarios = new ArrayList<>(List.of("standard", "cold-user"));
     private List<Integer> coldUserEvents = new ArrayList<>(List.of(0, 1, 3, 5));
+    private int bootstrap = 1000;
+    private double alpha = 0.05;
 
     public Optional<String> validate() {
         if (seeds == null || seeds.isEmpty()) {
             return Optional.of("eval.seeds");
+        }
+        if (bootstrap < 100 || bootstrap > 10000) {
+            return Optional.of("eval.bootstrap");
+        }
+        if (Double.isNaN(alpha) || alpha < 0.001 || alpha > 0.2) {
+            return Optional.of("eval.alpha");
         }
         if (luts < 40 || luts > 2000) {
             return Optional.of("eval.luts");

@@ -26,6 +26,7 @@ import vn.entity.backend.tables.PaymentOrder;
 import vn.entity.backend.tables.Permission;
 import vn.entity.backend.tables.Plan;
 import vn.entity.backend.tables.RecEvalRun;
+import vn.entity.backend.tables.RecEvalTest;
 import vn.entity.backend.tables.RecImpression;
 import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
@@ -125,6 +126,11 @@ public class DefaultSchema extends SchemaImpl {
     public final RecEvalRun REC_EVAL_RUN = RecEvalRun.REC_EVAL_RUN;
 
     /**
+     * The table <code>rec_eval_test</code>.
+     */
+    public final RecEvalTest REC_EVAL_TEST = RecEvalTest.REC_EVAL_TEST;
+
+    /**
      * The table <code>rec_impression</code>.
      */
     public final RecImpression REC_IMPRESSION = RecImpression.REC_IMPRESSION;
@@ -195,6 +201,7 @@ public class DefaultSchema extends SchemaImpl {
             Permission.PERMISSION,
             Plan.PLAN,
             RecEvalRun.REC_EVAL_RUN,
+            RecEvalTest.REC_EVAL_TEST,
             RecImpression.REC_IMPRESSION,
             RefreshToken.REFRESH_TOKEN,
             Resource.RESOURCE,

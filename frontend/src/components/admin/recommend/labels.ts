@@ -172,6 +172,39 @@ export const EVAL_ALGORITHMS = [
 
 export type EvalAlgorithm = (typeof EVAL_ALGORITHMS)[number];
 
+export const EVAL_BASELINE_ALGORITHMS: EvalAlgorithm[] = [
+  "random",
+  "popular",
+  "popular-dd",
+  "cbf-tag",
+  "cbf-full"
+];
+
+export const EVAL_ABLATION_ALGORITHMS: EvalAlgorithm[] = [
+  "cbf-full",
+  "m-mau",
+  "m-the",
+  "m-giam",
+  "m-mmr",
+  "m-kb",
+  "m-tron",
+  "m-mac-dinh"
+];
+
+export const EVAL_COLD_ALGORITHMS: EvalAlgorithm[] = [
+  "popular",
+  "cbf-tag",
+  "cbf-full",
+  "m-kb"
+];
+
+export const EVAL_CONCLUSION_LABELS: Record<string, string> = {
+  better: "M tốt hơn",
+  worse: "M kém hơn",
+  "no-diff": "Không khác biệt có ý nghĩa"
+};
+
+
 export const EVAL_ALGORITHM_LABELS: Record<string, string> = {
   random: "B1 Ngẫu nhiên",
   popular: "B2 Phổ biến",
@@ -306,6 +339,40 @@ export function formatSignedPercentChange(a: number, b: number): string {
   if (r < 0) return `-${body}%`;
   return `${body}%`;
 }
+
+export function formatPValue(p: number): string {
+  if (p < 0.001) return "< 0,001";
+  return formatMetricValue(p, 3);
+}
+
+export function formatMeanStd(
+  stat: { mean: number; std?: number } | undefined,
+  digits: number
+): string {
+  if (!stat) return "—";
+  if (stat.std === undefined) {
+    return formatMetricValue(stat.mean, digits);
+  }
+  return `${formatMetricValue(stat.mean, digits)} ± ${formatMetricValue(stat.std, digits)}`;
+}
+
+export function formatSignedPercent(value: number | undefined): string {
+  if (value === undefined) return "—";
+  const v = Math.round(value * 10) / 10;
+  const body = formatMetricValue(Math.abs(v), 1);
+  if (v > 0) return `+${body}%`;
+  if (v < 0) return `-${body}%`;
+  return `${body}%`;
+}
+
+export function batchLabel(b: {
+  batchCode: string;
+  seeds: number[];
+  hasTests: boolean;
+}): string {
+  return `${b.batchCode} · ${b.seeds.length} hạt giống${b.hasTests ? " · có kiểm định" : ""}`;
+}
+
 
 export function flattenParams(
   obj: Record<string, unknown>,

@@ -6,13 +6,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import vn.aeoc.business.recommend.eval.stats.EvalReportWriter;
+import vn.aeoc.business.recommend.eval.stats.PairedTests;
+import vn.aeoc.business.recommend.eval.stats.SeedPerUser;
 import vn.aeoc.business.recommend.eval.tune.TuningResult;
 import vn.aeoc.business.recommend.service.RecEvalRunService;
 import vn.aeoc.entity.data.mysql.recommend.RecEvalRun;
+import vn.aeoc.entity.data.mysql.recommend.RecEvalTest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Component
@@ -77,16 +82,37 @@ public class EvalCommand implements ApplicationRunner {
 
         try {
             List<RecEvalRun> allRuns = new ArrayList<>();
+            List<SeedPerUser> perUsers = new ArrayList<>();
+            long totalBatchStart = System.currentTimeMillis();
+
             for (Long seed : evalProperties.getSeeds()) {
                 long seedStart = System.currentTimeMillis();
                 EvalRunner.EvalSeedResult seedResult = evalRunner.runWithReport(seed, evalProperties, batchCode);
                 allRuns.addAll(seedResult.runs());
+                if (seedResult.perUser() != null) {
+                    perUsers.add(seedResult.perUser());
+                }
                 long seedElapsed = System.currentTimeMillis() - seedStart;
 
                 printSeedReport(seedResult, seed, batchCode, evalProperties, seedElapsed);
             }
 
-            recEvalRunService.saveBatch(allRuns);
+            LocalDateTime createdTime = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).truncatedTo(ChronoUnit.SECONDS);
+            List<RecEvalTest> tests = List.of();
+            if (evalProperties.getScenarios().contains("standard") && evalProperties.getAlgorithms().contains("cbf-full")) {
+                tests = PairedTests.build(perUsers, evalProperties, batchCode, createdTime);
+            }
+
+            recEvalRunService.saveBatch(allRuns, tests);
+
+            double totalBatchSec = (System.currentTimeMillis() - totalBatchStart) / 1000.0;
+            int nSeeds = evalProperties.getSeeds().size();
+            System.out.println(String.format(Locale.US,
+                    "== Tổng hợp lô %s · %d hạt giống · %.1f giây ==",
+                    batchCode, nSeeds, totalBatchSec));
+            System.out.println();
+            System.out.print(EvalReportWriter.render(allRuns, tests));
+
             System.exit(SpringApplication.exit(applicationContext, () -> 0));
         } catch (Throwable t) {
             t.printStackTrace();

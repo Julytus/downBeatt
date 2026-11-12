@@ -69,6 +69,48 @@ public class RecEvalRunRepository extends AbsMysqlRepository<RecEvalRunRecord, R
         return count(algorithm, null, batch);
     }
 
+    public List<RecEvalRun> listByBatch(String batch) {
+        if (batch == null || batch.trim().isEmpty()) {
+            return List.of();
+        }
+        return dslContext
+                .select(getFiled())
+                .from(getTable())
+                .where(REC_EVAL_RUN.BATCH_CODE.eq(batch.trim()))
+                .orderBy(REC_EVAL_RUN.ID.asc())
+                .fetchInto(pojoClass);
+    }
+
+    public List<String> batchCodes(Pageable pageable) {
+        return dslContext
+                .select(REC_EVAL_RUN.BATCH_CODE)
+                .from(getTable())
+                .groupBy(REC_EVAL_RUN.BATCH_CODE)
+                .orderBy(REC_EVAL_RUN.BATCH_CODE.desc())
+                .limit(pageable.getLimit())
+                .offset(pageable.getOffset())
+                .fetch(REC_EVAL_RUN.BATCH_CODE);
+    }
+
+    public Long countBatches() {
+        return dslContext
+                .select(DSL.countDistinct(REC_EVAL_RUN.BATCH_CODE))
+                .from(getTable())
+                .fetchOne(0, Long.class);
+    }
+
+    public List<RecEvalRun> listByBatches(java.util.Collection<String> batchCodes) {
+        if (batchCodes == null || batchCodes.isEmpty()) {
+            return List.of();
+        }
+        return dslContext
+                .select(getFiled())
+                .from(getTable())
+                .where(REC_EVAL_RUN.BATCH_CODE.in(batchCodes))
+                .orderBy(REC_EVAL_RUN.ID.asc())
+                .fetchInto(pojoClass);
+    }
+
     public void insertAll(List<RecEvalRun> runs) {
         if (runs == null || runs.isEmpty()) {
             return;

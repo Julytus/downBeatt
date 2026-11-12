@@ -17,7 +17,10 @@ import vn.aeoc.business.recommend.service.RecommendService;
 import vn.aeoc.business.recommend.service.RecommendStatsService;
 import vn.aeoc.entity.data.mysql.recommend.CustomerOption;
 import vn.aeoc.entity.data.mysql.recommend.RebuildResult;
+import vn.aeoc.entity.data.mysql.recommend.RecEvalBatch;
+import vn.aeoc.entity.data.mysql.recommend.RecEvalReport;
 import vn.aeoc.entity.data.mysql.recommend.RecEvalRun;
+import vn.aeoc.entity.data.mysql.recommend.RecEvalSummary;
 import vn.aeoc.entity.data.mysql.recommend.RecommendConfig;
 import vn.aeoc.entity.data.mysql.recommend.RecommendStats;
 import vn.aeoc.entity.data.mysql.recommend.TryProfileRequest;
@@ -109,5 +112,33 @@ public class RecommendAdminController extends BaseController {
     ) {
         checkPermission(principal, URI, "VIEW");
         return Mapper.map(recEvalRunService.get(id), ApiResponse::okEntity);
+    }
+
+    @GetMapping("/recommend/eval/batches")
+    public ResponseEntity<ApiResponse<Page<RecEvalBatch>>> evalBatches(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer limit,
+            Principal principal
+    ) {
+        checkPermission(principal, URI, "VIEW");
+        return Mapper.map(recEvalRunService.batches(page, limit), ApiResponse::okEntity);
+    }
+
+    @GetMapping("/recommend/eval/summary")
+    public ResponseEntity<ApiResponse<RecEvalSummary>> evalSummary(
+            @RequestParam(required = false) String batch,
+            Principal principal
+    ) {
+        checkPermission(principal, URI, "VIEW");
+        return Mapper.map(recEvalRunService.summary(batch), ApiResponse::okEntity);
+    }
+
+    @GetMapping("/recommend/eval/report")
+    public ResponseEntity<ApiResponse<RecEvalReport>> evalReport(
+            @RequestParam(required = false) String batch,
+            Principal principal
+    ) {
+        checkPermission(principal, URI, "VIEW");
+        return Mapper.map(recEvalRunService.report(batch), ApiResponse::okEntity);
     }
 }
