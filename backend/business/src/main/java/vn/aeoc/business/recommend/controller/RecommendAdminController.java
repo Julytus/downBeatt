@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.aeoc.authenticate.controller.BaseController;
 import vn.aeoc.authenticate.service.auth.UserService;
 import vn.aeoc.authenticate.util.Mapper;
+import vn.aeoc.base.config.extention.paging.Page;
 import vn.aeoc.base.config.model.ApiResponse;
+import vn.aeoc.business.recommend.service.RecEvalRunService;
 import vn.aeoc.business.recommend.service.RecommendAdminService;
 import vn.aeoc.business.recommend.service.RecommendService;
 import vn.aeoc.business.recommend.service.RecommendStatsService;
 import vn.aeoc.entity.data.mysql.recommend.CustomerOption;
 import vn.aeoc.entity.data.mysql.recommend.RebuildResult;
+import vn.aeoc.entity.data.mysql.recommend.RecEvalRun;
 import vn.aeoc.entity.data.mysql.recommend.RecommendConfig;
 import vn.aeoc.entity.data.mysql.recommend.RecommendStats;
 import vn.aeoc.entity.data.mysql.recommend.TryProfileRequest;
@@ -31,15 +34,18 @@ public class RecommendAdminController extends BaseController {
     private final RecommendAdminService recommendAdminService;
     private final RecommendStatsService recommendStatsService;
     private final RecommendService recommendService;
+    private final RecEvalRunService recEvalRunService;
 
     public RecommendAdminController(RecommendAdminService recommendAdminService,
                                     RecommendStatsService recommendStatsService,
                                     RecommendService recommendService,
+                                    RecEvalRunService recEvalRunService,
                                     UserService userService) {
         super(userService);
         this.recommendAdminService = recommendAdminService;
         this.recommendStatsService = recommendStatsService;
         this.recommendService = recommendService;
+        this.recEvalRunService = recEvalRunService;
     }
 
     @GetMapping("/recommend/config")
@@ -81,5 +87,26 @@ public class RecommendAdminController extends BaseController {
     ) {
         checkPermission(principal, URI, "VIEW");
         return Mapper.map(recommendService.tryProfile(request), ApiResponse::okEntity);
+    }
+
+    @GetMapping("/recommend/eval/list")
+    public ResponseEntity<ApiResponse<Page<RecEvalRun>>> evalList(
+            @RequestParam(required = false) String algorithm,
+            @RequestParam(required = false) String batch,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer limit,
+            Principal principal
+    ) {
+        checkPermission(principal, URI, "VIEW");
+        return Mapper.map(recEvalRunService.list(algorithm, batch, page, limit), ApiResponse::okEntity);
+    }
+
+    @GetMapping("/recommend/eval/get")
+    public ResponseEntity<ApiResponse<RecEvalRun>> evalGet(
+            @RequestParam(required = false) Integer id,
+            Principal principal
+    ) {
+        checkPermission(principal, URI, "VIEW");
+        return Mapper.map(recEvalRunService.get(id), ApiResponse::okEntity);
     }
 }

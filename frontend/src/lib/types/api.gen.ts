@@ -692,6 +692,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recommend/eval/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["evalList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recommend/eval/get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["evalGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recommend/customers": {
         parameters: {
             query?: never;
@@ -1593,6 +1625,46 @@ export interface components {
             dismissals?: number;
             /** Format: double */
             dismissRate?: number;
+        };
+        ApiResponsePageRecEvalRun: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["PageRecEvalRun"];
+            errors?: Record<string, never>;
+        };
+        PageRecEvalRun: {
+            /** Format: int64 */
+            total?: number;
+            /** Format: int32 */
+            page?: number;
+            items?: components["schemas"]["RecEvalRun"][];
+        };
+        RecEvalRun: {
+            /** Format: int32 */
+            id?: number;
+            batchCode?: string;
+            dataset?: string;
+            algorithm?: string;
+            params?: {
+                [key: string]: Record<string, never>;
+            };
+            metrics?: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
+            /** Format: int32 */
+            userCount?: number;
+            /** Format: date-time */
+            createdTime?: string;
+        };
+        ApiResponseRecEvalRun: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["RecEvalRun"];
+            errors?: Record<string, never>;
         };
         ApiResponseListCustomerOption: {
             /** Format: int32 */
@@ -2810,6 +2882,53 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseRecommendStats"];
+                };
+            };
+        };
+    };
+    evalList: {
+        parameters: {
+            query?: {
+                algorithm?: string;
+                batch?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePageRecEvalRun"];
+                };
+            };
+        };
+    };
+    evalGet: {
+        parameters: {
+            query?: {
+                id?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseRecEvalRun"];
                 };
             };
         };

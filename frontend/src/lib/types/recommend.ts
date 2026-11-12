@@ -1,3 +1,4 @@
+import type { PagedResult } from "@/lib/types/common";
 import type { LutDTO } from "@/lib/types/lut";
 
 export type RecommendEventType = "VIEW" | "PREVIEW" | "SEARCH" | "FILTER_STYLE";
@@ -190,3 +191,37 @@ export interface TryProfileRequest {
   anonId?: string;
   limit?: number;
 }
+
+/* ==================== Types cho Đánh giá gợi ý (plan §5, §8) ==================== */
+
+export interface EvalMetricSetDTO {
+  precision: number;
+  recall: number;
+  ndcg: number;
+  hitRate: number;
+  ild: number;
+  styles: number;
+  coverage: number;
+  novelty: number;
+}
+
+export interface RecEvalRunDTO {
+  id: number;
+  batchCode: string;
+  dataset: string;
+  algorithm: string;
+  userCount: number;
+  createdTime: string;
+  params: Record<string, unknown>;
+  metrics: Record<string, EvalMetricSetDTO>;
+}
+
+export interface EvalListParams {
+  algorithm?: string;
+  batch?: string;
+  page?: number;
+  limit?: number;
+}
+
+export type EvalListResponseDTO = PagedResult<RecEvalRunDTO>;
+

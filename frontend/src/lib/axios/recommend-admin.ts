@@ -2,7 +2,10 @@ import axiosInstance from "@/lib/axios/instance";
 import type { ApiResponse } from "@/lib/types/common";
 import type {
   CustomerOptionDTO,
+  EvalListParams,
+  EvalListResponseDTO,
   RebuildResultDTO,
+  RecEvalRunDTO,
   RecommendConfigDTO,
   RecommendStatsDTO,
   RecommendStatsParams,
@@ -54,3 +57,27 @@ export async function tryProfile(payload: TryProfileRequest): Promise<TryProfile
   const res = await axiosInstance.post<ApiResponse<TryProfileResultDTO>>("/recommend/try-profile", payload);
   return res.data.result;
 }
+
+/** GET /recommend/eval/list?algorithm=&batch=&page=&limit= — danh sách lần chạy đánh giá (plan §5.1) */
+export async function listEvalRuns(params: EvalListParams = {}): Promise<EvalListResponseDTO> {
+  const queryParams: Record<string, unknown> = {
+    page: params.page ?? 1,
+    limit: params.limit ?? 20
+  };
+  if (params.algorithm?.trim()) queryParams.algorithm = params.algorithm.trim();
+  if (params.batch?.trim()) queryParams.batch = params.batch.trim();
+
+  const res = await axiosInstance.get<ApiResponse<EvalListResponseDTO>>("/recommend/eval/list", {
+    params: queryParams
+  });
+  return res.data.result;
+}
+
+/** GET /recommend/eval/get?id= — chi tiết lần chạy đánh giá (plan §5.2) */
+export async function getEvalRun(id: number): Promise<RecEvalRunDTO> {
+  const res = await axiosInstance.get<ApiResponse<RecEvalRunDTO>>("/recommend/eval/get", {
+    params: { id }
+  });
+  return res.data.result;
+}
+

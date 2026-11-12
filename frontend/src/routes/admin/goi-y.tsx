@@ -21,7 +21,16 @@ import type { FeatureFailureDTO } from "@/lib/types/recommend";
 const RESOURCE_CODE = "RECOMMEND";
 
 const searchSchema = z.object({
-  tab: z.enum(["cau-hinh", "danh-gia", "truc-tuyen", "thu-ho-so"]).catch("cau-hinh")
+  tab: z.enum(["cau-hinh", "danh-gia", "truc-tuyen", "thu-ho-so"]).catch("cau-hinh"),
+  algo: z.string().optional().catch(undefined),
+  k: z.coerce
+    .number()
+    .refine((val): val is 5 | 10 | 20 => val === 5 || val === 10 || val === 20)
+    .default(10)
+    .catch(10),
+  page: z.coerce.number().int().positive().default(1).catch(1),
+  a: z.coerce.number().int().positive().optional().catch(undefined),
+  b: z.coerce.number().int().positive().optional().catch(undefined)
 });
 
 export const Route = createFileRoute("/admin/goi-y")({
@@ -38,7 +47,8 @@ function GoiYRoute() {
 }
 
 function GoiYPage() {
-  const { tab } = Route.useSearch();
+  const search = Route.useSearch();
+  const { tab } = search;
   const navigate = Route.useNavigate();
   const { can } = useCanView();
   const canUpdate = can(RESOURCE_CODE, "UPDATE");
@@ -64,7 +74,10 @@ function GoiYPage() {
 
   const handleTabChange = (nextTab: string) => {
     navigate({
-      search: { tab: nextTab as "cau-hinh" | "danh-gia" | "truc-tuyen" | "thu-ho-so" },
+      search: (prev) => ({
+        ...prev,
+        tab: nextTab as "cau-hinh" | "danh-gia" | "truc-tuyen" | "thu-ho-so"
+      }),
       replace: true
     });
   };
@@ -132,7 +145,61 @@ function GoiYPage() {
           <ConfigTab />
         </TabsContent>
         <TabsContent value="danh-gia" className="w-full min-w-0">
-          <EvalTab />
+          <EvalTab
+            algo={search.algo}
+            k={search.k}
+            page={search.page}
+            a={search.a}
+            b={search.b}
+            onAlgoChange={(algo) =>
+              navigate({
+                search: (prev) => ({
+                  ...prev,
+                  algo: algo || undefined,
+                  page: 1
+                }),
+                replace: true
+              })
+            }
+            onKChange={(k) =>
+              navigate({
+                search: (prev) => ({
+                  ...prev,
+                  k
+                }),
+                replace: true
+              })
+            }
+            onPageChange={(page) =>
+              navigate({
+                search: (prev) => ({
+                  ...prev,
+                  page
+                }),
+                replace: true
+              })
+            }
+            onCompare={(a, b) =>
+              navigate({
+                search: (prev) => ({
+                  ...prev,
+                  a,
+                  b
+                }),
+                replace: true
+              })
+            }
+            onCloseCompare={() =>
+              navigate({
+                search: (prev) => ({
+                  ...prev,
+                  a: undefined,
+                  b: undefined
+                }),
+                replace: true
+              })
+            }
+          />
         </TabsContent>
         <TabsContent value="truc-tuyen" className="w-full min-w-0">
           <OnlineTab />

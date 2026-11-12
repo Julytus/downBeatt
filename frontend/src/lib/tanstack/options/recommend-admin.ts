@@ -1,15 +1,18 @@
 import { keepPreviousData, queryOptions, type MutationOptions } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
+import { AxiosError } from "axios";
 
 import {
   getRecommendConfig,
   getRecommendStats,
+  getEvalRun,
+  listEvalRuns,
   rebuildRecommendIndex,
   searchRecommendCustomers,
   tryProfile
 } from "@/lib/axios/recommend-admin";
 import type { ErrorResponse } from "@/lib/types/common";
 import type {
+  EvalListParams,
   RebuildResultDTO,
   RecommendStatsParams,
   TryProfileRequest,
@@ -64,3 +67,27 @@ export const tryProfileMutationOptions: MutationOptions<
     silentError: true
   }
 };
+
+export const createEvalRunsQueryOptions = (params: EvalListParams = {}) => {
+  const algorithm = params.algorithm?.trim() ?? "";
+  const page = params.page ?? 1;
+  const limit = params.limit ?? 20;
+  return queryOptions({
+    queryKey: [...RECOMMEND_ADMIN_QUERY_KEY, "eval", "list", algorithm, page, limit] as const,
+    queryFn: () => listEvalRuns({ algorithm: algorithm || undefined, page, limit }),
+    placeholderData: keepPreviousData
+  });
+};
+
+export const createEvalRunQueryOptions = (id: number) =>
+  queryOptions({
+    queryKey: [...RECOMMEND_ADMIN_QUERY_KEY, "eval", "get", id] as const,
+    queryFn: () => getEvalRun(id),
+    retry: (failureCount, error) => {
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    }
+  });
+
