@@ -10,6 +10,7 @@ import vn.aeoc.business.recommend.eval.sim.SimDataset;
 import vn.aeoc.business.recommend.eval.sim.UserSimulator;
 import vn.aeoc.business.recommend.eval.split.EvalCase;
 import vn.aeoc.business.recommend.eval.split.TimeSplitter;
+import vn.aeoc.business.recommend.eval.stats.SeedPerUser;
 import vn.aeoc.business.recommend.eval.tune.ItemSimMatrix;
 import vn.aeoc.business.recommend.eval.tune.Tuner;
 import vn.aeoc.business.recommend.eval.tune.TuningResult;
@@ -29,8 +30,13 @@ public class EvalRunner {
     public record EvalSeedResult(
             List<RecEvalRun> runs,
             TuningResult tuningM,
-            TuningResult tuningB3
-    ) {}
+            TuningResult tuningB3,
+            SeedPerUser perUser
+    ) {
+        public EvalSeedResult(List<RecEvalRun> runs, TuningResult tuningM, TuningResult tuningB3) {
+            this(runs, tuningM, tuningB3, null);
+        }
+    }
 
     private final RecommendProperties recommendProperties;
 
@@ -99,6 +105,9 @@ public class EvalRunner {
 
         LocalDateTime createdTime = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).truncatedTo(ChronoUnit.SECONDS);
         List<RecEvalRun> allRuns = new ArrayList<>();
+        int kTest = p.getKValues().contains(10) ? 10 : p.getKValues().stream().max(Integer::compareTo).orElse(10);
+        int[] userIds = null;
+        Map<String, double[]> ndcgByAlgo = new LinkedHashMap<>();
 
         // Kịch bản chính (standard)
         if (p.getScenarios().contains("standard")) {
@@ -110,6 +119,11 @@ public class EvalRunner {
                     p.isExcludeSeen(),
                     p.getNewLutDays()
             );
+
+            userIds = new int[testCases.size()];
+            for (int i = 0; i < testCases.size(); i++) {
+                userIds[i] = testCases.get(i).userId();
+            }
 
             for (String algoCode : EvalProperties.ALGORITHM_ORDER) {
                 if (!chosenAlgos.contains(algoCode)) {
@@ -127,7 +141,9 @@ public class EvalRunner {
                         createdTime,
                         tuningM,
                         tuningB3,
-                        null
+                        null,
+                        ndcgByAlgo,
+                        kTest
                 );
                 allRuns.add(run);
             }
@@ -166,7 +182,9 @@ public class EvalRunner {
                                 createdTime,
                                 tuningM,
                                 tuningB3,
-                                n
+                                n,
+                                null,
+                                kTest
                         );
                         allRuns.add(run);
                     }
@@ -174,7 +192,8 @@ public class EvalRunner {
             }
         }
 
-        return new EvalSeedResult(allRuns, tuningM, tuningB3);
+        SeedPerUser perUser = (userIds != null) ? new SeedPerUser(seed, userIds, ndcgByAlgo, kTest) : null;
+        return new EvalSeedResult(allRuns, tuningM, tuningB3, perUser);
     }
 
     private RecEvalRun evaluateAlgorithm(String algoCode,
@@ -188,7 +207,9 @@ public class EvalRunner {
                                          LocalDateTime createdTime,
                                          TuningResult tuningM,
                                          TuningResult tuningB3,
-                                         Integer historyEvents) {
+                                         Integer historyEvents,
+                                         Map<String, double[]> ndcgByAlgo,
+                                         int kTest) {
         int userCount = evalCases.size();
         int maxK = p.getKValues().stream().max(Integer::compareTo).orElse(20);
 
@@ -273,6 +294,9 @@ public class EvalRunner {
                 double sumIld = 0.0, sumStyles = 0.0, sumNov = 0.0;
                 double sumNewLutHit = 0.0, sumNewLutRecall = 0.0;
                 List<List<Integer>> allL = new ArrayList<>(userCount);
+                double[] perUserNdcg = (k == kTest && "standard".equals(scenario) && ndcgByAlgo != null)
+                        ? new double[userCount]
+                        : null;
 
                 for (int uIdx = 0; uIdx < userCount; uIdx++) {
                     EvalCase c = evalCases.get(uIdx);
@@ -282,9 +306,14 @@ public class EvalRunner {
                     List<Integer> sub = ranked.subList(0, Math.min(k, ranked.size()));
                     allL.add(sub);
 
+                    double ndcgVal = EvalMetrics.ndcg(sub, c.relMap(), k);
+                    if (perUserNdcg != null) {
+                        perUserNdcg[uIdx] = ndcgVal;
+                    }
+
                     sumP += EvalMetrics.precision(sub, c.relevantIds(), k);
                     sumR += EvalMetrics.recall(sub, c.relevantIds(), k);
-                    sumNdcg += EvalMetrics.ndcg(sub, c.relMap(), k);
+                    sumNdcg += ndcgVal;
                     sumHit += EvalMetrics.hitRate(sub, c.relevantIds(), k);
                     sumIld += EvalMetrics.ild(sub, ix, k);
                     sumStyles += EvalMetrics.styles(sub, ix, k);
@@ -293,6 +322,10 @@ public class EvalRunner {
                     if (!rNew.isEmpty()) {
                         sumNewLutRecall += EvalMetrics.newLutRecall(sub, rNew, k);
                     }
+                }
+
+                if (perUserNdcg != null) {
+                    ndcgByAlgo.put(algoCode, perUserNdcg);
                 }
 
                 double avgP = userCount > 0 ? (sumP / userCount) : 0.0;

@@ -19,6 +19,7 @@ import vn.entity.backend.tables.PaymentOrder;
 import vn.entity.backend.tables.Permission;
 import vn.entity.backend.tables.Plan;
 import vn.entity.backend.tables.RecEvalRun;
+import vn.entity.backend.tables.RecEvalTest;
 import vn.entity.backend.tables.RecImpression;
 import vn.entity.backend.tables.RefreshToken;
 import vn.entity.backend.tables.Resource;
@@ -109,6 +110,11 @@ public class Tables {
      * The table <code>rec_eval_run</code>.
      */
     public static final RecEvalRun REC_EVAL_RUN = RecEvalRun.REC_EVAL_RUN;
+
+    /**
+     * The table <code>rec_eval_test</code>.
+     */
+    public static final RecEvalTest REC_EVAL_TEST = RecEvalTest.REC_EVAL_TEST;
 
     /**
      * The table <code>rec_impression</code>.

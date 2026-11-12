@@ -27,7 +27,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | done (11/11/2026) |
 | 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | done (11/11/2026) |
 | 2.4 | 2. Hệ gợi ý | `quan-tri-goi-y` | 2.3 | done (11/11/2026) |
-| 3.1 | 3. Đánh giá | `danh-gia-goi-y` (phần 1; đề xuất tách thêm `tinh-chinh-goi-y`, `kiem-dinh-goi-y`) | 2.3 | phần 1 done (12/11/2026); phần 2 `tinh-chinh-goi-y` done (12/11/2026); phần 3 chưa làm |
+| 3.1 | 3. Đánh giá | `danh-gia-goi-y` (phần 1; đề xuất tách thêm `tinh-chinh-goi-y`, `kiem-dinh-goi-y`) | 2.3 | done (12/11/2026): phần 1 `danh-gia-goi-y`, phần 2 `tinh-chinh-goi-y`, phần 3 `kiem-dinh-goi-y` |
 | 3.2 | 3. Đánh giá | thu thập D2 / D3 (người dùng thử) | 2.3 | chưa làm |
 | 4.1 | 4. Quản trị số liệu | `dashboard-admin` | 1.4, 1.5 | chưa làm |
 | 5.1 | 5. Plugin (tuỳ chọn) | `kho-plugin` | 3.1 | chưa làm |
@@ -259,16 +259,17 @@ Thiết kế: §5.6 (recommend), §9.4 `/admin/goi-y`, API-11, UI-06.
 
 ## Giai đoạn 3. Đánh giá thuật toán
 
-### 3.1 `danh-gia-goi-y` — phần 1 + phần 2 `tinh-chinh-goi-y` done (12/11/2026) ([plan/danh-gia-goi-y.md](../../plan/danh-gia-goi-y.md), phần 1 của 3)
+### 3.1 `danh-gia-goi-y` — done (12/11/2026; phần 1 + phần 2 `tinh-chinh-goi-y` + phần 3 `kiem-dinh-goi-y`) ([plan/danh-gia-goi-y.md](../../plan/danh-gia-goi-y.md), phần 1 của 3)
 
 Thiết kế: chương 8, UT-13. Bảng: `rec_eval_run`, schema riêng `downbeat_eval` (đã chốt bỏ: D1 sinh trong bộ nhớ, plan §11 câu 2). Tách 3 lát: `danh-gia-goi-y` (D1, chia dữ liệu, chỉ số, 5 thuật toán, API, thẻ "Đánh giá") → `tinh-chinh-goi-y` (tinh chỉnh, biến thể, cold-start) → `kiem-dinh-goi-y` (5 hạt giống, Wilcoxon, bảng báo cáo).
 
 - [x] Plan → duyệt (12/11/2026, phần 1 `danh-gia-goi-y`)
 - [x] Plan phần 2 `tinh-chinh-goi-y` → duyệt ([plan/tinh-chinh-goi-y.md](../../plan/tinh-chinh-goi-y.md), 12/11/2026)
+- [x] Plan phần 3 `kiem-dinh-goi-y` → duyệt ([plan/kiem-dinh-goi-y.md](../../plan/kiem-dinh-goi-y.md), 12/11/2026)
 - [x] Dữ liệu
   - [x] Kho đánh giá 300 LUT sinh tham số (sinh trong bộ nhớ bằng `CatalogGenerator` + `CubeWriter`, không dùng `downbeat_eval` / `tools/seed`, plan §11 câu 2)
   - [x] Bộ mô phỏng người dùng D1 theo hạt giống cố định
-- [ ] Backend
+- [x] Backend
   - [x] Migration `rec_eval_run`, profile `eval`
   - [x] Chia dữ liệu theo thời gian (§8.3): phần dựng hồ sơ / kiểm định / kiểm tra theo t0 từng người
   - [x] Chỉ số Precision / Recall / NDCG / ILD / Coverage và chỉ số cold-start (UT-13)
@@ -282,17 +283,21 @@ Thiết kế: chương 8, UT-13. Bảng: `rec_eval_run`, schema riêng `downbeat
     - [x] M CBF đủ 6 khối (thuật toán đề xuất)
   - [x] Biến thể bỏ bớt: M-mau, M-the, M-giam, M-mmr, M-kb, M-tron, M-mac-dinh (`tinh-chinh-goi-y`, 12/11/2026)
   - [x] Tinh chỉnh trên tập kiểm định: 500 bộ trọng số khối ngẫu nhiên, λ ∈ {0.5 … 1.0}, chu kỳ bán rã ∈ {7, 14, 30, 60, ∞}, k ∈ {2, 5, 10}; B3 cũng được tinh chỉnh (`tinh-chinh-goi-y`, 12/11/2026)
-  - [ ] Chạy 5 hạt giống, K = 5 / 10 / 20 (phần 1 đã có K = 5 / 10 / 20 và `eval.seeds` nhiều hạt giống; chạy 5 hạt giống chính thức ở `kiem-dinh-goi-y`)
-  - [ ] Kiểm định thống kê (Wilcoxon), in bảng Markdown cho báo cáo (phần 1 đã in bảng mỗi hạt giống; Wilcoxon ở `kiem-dinh-goi-y`)
+  - [x] Chạy 5 hạt giống (42, 7, 123, 2026, 4242), K = 5 / 10 / 20: lô chính thức `20261112-124758` (`kiem-dinh-goi-y`, 12/11/2026)
+  - [x] Kiểm định thống kê: Wilcoxon có dấu theo cặp + Holm (9 phép so sánh) + khoảng tin cậy bootstrap; `eval/batches`, `eval/summary`, `eval/report` in bảng Markdown 8.1 → 8.5 (`kiem-dinh-goi-y`, 12/11/2026)
   - [x] `GET /recommend/eval/list` (+ `eval/get`)
 - [x] Frontend: thẻ "Đánh giá" ở `/admin/goi-y` (bảng các lần chạy, chọn hai lần để so sánh)
-- [ ] Kết quả: bảng theo mẫu §8.8 đưa vào báo cáo (sau `kiem-dinh-goi-y`)
+- [x] Frontend: thẻ "Tổng hợp" ở `/admin/goi-y` (5 card Bảng 8.1 → 8.5, sao chép / tải Markdown) (`kiem-dinh-goi-y`, 12/11/2026)
+- [x] Kết quả: bảng theo mẫu §8.8 (Bảng 8.1 → 8.5 + tinh chỉnh theo hạt giống) và kiểm tra H1 → H5 nằm trong [docs/chuc-nang/kiem-dinh-goi-y.md](../chuc-nang/kiem-dinh-goi-y.md) (12/11/2026)
 - [x] E2E + review + tài liệu (phần 1)
   - [x] E2E 13/13 + review BE/FE (12/11/2026)
   - [x] Tài liệu (`/doc-chuc-nang danh-gia-goi-y`, [docs/chuc-nang/danh-gia-goi-y.md](../chuc-nang/danh-gia-goi-y.md))
 - [x] E2E + review + tài liệu (phần 2 `tinh-chinh-goi-y`)
   - [x] E2E 13/13 + hồi quy phần 1 13/13 + review BE/FE, 0 vòng sửa (12/11/2026)
   - [x] Tài liệu (`/doc-chuc-nang tinh-chinh-goi-y`, [docs/chuc-nang/tinh-chinh-goi-y.md](../chuc-nang/tinh-chinh-goi-y.md))
+- [x] E2E + review + tài liệu (phần 3 `kiem-dinh-goi-y`)
+  - [x] E2E 15/15 + hồi quy 45/45 + review BE/FE, BE 0 vòng sửa, FE 1 vòng sửa (12/11/2026)
+  - [x] Tài liệu (`/doc-chuc-nang kiem-dinh-goi-y`, [docs/chuc-nang/kiem-dinh-goi-y.md](../chuc-nang/kiem-dinh-goi-y.md))
 
 ### 3.2 Thu thập D2 / D3 — chưa làm (không phải lát code)
 

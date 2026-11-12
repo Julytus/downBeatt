@@ -10,6 +10,7 @@ import { ConfigTab } from "@/components/admin/recommend/config-tab";
 import { EvalTab } from "@/components/admin/recommend/eval-tab";
 import { OnlineTab } from "@/components/admin/recommend/online-tab";
 import { RebuildIndexDialog } from "@/components/admin/recommend/rebuild-index-dialog";
+import { SummaryTab } from "@/components/admin/recommend/summary-tab";
 import { TryProfileTab } from "@/components/admin/recommend/try-profile-tab";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -32,9 +33,10 @@ const VALID_SCENARIOS = [
 export type ValidScenario = (typeof VALID_SCENARIOS)[number];
 
 const searchSchema = z.object({
-  tab: z.enum(["cau-hinh", "danh-gia", "truc-tuyen", "thu-ho-so"]).catch("cau-hinh"),
+  tab: z.enum(["cau-hinh", "danh-gia", "tong-hop", "truc-tuyen", "thu-ho-so"]).catch("cau-hinh"),
   scen: z.enum(VALID_SCENARIOS).catch("standard"),
   algo: z.string().optional().catch(undefined),
+  batch: z.string().optional().catch(undefined),
   k: z.coerce
     .number()
     .refine((val): val is 5 | 10 | 20 => val === 5 || val === 10 || val === 20)
@@ -88,7 +90,7 @@ function GoiYPage() {
     navigate({
       search: (prev) => ({
         ...prev,
-        tab: nextTab as "cau-hinh" | "danh-gia" | "truc-tuyen" | "thu-ho-so"
+        tab: nextTab as "cau-hinh" | "danh-gia" | "tong-hop" | "truc-tuyen" | "thu-ho-so"
       }),
       replace: true
     });
@@ -148,6 +150,7 @@ function GoiYPage() {
           <TabsList>
             <TabsTrigger value="cau-hinh">Cấu hình</TabsTrigger>
             <TabsTrigger value="danh-gia">Đánh giá</TabsTrigger>
+            <TabsTrigger value="tong-hop">Tổng hợp</TabsTrigger>
             <TabsTrigger value="truc-tuyen">Trực tuyến</TabsTrigger>
             <TabsTrigger value="thu-ho-so">Thử hồ sơ</TabsTrigger>
           </TabsList>
@@ -218,6 +221,30 @@ function GoiYPage() {
                   ...prev,
                   a: undefined,
                   b: undefined
+                }),
+                replace: true
+              })
+            }
+          />
+        </TabsContent>
+        <TabsContent value="tong-hop" className="w-full min-w-0">
+          <SummaryTab
+            batch={search.batch}
+            k={search.k}
+            onBatchChange={(batch) =>
+              navigate({
+                search: (prev) => ({
+                  ...prev,
+                  batch: batch || undefined
+                }),
+                replace: true
+              })
+            }
+            onKChange={(k) =>
+              navigate({
+                search: (prev) => ({
+                  ...prev,
+                  k
                 }),
                 replace: true
               })
