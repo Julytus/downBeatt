@@ -1060,6 +1060,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/dashboard/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["summary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/collection/my-list": {
         parameters: {
             query?: never;
@@ -2005,6 +2021,83 @@ export interface components {
             message?: string;
             result?: components["schemas"]["LutCategory"];
             errors?: Record<string, never>;
+        };
+        ActivePlans: {
+            /** Format: int64 */
+            totalCustomers?: number;
+            items?: components["schemas"]["PlanCustomers"][];
+        };
+        ApiResponseDashboardSummary: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["DashboardSummary"];
+            errors?: Record<string, never>;
+        };
+        DashboardPoint: {
+            period?: string;
+            /** Format: int64 */
+            revenue?: number;
+            /** Format: int64 */
+            paidOrders?: number;
+            /** Format: int64 */
+            newCustomers?: number;
+            /** Format: int64 */
+            downloads?: number;
+        };
+        DashboardSummary: {
+            from?: string;
+            to?: string;
+            groupBy?: string;
+            summary?: components["schemas"]["DashboardTotals"];
+            previous?: components["schemas"]["DashboardTotals"];
+            series?: components["schemas"]["DashboardPoint"][];
+            revenueByPlan?: components["schemas"]["PlanRevenue"][];
+            activePlans?: components["schemas"]["ActivePlans"];
+            topLuts?: components["schemas"]["DashboardTopLut"][];
+        };
+        DashboardTopLut: {
+            /** Format: int32 */
+            id?: number;
+            slug?: string;
+            title?: string;
+            coverUrl?: string;
+            /** Format: int32 */
+            isPremium?: number;
+            status?: string;
+            creatorName?: string;
+            /** Format: int64 */
+            downloads?: number;
+        };
+        DashboardTotals: {
+            from?: string;
+            to?: string;
+            /** Format: int64 */
+            revenue?: number;
+            /** Format: int64 */
+            paidOrders?: number;
+            /** Format: int64 */
+            newCustomers?: number;
+            /** Format: int64 */
+            downloads?: number;
+            /** Format: int64 */
+            premiumDownloads?: number;
+            /** Format: double */
+            premiumRatio?: number;
+        };
+        PlanCustomers: {
+            planCode?: string;
+            planName?: string;
+            /** Format: int64 */
+            customers?: number;
+        };
+        PlanRevenue: {
+            planCode?: string;
+            planName?: string;
+            /** Format: int64 */
+            revenue?: number;
+            /** Format: int64 */
+            paidOrders?: number;
         };
         ApiResponseListLutCollection: {
             /** Format: int32 */
@@ -3577,6 +3670,30 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseLutCategory"];
+                };
+            };
+        };
+    };
+    summary: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+                groupBy?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseDashboardSummary"];
                 };
             };
         };
