@@ -92,13 +92,14 @@ public class RecommendAdminController extends BaseController {
     @GetMapping("/recommend/eval/list")
     public ResponseEntity<ApiResponse<Page<RecEvalRun>>> evalList(
             @RequestParam(required = false) String algorithm,
+            @RequestParam(required = false) String scenario,
             @RequestParam(required = false) String batch,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer limit,
             Principal principal
     ) {
         checkPermission(principal, URI, "VIEW");
-        return Mapper.map(recEvalRunService.list(algorithm, batch, page, limit), ApiResponse::okEntity);
+        return Mapper.map(recEvalRunService.list(algorithm, scenario, batch, page, limit), ApiResponse::okEntity);
     }
 
     @GetMapping("/recommend/eval/get")

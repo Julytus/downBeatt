@@ -4,9 +4,12 @@ import {
   EVAL_ALGORITHMS,
   EVAL_ALGORITHM_LABELS,
   EVAL_METRICS,
+  EVAL_SCENARIO_OPTIONS,
+  evalScenarioLabel,
   formatDateTimeShort,
   formatMetricValue
 } from "@/components/admin/recommend/labels";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -45,9 +48,11 @@ export interface EvalRunsTableProps {
   runs: RecEvalRunDTO[];
   total: number;
   page: number;
+  scen?: string;
   algo?: string;
   k: number;
   selectedIds: number[];
+  onScenarioChange: (scen: string) => void;
   onAlgoChange: (algo: string) => void;
   onKChange: (k: number) => void;
   onPageChange: (page: number) => void;
@@ -60,9 +65,11 @@ export function EvalRunsTable({
   runs,
   total,
   page,
+  scen,
   algo,
   k,
   selectedIds,
+  onScenarioChange,
   onAlgoChange,
   onKChange,
   onPageChange,
@@ -82,16 +89,34 @@ export function EvalRunsTable({
     }
   };
 
+  const coldMatch = scen?.match(/^cold-user-(\d+)$/);
+
   return (
     <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
       {/* 6.2 Thanh công cụ */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
+          <Select
+            value={scen || "standard"}
+            onValueChange={(val) => onScenarioChange(val)}
+          >
+            <SelectTrigger aria-label="Kịch bản" className="w-full sm:w-[220px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {EVAL_SCENARIO_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <Select
             value={algo || "all"}
             onValueChange={(val) => onAlgoChange(val === "all" ? "" : val)}
           >
-            <SelectTrigger aria-label="Thuật toán" className="w-[190px]">
+            <SelectTrigger aria-label="Thuật toán" className="w-full sm:w-[260px]">
               <SelectValue placeholder="Tất cả thuật toán" />
             </SelectTrigger>
             <SelectContent>
@@ -108,7 +133,7 @@ export function EvalRunsTable({
             value={String(k)}
             onValueChange={(val) => onKChange(Number(val))}
           >
-            <SelectTrigger aria-label="Số gợi ý" className="w-[110px]">
+            <SelectTrigger aria-label="Số gợi ý" className="w-full sm:w-[110px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -134,6 +159,12 @@ export function EvalRunsTable({
         </div>
       </div>
 
+      {coldMatch && (
+        <p className="text-sm text-muted-foreground">
+          {`Người dùng mới chỉ có sở thích khai báo và ${coldMatch[1]} sự kiện đầu tiên; chỉ số đo trên các LUT họ tải hoặc yêu thích sau đó.`}
+        </p>
+      )}
+
       {/* 6.3 Bảng Các lần chạy */}
       <Card data-slot="card" className="w-full min-w-0 max-w-full">
         <CardHeader>
@@ -153,6 +184,7 @@ export function EvalRunsTable({
                 <TableHead>Lô</TableHead>
                 <TableHead>Thời điểm</TableHead>
                 <TableHead>Thuật toán</TableHead>
+                <TableHead>Kịch bản</TableHead>
                 <TableHead>Hạt giống</TableHead>
                 <TableHead>Người dùng</TableHead>
                 {EVAL_METRICS.map((metric) => (
@@ -186,6 +218,9 @@ export function EvalRunsTable({
                       <Skeleton className="h-4 w-32" />
                     </TableCell>
                     <TableCell>
+                      <Skeleton className="h-4 w-28" />
+                    </TableCell>
+                    <TableCell>
                       <Skeleton className="h-4 w-12" />
                     </TableCell>
                     <TableCell>
@@ -201,7 +236,7 @@ export function EvalRunsTable({
               ) : runs.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={14}
+                    colSpan={17}
                     className="h-32 text-center text-muted-foreground"
                   >
                     Không có lần chạy nào khớp bộ lọc.
@@ -239,7 +274,17 @@ export function EvalRunsTable({
                         {formatDateTimeShort(run.createdTime)}
                       </TableCell>
                       <TableCell>
-                        {EVAL_ALGORITHM_LABELS[run.algorithm] ?? run.algorithm}
+                        <div className="flex items-center gap-2">
+                          <span>
+                            {EVAL_ALGORITHM_LABELS[run.algorithm] ?? run.algorithm}
+                          </span>
+                          {run.params?.tuned === true && (
+                            <Badge variant="secondary">tinh chỉnh</Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {evalScenarioLabel(run.scenario ?? "standard")}
                       </TableCell>
                       <TableCell>{String(run.params.seed ?? "—")}</TableCell>
                       <TableCell>{String(run.userCount)}</TableCell>

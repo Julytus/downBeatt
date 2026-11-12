@@ -1646,6 +1646,7 @@ export interface components {
             batchCode?: string;
             dataset?: string;
             algorithm?: string;
+            scenario?: string;
             params?: {
                 [key: string]: Record<string, never>;
             };
@@ -2890,6 +2891,7 @@ export interface operations {
         parameters: {
             query?: {
                 algorithm?: string;
+                scenario?: string;
                 batch?: string;
                 page?: number;
                 limit?: number;

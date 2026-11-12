@@ -6,6 +6,7 @@ import {
   areParamValuesDifferent,
   EVAL_ALGORITHM_LABELS,
   EVAL_METRICS,
+  evalScenarioLabel,
   flattenParams,
   formatMetricValue,
   formatParamValue,
@@ -31,12 +32,20 @@ import {
 } from "@/components/ui/table";
 import { createEvalRunQueryOptions } from "@/lib/tanstack/options/recommend-admin";
 import { cn } from "@/lib/utils";
+import type { RecEvalRunDTO } from "@/lib/types/recommend";
 
 export interface EvalCompareCardProps {
   aId: number;
   bId: number;
   k: number;
   onClose: () => void;
+}
+
+function buildRunHeader(prefix: "A" | "B", run: RecEvalRunDTO) {
+  const algoLabel = EVAL_ALGORITHM_LABELS[run.algorithm] ?? run.algorithm;
+  const isCold = run.scenario && run.scenario !== "standard";
+  const scenPart = isCold ? ` · ${evalScenarioLabel(run.scenario)}` : "";
+  return `${prefix}: #${run.id} ${algoLabel}${scenPart} · lô ${run.batchCode} · hạt giống ${String(run.params.seed ?? "—")}`;
 }
 
 export function EvalCompareCard({
@@ -72,13 +81,6 @@ export function EvalCompareCard({
     ]);
     return Array.from(keys);
   }, [flatParamsA, flatParamsB]);
-
-  const labelA = runA
-    ? EVAL_ALGORITHM_LABELS[runA.algorithm] ?? runA.algorithm
-    : "";
-  const labelB = runB
-    ? EVAL_ALGORITHM_LABELS[runB.algorithm] ?? runB.algorithm
-    : "";
 
   return (
     <Card data-slot="card" className="w-full min-w-0 max-w-full">
@@ -116,14 +118,8 @@ export function EvalCompareCard({
           <>
             {/* Nhãn A và B */}
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-sm font-medium text-foreground">
-              <div>
-                A: #{runA.id} {labelA} · lô {runA.batchCode} · hạt giống{" "}
-                {String(runA.params.seed ?? "—")}
-              </div>
-              <div>
-                B: #{runB.id} {labelB} · lô {runB.batchCode} · hạt giống{" "}
-                {String(runB.params.seed ?? "—")}
-              </div>
+              <div>{buildRunHeader("A", runA)}</div>
+              <div>{buildRunHeader("B", runB)}</div>
             </div>
 
             {/* Bảng Chỉ số */}
@@ -171,12 +167,37 @@ export function EvalCompareCard({
                     <TableCell className="text-right">—</TableCell>
                   </TableRow>
 
-                  {/* 8 hàng chỉ số */}
+                  {/* Các hàng chỉ số */}
                   {EVAL_METRICS.map((metric) => {
                     const valA =
-                      runA.metrics?.[String(k)]?.[metric.key] ?? 0;
+                      runA.metrics?.[String(k)]?.[metric.key];
                     const valB =
-                      runB.metrics?.[String(k)]?.[metric.key] ?? 0;
+                      runB.metrics?.[String(k)]?.[metric.key];
+                    const isMissing = valA === undefined || valB === undefined;
+
+                    const textA =
+                      valA !== undefined
+                        ? formatMetricValue(valA, metric.digits)
+                        : "—";
+                    const textB =
+                      valB !== undefined
+                        ? formatMetricValue(valB, metric.digits)
+                        : "—";
+
+                    if (isMissing) {
+                      return (
+                        <TableRow key={metric.key}>
+                          <TableCell className="font-medium">
+                            {metric.header(k)}
+                          </TableCell>
+                          <TableCell className="text-right">{textA}</TableCell>
+                          <TableCell className="text-right">{textB}</TableCell>
+                          <TableCell className="text-right">—</TableCell>
+                          <TableCell className="text-right">—</TableCell>
+                        </TableRow>
+                      );
+                    }
+
                     const diff = valB - valA;
                     const rDiff =
                       Math.round(diff * 10 ** metric.digits) /
@@ -188,12 +209,8 @@ export function EvalCompareCard({
                         <TableCell className="font-medium">
                           {metric.header(k)}
                         </TableCell>
-                        <TableCell className="text-right">
-                          {formatMetricValue(valA, metric.digits)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {formatMetricValue(valB, metric.digits)}
-                        </TableCell>
+                        <TableCell className="text-right">{textA}</TableCell>
+                        <TableCell className="text-right">{textB}</TableCell>
                         <TableCell
                           className={cn(
                             "text-right",

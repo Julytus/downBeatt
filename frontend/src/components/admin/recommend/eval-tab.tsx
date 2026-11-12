@@ -15,11 +15,13 @@ import {
 import { createEvalRunsQueryOptions } from "@/lib/tanstack/options/recommend-admin";
 
 export interface EvalTabProps {
+  scen?: string;
   algo?: string;
   k?: number;
   page?: number;
   a?: number;
   b?: number;
+  onScenarioChange?: (scen: string) => void;
   onAlgoChange?: (algo: string) => void;
   onKChange?: (k: number) => void;
   onPageChange?: (page: number) => void;
@@ -28,11 +30,13 @@ export interface EvalTabProps {
 }
 
 export function EvalTab({
+  scen = "standard",
   algo = "",
   k = 10,
   page = 1,
   a,
   b,
+  onScenarioChange = () => {},
   onAlgoChange = () => {},
   onKChange = () => {},
   onPageChange = () => {},
@@ -57,9 +61,11 @@ export function EvalTab({
     }
   }, [a, b]);
 
+  const scenario = scen === "all" ? undefined : scen;
   const { data, isLoading, isError, refetch } = useQuery(
     createEvalRunsQueryOptions({
       algorithm: algo || undefined,
+      scenario: scenario || undefined,
       page
     })
   );
@@ -68,7 +74,8 @@ export function EvalTab({
     return <TabLoadError onRetry={() => void refetch()} />;
   }
 
-  if (!isLoading && data?.total === 0 && !algo) {
+  const isMainScenario = !scen || scen === "standard" || scen === "all";
+  if (!isLoading && data?.total === 0 && !algo && isMainScenario) {
     return (
       <div className="py-12">
         <Empty>
@@ -99,9 +106,11 @@ export function EvalTab({
         runs={data?.items ?? []}
         total={data?.total ?? 0}
         page={page}
+        scen={scen}
         algo={algo}
         k={k}
         selectedIds={selectedIds}
+        onScenarioChange={onScenarioChange}
         onAlgoChange={onAlgoChange}
         onKChange={onKChange}
         onPageChange={onPageChange}

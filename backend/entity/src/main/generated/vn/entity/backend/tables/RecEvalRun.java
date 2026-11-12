@@ -11,14 +11,14 @@ import java.util.function.Function;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Function8;
+import org.jooq.Function9;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.JSON;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.SelectField;
 import org.jooq.Table;
@@ -77,6 +77,12 @@ public class RecEvalRun extends TableImpl<RecEvalRunRecord> {
      * popular-dd, cbf-tag, cbf-full (biến thể ở lát sau)
      */
     public final TableField<RecEvalRunRecord, String> ALGORITHM = createField(DSL.name("algorithm"), SQLDataType.VARCHAR(30).nullable(false), this, "random, popular, popular-dd, cbf-tag, cbf-full (biến thể ở lát sau)");
+
+    /**
+     * The column <code>rec_eval_run.scenario</code>. standard = phần kiểm 20%
+     * cuối; cold-user-{n} = người mới chỉ có khai báo và n sự kiện đầu
+     */
+    public final TableField<RecEvalRunRecord, String> SCENARIO = createField(DSL.name("scenario"), SQLDataType.VARCHAR(30).nullable(false).defaultValue(DSL.inline("standard", SQLDataType.VARCHAR)), this, "standard = phần kiểm 20% cuối; cold-user-{n} = người mới chỉ có khai báo và n sự kiện đầu");
 
     /**
      * The column <code>rec_eval_run.params</code>. Hạt giống, cỡ dữ liệu, trọng
@@ -139,7 +145,7 @@ public class RecEvalRun extends TableImpl<RecEvalRunRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.REC_EVAL_RUN_IDX_REC_EVAL_RUN_ALGORITHM, Indexes.REC_EVAL_RUN_IDX_REC_EVAL_RUN_BATCH);
+        return Arrays.asList(Indexes.REC_EVAL_RUN_IDX_REC_EVAL_RUN_ALGORITHM, Indexes.REC_EVAL_RUN_IDX_REC_EVAL_RUN_BATCH, Indexes.REC_EVAL_RUN_IDX_REC_EVAL_RUN_SCENARIO);
     }
 
     @Override
@@ -192,18 +198,18 @@ public class RecEvalRun extends TableImpl<RecEvalRunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<Integer, String, String, String, JSON, JSON, Integer, LocalDateTime> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<Integer, String, String, String, String, JSON, JSON, Integer, LocalDateTime> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function8<? super Integer, ? super String, ? super String, ? super String, ? super JSON, ? super JSON, ? super Integer, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super Integer, ? super String, ? super String, ? super String, ? super String, ? super JSON, ? super JSON, ? super Integer, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -211,7 +217,7 @@ public class RecEvalRun extends TableImpl<RecEvalRunRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super Integer, ? super String, ? super String, ? super String, ? super JSON, ? super JSON, ? super Integer, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super Integer, ? super String, ? super String, ? super String, ? super String, ? super JSON, ? super JSON, ? super Integer, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

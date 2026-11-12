@@ -32,10 +32,13 @@ public class RecEvalRunRepository extends AbsMysqlRepository<RecEvalRunRecord, R
         return REC_EVAL_RUN;
     }
 
-    private Condition getWhereCondition(String algorithm, String batch) {
+    private Condition getWhereCondition(String algorithm, String scenario, String batch) {
         Condition condition = DSL.noCondition();
         if (algorithm != null && !algorithm.trim().isEmpty()) {
             condition = condition.and(REC_EVAL_RUN.ALGORITHM.eq(algorithm.trim()));
+        }
+        if (scenario != null && !scenario.trim().isEmpty()) {
+            condition = condition.and(REC_EVAL_RUN.SCENARIO.eq(scenario.trim()));
         }
         if (batch != null && !batch.trim().isEmpty()) {
             condition = condition.and(REC_EVAL_RUN.BATCH_CODE.eq(batch.trim()));
@@ -43,19 +46,27 @@ public class RecEvalRunRepository extends AbsMysqlRepository<RecEvalRunRecord, R
         return condition;
     }
 
-    public List<RecEvalRun> list(String algorithm, String batch, Pageable pageable) {
+    public List<RecEvalRun> list(String algorithm, String scenario, String batch, Pageable pageable) {
         return dslContext
                 .select(getFiled())
                 .from(getTable())
-                .where(getWhereCondition(algorithm, batch))
+                .where(getWhereCondition(algorithm, scenario, batch))
                 .orderBy(REC_EVAL_RUN.BATCH_CODE.desc(), REC_EVAL_RUN.ID.asc())
                 .limit(pageable.getLimit())
                 .offset(pageable.getOffset())
                 .fetchInto(pojoClass);
     }
 
+    public List<RecEvalRun> list(String algorithm, String batch, Pageable pageable) {
+        return list(algorithm, null, batch, pageable);
+    }
+
+    public Long count(String algorithm, String scenario, String batch) {
+        return getCountWithCriteria(getWhereCondition(algorithm, scenario, batch));
+    }
+
     public Long count(String algorithm, String batch) {
-        return getCountWithCriteria(getWhereCondition(algorithm, batch));
+        return count(algorithm, null, batch);
     }
 
     public void insertAll(List<RecEvalRun> runs) {
@@ -71,6 +82,7 @@ public class RecEvalRunRepository extends AbsMysqlRepository<RecEvalRunRecord, R
                     REC_EVAL_RUN.BATCH_CODE,
                     REC_EVAL_RUN.DATASET,
                     REC_EVAL_RUN.ALGORITHM,
+                    REC_EVAL_RUN.SCENARIO,
                     REC_EVAL_RUN.PARAMS,
                     REC_EVAL_RUN.METRICS,
                     REC_EVAL_RUN.USER_COUNT,
@@ -81,6 +93,7 @@ public class RecEvalRunRepository extends AbsMysqlRepository<RecEvalRunRecord, R
                         r.getBatchCode(),
                         r.getDataset(),
                         r.getAlgorithm(),
+                        r.getScenario() != null ? r.getScenario() : "standard",
                         JSON.valueOf(toJson(r.getParams())),
                         JSON.valueOf(toJson(r.getMetrics())),
                         r.getUserCount(),

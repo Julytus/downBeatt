@@ -203,6 +203,8 @@ export interface EvalMetricSetDTO {
   styles: number;
   coverage: number;
   novelty: number;
+  newLutHit?: number;
+  newLutRecall?: number;
 }
 
 export interface RecEvalRunDTO {
@@ -210,6 +212,7 @@ export interface RecEvalRunDTO {
   batchCode: string;
   dataset: string;
   algorithm: string;
+  scenario: string;
   userCount: number;
   createdTime: string;
   params: Record<string, unknown>;
@@ -218,6 +221,7 @@ export interface RecEvalRunDTO {
 
 export interface EvalListParams {
   algorithm?: string;
+  scenario?: string;
   batch?: string;
   page?: number;
   limit?: number;

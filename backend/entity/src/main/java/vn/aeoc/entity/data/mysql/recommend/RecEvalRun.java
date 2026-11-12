@@ -30,6 +30,10 @@ public class RecEvalRun {
             "kValues",
             "generatorVersion",
             "catalogStart",
+            "excludeSeen",
+            "newLutDays",
+            "newLutUserCount",
+            "historyEvents",
             "elapsedMs",
             "repeats",
             "popularWindow",
@@ -41,7 +45,10 @@ public class RecEvalRun {
             "candidateTop",
             "historyDays",
             "historyMaxPairs",
-            "popularDays"
+            "popularDays",
+            "useDeclared",
+            "tuned",
+            "tuning"
     );
 
     public static final List<String> CANONICAL_WEIGHT_ORDER = List.of(
@@ -52,14 +59,21 @@ public class RecEvalRun {
             "VIEW", "PREVIEW", "SEARCH", "FILTER_STYLE", "FAVORITE", "DOWNLOAD", "PURCHASE", "DISMISS"
     );
 
+    public static final List<String> CANONICAL_TUNING_ORDER = List.of(
+            "validUserCount", "weightTrials", "validNdcgDefault", "validNdcgWeights",
+            "validNdcgLambda", "validNdcgFinal", "validIldBase", "elapsedMs"
+    );
+
     public static final List<String> CANONICAL_METRIC_ORDER = List.of(
-            "precision", "recall", "ndcg", "hitRate", "ild", "styles", "coverage", "novelty"
+            "precision", "recall", "ndcg", "hitRate", "ild", "styles", "coverage", "novelty",
+            "newLutHit", "newLutRecall"
     );
 
     private Integer id;
     private String batchCode;
     private String dataset;
     private String algorithm;
+    private String scenario;
     private Map<String, Object> params;
     private Map<String, Map<String, Double>> metrics;
     private Integer userCount;
@@ -126,6 +140,20 @@ public class RecEvalRun {
                         }
                     }
                     ordered.put(k, eOrdered);
+                } else if ("tuning".equals(k) && v instanceof Map<?, ?> tm) {
+                    LinkedHashMap<String, Object> tOrdered = new LinkedHashMap<>();
+                    for (String tk : CANONICAL_TUNING_ORDER) {
+                        if (tm.containsKey(tk)) {
+                            tOrdered.put(tk, tm.get(tk));
+                        }
+                    }
+                    for (Map.Entry<?, ?> te : tm.entrySet()) {
+                        String tk = String.valueOf(te.getKey());
+                        if (!tOrdered.containsKey(tk)) {
+                            tOrdered.put(tk, te.getValue());
+                        }
+                    }
+                    ordered.put(k, tOrdered);
                 } else {
                     ordered.put(k, v);
                 }
