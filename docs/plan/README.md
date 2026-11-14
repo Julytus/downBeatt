@@ -16,7 +16,8 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 0.1 | 0. Nền tảng | `go-redis-mail` | | done |
 | 0.2 | 0. Nền tảng | `trang-chu` | | done |
 | 0.3 | 0. Nền tảng | `kho-lut` | | done |
-| 0.4 | 0. Nền tảng | phân quyền theo role (V4, không qua plan) | | done (07/11/2026) |
+| 0.4 | 0. Nền tảng | phân quyền theo role (V4, không qua plan) | | done (07/11/2026); còn tài liệu chức năng |
+| 0.5 | 0. Nền tảng | `seed-minio` (nạp sẵn file mẫu lên MinIO) | 0.3, 1.2 | done (14/11/2026) |
 | 1.1 | 1. Cửa hàng | `tai-khoan-khach` | | done (10/11/2026) |
 | 1.2 | 1. Cửa hàng | `dac-trung-mau` | 0.3 | done (10/11/2026) |
 | 1.3 | 1. Cửa hàng | `quan-ly-lut` | 0.3, 0.4, 1.2 | done (10/11/2026) |
@@ -24,6 +25,8 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | done (10/11/2026) |
 | 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | done (10/11/2026) |
 | 1.7 | 1. Cửa hàng | `goi-cua-toi` (phần dời từ 1.4) | 1.4 | done (14/11/2026) |
+| 1.8 | 1. Cửa hàng | `quan-tri-don-hang` (phần dời từ 1.4, FR-14) | 1.4, 1.7 | chưa làm |
+| 1.9 | 1. Cửa hàng | `danh-muc-tac-gia` (phần dời từ 1.3, FR-14) | 1.3, 2.1 | chưa làm |
 | 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | done (10/11/2026) |
 | 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | done (11/11/2026) |
 | 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | done (11/11/2026) |
@@ -35,7 +38,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 5.2 | 5. Plugin (tuỳ chọn) | `goi-y-plugin` | 5.1 | chưa làm |
 | 6.1 | 6. Báo cáo, bảo vệ | hoàn thiện báo cáo và demo | tất cả | chưa làm |
 
-Làm song song được (khác bảng, khác màn hình): **1.1 ∥ 1.2**, **1.6 ∥ 1.5**, **2.1 ∥ 1.4 / 1.5 / 1.6** (2.1 chỉ cần dữ liệu kho, không cần tài khoản), **4.1** chen vào bất cứ lúc nào sau 1.5, **3.2** chạy nền trong khi làm 2.4 và 3.1.
+Làm song song được (khác bảng, khác màn hình): **1.8 ∥ 1.9** (0.5 làm trước vì demo và 3.2 cần), **1.1 ∥ 1.2**, **1.6 ∥ 1.5**, **2.1 ∥ 1.4 / 1.5 / 1.6** (2.1 chỉ cần dữ liệu kho, không cần tài khoản), **4.1** chen vào bất cứ lúc nào sau 1.5, **3.2** chạy nền trong khi làm 2.4 và 3.1.
 
 ## Lý do sắp xếp
 
@@ -51,7 +54,7 @@ Làm song song được (khác bảng, khác màn hình): **1.1 ∥ 1.2**, **1.6
 
 ---
 
-## Giai đoạn 0. Nền tảng — done
+## Giai đoạn 0. Nền tảng
 
 - [x] **0.1 `go-redis-mail`**: gỡ Redis và mail, refresh token sang MySQL (V2), Caffeine. Tài liệu: [docs/chuc-nang/go-redis-mail.md](../chuc-nang/go-redis-mail.md)
 - [x] **0.2 `trang-chu`**: landing page `/` (chỉ frontend). Tài liệu: [docs/chuc-nang/trang-chu.md](../chuc-nang/trang-chu.md)
@@ -59,7 +62,19 @@ Làm song song được (khác bảng, khác màn hình): **1.1 ∥ 1.2**, **1.6
 - [x] **0.4 Phân quyền theo role**: V4, trang `/admin/chuc-vu`, `/admin/phan-quyen`, `/admin/tai-nguyen`, `/admin/module`. Làm ngoài luồng plan (commit `5339c1a`), chưa có `docs/chuc-nang/`.
   - [ ] Bổ sung tài liệu chức năng phân quyền (ảnh đã có ở `docs/chuc-nang/img/phan-quyen/`)
 
-## Giai đoạn 1. Cửa hàng hoàn chỉnh — done
+### 0.5 `seed-minio` — done (14/11/2026) ([plan/seed-minio.md](../../plan/seed-minio.md))
+
+Máy mới chạy Flyway có 38 LUT trong DB nhưng MinIO trống (ảnh hỏng, không tải được, không đo được đặc trưng màu) cho tới khi chạy tay `tools/seed/kho-lut/build.py` (Python + mạng). Không migration, không giao diện.
+
+- [x] Plan → duyệt (14/11/2026)
+- [x] Backend
+  - [x] Đưa `luts.json` + 38 ảnh gốc + 2 video vào `backend/business/src/main/resources/seed/kho-lut/`; `build.py` đọc từ đó
+  - [x] Sinh `.cube` 33³ từ chuỗi `filter` (khớp bản Python), sinh ảnh trước / sau / bìa
+  - [x] `SeedAssetLoader` lúc khởi động (profile local): chỉ đẩy object còn thiếu, chạy trước `LutColorFeatureBootstrap`
+- [x] E2E + kiểm tay (xoá object, restart, tự khôi phục) + review + tài liệu
+  - E2E 5/5, kiểm tay TC-21 → TC-23 và review xong 14/11/2026; tài liệu: `docs/chuc-nang/seed-minio.md`
+
+## Giai đoạn 1. Cửa hàng hoàn chỉnh
 
 ### 1.1 `tai-khoan-khach` — done (10/11/2026) ([plan/tai-khoan-khach.md](../../plan/tai-khoan-khach.md))
 
@@ -170,6 +185,24 @@ Thiết kế: FR-07, §4.5 (`subscription.auto_renew`), §5.4 (`order/my-list`, 
 - [x] Frontend: trang `/goi-cua-toi` (gói hiện tại, huỷ gói, lịch sử đơn hàng), mục menu "Gói của tôi", thôi nhắc gia hạn khi đã huỷ
 - [x] E2E + review + tài liệu
   - E2E 28/28 + review BE/FE xong 14/11/2026; tài liệu: `docs/chuc-nang/goi-cua-toi.md`
+
+### 1.8 `quan-tri-don-hang` — chưa làm (phần dời từ 1.4, FR-14)
+
+Thiết kế: §5.4, §5.6 (plan, order, customer), §9.4. Resource: `PLAN`, `ORDER`, `CUSTOMER`.
+
+- [ ] Plan → duyệt
+- [ ] Backend: migration resource `PLAN` / `ORDER` / `CUSTOMER`; `plan/list,update`, `order/list,get`, `customer/list,get`
+- [ ] Frontend: `/admin/don-hang`, `/admin/khach-hang`, sửa giá gói
+- [ ] E2E + review + tài liệu
+
+### 1.9 `danh-muc-tac-gia` — chưa làm (phần dời từ 1.3, FR-14)
+
+Thiết kế: §5.6 (lut-category, creator), §9.4. Resource: `LUT_CATEGORY`, `CREATOR`.
+
+- [ ] Plan → duyệt
+- [ ] Backend: migration resource; CRUD `lut-category`, `creator` theo khuôn `list/get/update/delete`; sửa / xoá danh mục, tác giả thì dựng lại chỉ mục tương đồng (như `publish` / `hide`)
+- [ ] Frontend: `/admin/danh-muc`, `/admin/tac-gia`
+- [ ] E2E + review + tài liệu
 
 ## Giai đoạn 2. Hệ gợi ý theo nội dung — done
 
@@ -349,3 +382,4 @@ Thiết kế: §5.6 (dashboard), §9.4 `/admin`. Resource: `DASHBOARD`.
 - **Số migration**: tài liệu thiết kế §4.8 dự kiến V4 cho `quan-ly-lut`, nhưng V4 đã dùng cho phân quyền (`V4__phan_quyen.sql`). Các lát sau đánh số tiếp từ V5 theo thứ tự làm thật.
 - **Email nhắc gia hạn**: `plan/thiet-ke-tong-quat.md` §9 lát 4 còn ghi "email nhắc gia hạn", nhưng mail đã gỡ; theo tài liệu thiết kế §6.5 chỉ nhắc trên giao diện.
 - **Lát gợi ý**: lát `goi-y-lut` của `thiet-ke-tong-quat.md` §9 và tài liệu thiết kế §12.1 được chia thành `dac-trung-mau` (1.2), `chi-muc-tuong-dong`, `ho-so-nguoi-dung`, `xep-hang-goi-y`, `quan-tri-goi-y` (2.1 đến 2.4). Khi lập plan các lát này, coi mục tương ứng ở đây là phạm vi.
+- **FR-05 thu hẹp** (người dùng chốt 14/11/2026): thiết kế ghi người dùng chọn "phong cách màu, thể loại quay và phần mềm" khi đăng ký; lát 2.2 chỉ làm phần phong cách màu (bước "Bạn thích phong cách màu nào?", mục "Sở thích màu"). Thể loại quay và phần mềm không làm; báo cáo ghi đây là phạm vi đã thu hẹp.

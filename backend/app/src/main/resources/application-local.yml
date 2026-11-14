@@ -33,3 +33,8 @@ springdoc:
     enabled: true
   api-docs:
     enabled: true
+
+seed:
+  minio:
+    enabled: ${SEED_MINIO_ENABLED:true}
+
