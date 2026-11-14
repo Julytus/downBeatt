@@ -54,6 +54,7 @@ public class AccountService {
             if (plan != null) {
                 result.setPlan(plan.getCode());
                 result.setPlanExpiresAt(activeSub.getEndDate());
+                result.setPlanAutoRenew(activeSub.getAutoRenew());
                 return result;
             }
         }

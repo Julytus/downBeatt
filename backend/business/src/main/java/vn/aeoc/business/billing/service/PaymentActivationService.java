@@ -98,10 +98,11 @@ public class PaymentActivationService {
             activeSub.setEndDate(newEnd);
             activeSub.setCycle(order.getCycle());
             activeSub.setOrderId(order.getId());
+            activeSub.setAutoRenew(1);
             subscriptionRepository.updateByCondition(
                     SUBSCRIPTION.ID.eq(activeSub.getId()),
                     activeSub,
-                    SUBSCRIPTION.END_DATE, SUBSCRIPTION.CYCLE, SUBSCRIPTION.ORDER_ID
+                    SUBSCRIPTION.END_DATE, SUBSCRIPTION.CYCLE, SUBSCRIPTION.ORDER_ID, SUBSCRIPTION.AUTO_RENEW
             );
         } else {
             // Đổi gói: huỷ dòng cũ, dòng mới bắt đầu hôm nay + quy đổi ngày còn lại

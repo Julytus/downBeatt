@@ -1,6 +1,16 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, FolderHeart, History, LogOut, Palette, RefreshCcw, Sparkles, Star } from "lucide-react";
+import {
+  ChevronDown,
+  CreditCard,
+  FolderHeart,
+  History,
+  LogOut,
+  Palette,
+  RefreshCcw,
+  Sparkles,
+  Star
+} from "lucide-react";
 import { useState } from "react";
 import { ClearHistoryDialog } from "@/components/shop/account/clear-history-dialog";
 import { ShopButton } from "@/components/shop/ui/shop-button";
@@ -74,8 +84,9 @@ export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }
       name: user.plan === "studio" ? "Studio" : user.plan === "pro" ? "Pro" : "Miễn phí"
     };
 
+  const isCancelled = user.planAutoRenew === 0;
   const days = user.planExpiresAt ? daysLeft(user.planExpiresAt) : undefined;
-  const isExpiringSoon = user.plan !== "free" && user.planExpiresAt && days !== undefined && days <= 3;
+  const isExpiringSoon = !isCancelled && user.plan !== "free" && user.planExpiresAt && days !== undefined && days <= 3;
 
   return (
     <div className="flex shrink-0 items-center gap-2">
@@ -107,7 +118,14 @@ export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }
               Gói <b>{plan.name}</b>
               {user.planExpiresAt && (
                 <span className="block text-xs text-(--sh-muted)">
-                  Hết hạn {formatPlanDate(user.planExpiresAt)}
+                  {isCancelled
+                    ? `Dùng đến ${formatPlanDate(user.planExpiresAt)}`
+                    : `Hết hạn ${formatPlanDate(user.planExpiresAt)}`}
+                </span>
+              )}
+              {isCancelled && (
+                <span className="block text-xs text-(--sh-muted)">
+                  Đã huỷ gia hạn
                 </span>
               )}
               {isExpiringSoon && (
@@ -118,6 +136,11 @@ export function HeaderActions({ hidePricing = false }: { hidePricing?: boolean }
             </span>
           </div>
           <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link to="/goi-cua-toi">
+              <CreditCard /> Gói của tôi
+            </Link>
+          </DropdownMenuItem>
           {isExpiringSoon && (
             <DropdownMenuItem asChild>
               <Link to="/pricing">

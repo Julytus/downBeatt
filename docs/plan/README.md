@@ -23,6 +23,7 @@ Lập ngày 10/11/2026 từ [docs/tai-lieu-thiet-ke.md](../tai-lieu-thiet-ke.md)
 | 1.4 | 1. Cửa hàng | `goi-thanh-toan` | 1.1 | done (10/11/2026) |
 | 1.5 | 1. Cửa hàng | `tai-lut` | 0.3, 1.4 | done (10/11/2026) |
 | 1.6 | 1. Cửa hàng | `bo-suu-tap` | 0.3, 1.1 | done (10/11/2026) |
+| 1.7 | 1. Cửa hàng | `goi-cua-toi` (phần dời từ 1.4) | 1.4 | done (14/11/2026) |
 | 2.1 | 2. Hệ gợi ý | `chi-muc-tuong-dong` (hồ sơ sản phẩm + độ tương đồng) | 1.2, 1.3 | done (10/11/2026) |
 | 2.2 | 2. Hệ gợi ý | `ho-so-nguoi-dung` (sự kiện, hồ sơ, cold-start) | 1.1, 1.5, 1.6, 2.1 | done (11/11/2026) |
 | 2.3 | 2. Hệ gợi ý | `xep-hang-goi-y` (tính điểm, MMR, giải thích, "Dành cho bạn") | 2.2 | done (11/11/2026) |
@@ -133,7 +134,7 @@ Thiết kế: §2.2, §4.5, §5.4 (order, subscription), §6.4, §6.5, §6.8 (t�
 - [x] Frontend
   - [x] `/pricing` đọc API, nút mua → payOS; `/thanh-toan/ket-qua` hỏi trạng thái mỗi 2 giây
   - [x] Hộp thoại nâng cấp (nhớ `sourceLutId`), nhắc gia hạn khi còn 3 ngày (không gửi email)
-  - [ ] Menu tài khoản: lịch sử đơn, huỷ gói — lát `goi-cua-toi` (lát này đã thêm "Gia hạn gói", "Nâng cấp lên Studio")
+  - [x] Menu tài khoản: lịch sử đơn, huỷ gói — lát `goi-cua-toi` (lát này đã thêm "Gia hạn gói", "Nâng cấp lên Studio")
   - [ ] `/admin/don-hang`, `/admin/khach-hang`, sửa giá gói — lát `quan-tri-don-hang`
 - [x] E2E (có webhook lặp, sai chữ ký, sai số tiền) + review + tài liệu
   - E2E + review: xong (27/27); tài liệu: `docs/chuc-nang/goi-thanh-toan.md`
@@ -159,6 +160,16 @@ Thiết kế: §4.6, §5.4 (collection), §6.7.
 - [x] Frontend: nút "Lưu vào bộ sưu tập" ở thẻ / trang chi tiết, trang bộ sưu tập của tôi
 - [x] E2E + review + tài liệu
   - E2E (31/31) + review xong; tài liệu: `docs/chuc-nang/bo-suu-tap.md`
+
+### 1.7 `goi-cua-toi` — done (14/11/2026) ([plan/goi-cua-toi.md](../../plan/goi-cua-toi.md), phần dời từ 1.4)
+
+Thiết kế: FR-07, §4.5 (`subscription.auto_renew`), §5.4 (`order/my-list`, `subscription/cancel`), §6.5. Không migration.
+
+- [x] Plan → duyệt (14/11/2026)
+- [x] Backend: `order/my-list`, `subscription/my`, `subscription/cancel` (`NO_ACTIVE_PLAN`), `account/me` thêm `planAutoRenew`, gia hạn bật lại `auto_renew`
+- [x] Frontend: trang `/goi-cua-toi` (gói hiện tại, huỷ gói, lịch sử đơn hàng), mục menu "Gói của tôi", thôi nhắc gia hạn khi đã huỷ
+- [x] E2E + review + tài liệu
+  - E2E 28/28 + review BE/FE xong 14/11/2026; tài liệu: `docs/chuc-nang/goi-cua-toi.md`
 
 ## Giai đoạn 2. Hệ gợi ý theo nội dung — done
 

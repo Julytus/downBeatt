@@ -36,6 +36,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/subscription/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/role/update": {
         parameters: {
             query?: never;
@@ -301,7 +317,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["cancel"];
+        post: operations["cancel_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -612,6 +628,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/subscription/my": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["my"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/role/list": {
         parameters: {
             query?: never;
@@ -852,6 +884,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/order/my-list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["myList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/order/get": {
         parameters: {
             query?: never;
@@ -1083,7 +1131,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["myList"];
+        get: operations["myList_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1165,6 +1213,8 @@ export interface components {
             plan?: string;
             /** Format: date */
             planExpiresAt?: string;
+            /** Format: int32 */
+            planAutoRenew?: number;
         };
         ApiResponseTokenResponse: {
             /** Format: int32 */
@@ -1178,6 +1228,39 @@ export interface components {
             refreshToken?: string;
             /** Format: int32 */
             userId?: number;
+        };
+        ApiResponseSubscription: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["Subscription"];
+            errors?: Record<string, never>;
+        };
+        Subscription: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            /** Format: int32 */
+            planId?: number;
+            /** Format: int32 */
+            orderId?: number;
+            cycle?: string;
+            status?: string;
+            /** Format: date */
+            startDate?: string;
+            /** Format: date */
+            endDate?: string;
+            /** Format: int32 */
+            autoRenew?: number;
+            /** Format: int32 */
+            activeUserId?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: date-time */
+            updatedTime?: string;
+            planCode?: string;
+            planName?: string;
         };
         Role: {
             /** Format: int32 */
@@ -1947,6 +2030,20 @@ export interface components {
             code?: string;
             actions?: string;
         };
+        ApiResponsePagePaymentOrder: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["PagePaymentOrder"];
+            errors?: Record<string, never>;
+        };
+        PagePaymentOrder: {
+            /** Format: int64 */
+            total?: number;
+            /** Format: int32 */
+            page?: number;
+            items?: components["schemas"]["PaymentOrder"][];
+        };
         ApiResponsePageModule: {
             /** Format: int32 */
             code?: number;
@@ -2158,6 +2255,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseTokenResponse"];
+                };
+            };
+        };
+    };
+    cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSubscription"];
                 };
             };
         };
@@ -2536,7 +2653,7 @@ export interface operations {
             };
         };
     };
-    cancel: {
+    cancel_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -3028,6 +3145,26 @@ export interface operations {
             };
         };
     };
+    my: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSubscription"];
+                };
+            };
+        };
+    };
     list: {
         parameters: {
             query?: {
@@ -3369,6 +3506,29 @@ export interface operations {
             };
         };
     };
+    myList: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePagePaymentOrder"];
+                };
+            };
+        };
+    };
     get_2: {
         parameters: {
             query: {
@@ -3698,7 +3858,7 @@ export interface operations {
             };
         };
     };
-    myList: {
+    myList_1: {
         parameters: {
             query?: {
                 lutId?: number;

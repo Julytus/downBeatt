@@ -1,4 +1,10 @@
-import type { PlanDTO, ShopUserDTO } from "@/lib/types/account";
+import type {
+  ApiBillingCycle,
+  BillingCycle,
+  OrderStatus,
+  PlanDTO,
+  ShopUserDTO
+} from "@/lib/types/account";
 
 /** Lấy ngày hiện tại theo giờ Asia/Ho_Chi_Minh dạng ISO "YYYY-MM-DD". */
 export function todayIso(): string {
@@ -18,6 +24,53 @@ export function formatPlanDate(iso?: string | null): string {
     return `${d.padStart(2, "0")}/${m.padStart(2, "0")}/${y}`;
   }
   return iso;
+}
+
+/**
+ * Định dạng ngày giờ "dd/MM/yyyy HH:mm" có đệm số 0 (plan §6.1).
+ * Tách trực tiếp chuỗi "YYYY-MM-DDTHH:mm:ss" từ API để không qua new Date.
+ */
+export function formatOrderDateTime(iso?: string | null): string {
+  if (!iso) return "";
+  const [datePart, timePart] = iso.split(/[T ]/);
+  if (!datePart) return iso;
+  const dateParts = datePart.split("-");
+  const formattedDate =
+    dateParts.length === 3
+      ? `${dateParts[2]!.padStart(2, "0")}/${dateParts[1]!.padStart(2, "0")}/${dateParts[0]}`
+      : datePart;
+  if (!timePart) return formattedDate;
+  const timeParts = timePart.split(":");
+  const formattedTime =
+    timeParts.length >= 2
+      ? `${timeParts[0]!.padStart(2, "0")}:${timeParts[1]!.padStart(2, "0")}`
+      : timePart;
+  return `${formattedDate} ${formattedTime}`;
+}
+
+/** Nhãn tiếng Việt cho trạng thái đơn hàng (plan §6.1). */
+export function orderStatusLabel(status: OrderStatus): string {
+  switch (status) {
+    case "PENDING":
+      return "Chờ thanh toán";
+    case "PAID":
+      return "Đã thanh toán";
+    case "CANCELLED":
+      return "Đã huỷ";
+    case "EXPIRED":
+      return "Hết hạn";
+    default:
+      return status;
+  }
+}
+
+/** Nhãn tiếng Việt cho chu kỳ thanh toán (plan §6.1). */
+export function cycleLabel(cycle?: ApiBillingCycle | BillingCycle | string | null): string {
+  if (!cycle) return "";
+  const upper = cycle.toUpperCase();
+  if (upper === "YEAR") return "Theo năm";
+  if (upper === "MONTH") return "Theo tháng";
+  return cycle;
 }
 
 /**

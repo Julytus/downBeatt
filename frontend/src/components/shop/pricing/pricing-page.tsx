@@ -43,7 +43,13 @@ export function PricingPage() {
   const { select, user } = usePlanSelect(cycle);
 
   const days = user?.planExpiresAt ? daysLeft(user.planExpiresAt) : undefined;
-  const isExpiringSoon = user && user.plan !== "free" && user.planExpiresAt && days !== undefined && days <= 3;
+  const isExpiringSoon =
+    user &&
+    user.plan !== "free" &&
+    user.planExpiresAt &&
+    user.planAutoRenew !== 0 &&
+    days !== undefined &&
+    days <= 3;
   const currentPlan = plans?.find((p) => p.code === user?.plan);
   const currentPlanName = currentPlan?.name ?? (user?.plan === "studio" ? "Studio" : "Pro");
 

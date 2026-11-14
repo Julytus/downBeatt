@@ -27,6 +27,8 @@ export interface ShopUserDTO {
   plan: PlanCode;
   /** Ngày gói trả phí hết hạn (ISO "YYYY-MM-DD"), không có với gói miễn phí */
   planExpiresAt?: string;
+  /** 1 = tự động gia hạn, 0 = đã huỷ tự gia hạn */
+  planAutoRenew?: 0 | 1;
 }
 
 /** Response từ GET /api/account/me (plan §5.8). */
@@ -36,6 +38,17 @@ export interface AccountMeApiDTO {
   email: string;
   plan: PlanCode;
   planExpiresAt?: string;
+  planAutoRenew?: 0 | 1;
+}
+
+/** Gói đăng ký của người dùng từ GET /subscription/my (plan §5.2). */
+export interface SubscriptionDTO {
+  planCode: PlanCode;
+  planName: string;
+  cycle?: ApiBillingCycle;
+  startDate?: string;
+  endDate?: string;
+  autoRenew?: 0 | 1;
 }
 
 export interface ShopLoginRequest {
@@ -66,6 +79,8 @@ export interface OrderDTO {
   paidTime?: string;
   planExpiresAt?: string;
 }
+
+export type OrderListItemDTO = Omit<OrderDTO, "planExpiresAt">;
 
 export interface CreateOrderRequest {
   planCode: string;

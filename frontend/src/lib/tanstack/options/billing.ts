@@ -1,9 +1,23 @@
 import { mutationOptions, queryOptions, type MutationOptions } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import { cancelOrder, createOrder, getOrder, getPlans } from "@/lib/axios/billing";
+import {
+  cancelOrder,
+  cancelSubscription,
+  createOrder,
+  getMyOrders,
+  getMySubscription,
+  getOrder,
+  getPlans
+} from "@/lib/axios/billing";
 import { useAuthStore } from "@/lib/stores/auth";
-import type { CreateOrderRequest, CreateOrderResult, OrderDTO } from "@/lib/types/account";
+import type {
+  CreateOrderRequest,
+  CreateOrderResult,
+  OrderDTO,
+  SubscriptionDTO
+} from "@/lib/types/account";
 import type { ErrorResponse } from "@/lib/types/common";
+import { formatPlanDate } from "@/lib/utils/plan";
 
 export const BILLING_QUERY_KEY = ["billing"] as const;
 
@@ -71,5 +85,38 @@ export const cancelOrderSilentMutationOptions: MutationOptions<
   mutationFn: cancelOrder,
   meta: {
     silentError: true
+  }
+};
+
+const MY_ORDERS_PAGE_LIMIT = 10;
+
+/** GET /order/my-list — lấy danh sách đơn hàng có phân trang (plan §5.1, §8). */
+export const myOrdersQueryOptions = (page = 1) =>
+  queryOptions({
+    queryKey: ["order-my-list", page],
+    queryFn: () => getMyOrders(page, MY_ORDERS_PAGE_LIMIT)
+  });
+
+/** GET /subscription/my — gói đang dùng của khách hàng (plan §5.2, §8). */
+export const mySubscriptionQueryOptions = queryOptions({
+  queryKey: ["subscription-my"],
+  queryFn: () => getMySubscription()
+});
+
+/** POST /subscription/cancel — huỷ tự gia hạn gói đang dùng (plan §5.3, §6.1, §8). */
+export const cancelSubscriptionMutationOptions: MutationOptions<
+  SubscriptionDTO,
+  AxiosError<ErrorResponse>,
+  void
+> = {
+  mutationKey: ["subscription-cancel"],
+  mutationFn: () => cancelSubscription(),
+  meta: {
+    invalidatesQuery: [["subscription-my"], ["account-me"]],
+    successMessage: (data) => {
+      const sub = data as SubscriptionDTO;
+      return `Đã huỷ gói ${sub.planName}. Bạn vẫn dùng được đến ${formatPlanDate(sub.endDate)}.`;
+    },
+    errorMessage: "Không huỷ được gói dịch vụ"
   }
 };

@@ -21,6 +21,7 @@ import { Route as AdminModuleRouteImport } from './routes/admin/module'
 import { Route as AdminGoiYRouteImport } from './routes/admin/goi-y'
 import { Route as AdminDacTrungMauRouteImport } from './routes/admin/dac-trung-mau'
 import { Route as AdminChucVuRouteImport } from './routes/admin/chuc-vu'
+import { Route as ShopGoiCuaToiRouteImport } from './routes/_shop/goi-cua-toi'
 import { Route as PlainPricingRouteImport } from './routes/_plain/pricing'
 import { Route as AuthLogoutRouteImport } from './routes/_auth/logout'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
@@ -90,6 +91,11 @@ const AdminChucVuRoute = AdminChucVuRouteImport.update({
   path: '/chuc-vu',
   getParentRoute: () => AdminRoute,
 } as any)
+const ShopGoiCuaToiRoute = ShopGoiCuaToiRouteImport.update({
+  id: '/goi-cua-toi',
+  path: '/goi-cua-toi',
+  getParentRoute: () => ShopRoute,
+} as any)
 const PlainPricingRoute = PlainPricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
   '/pricing': typeof PlainPricingRoute
+  '/goi-cua-toi': typeof ShopGoiCuaToiRoute
   '/admin/chuc-vu': typeof AdminChucVuRoute
   '/admin/dac-trung-mau': typeof AdminDacTrungMauRoute
   '/admin/goi-y': typeof AdminGoiYRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
   '/pricing': typeof PlainPricingRoute
+  '/goi-cua-toi': typeof ShopGoiCuaToiRoute
   '/admin/chuc-vu': typeof AdminChucVuRoute
   '/admin/dac-trung-mau': typeof AdminDacTrungMauRoute
   '/admin/goi-y': typeof AdminGoiYRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/logout': typeof AuthLogoutRoute
   '/_plain/pricing': typeof PlainPricingRoute
+  '/_shop/goi-cua-toi': typeof ShopGoiCuaToiRoute
   '/admin/chuc-vu': typeof AdminChucVuRoute
   '/admin/dac-trung-mau': typeof AdminDacTrungMauRoute
   '/admin/goi-y': typeof AdminGoiYRoute
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/pricing'
+    | '/goi-cua-toi'
     | '/admin/chuc-vu'
     | '/admin/dac-trung-mau'
     | '/admin/goi-y'
@@ -245,6 +255,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/pricing'
+    | '/goi-cua-toi'
     | '/admin/chuc-vu'
     | '/admin/dac-trung-mau'
     | '/admin/goi-y'
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/logout'
     | '/_plain/pricing'
+    | '/_shop/goi-cua-toi'
     | '/admin/chuc-vu'
     | '/admin/dac-trung-mau'
     | '/admin/goi-y'
@@ -381,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminChucVuRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_shop/goi-cua-toi': {
+      id: '/_shop/goi-cua-toi'
+      path: '/goi-cua-toi'
+      fullPath: '/goi-cua-toi'
+      preLoaderRoute: typeof ShopGoiCuaToiRouteImport
+      parentRoute: typeof ShopRoute
+    }
     '/_plain/pricing': {
       id: '/_plain/pricing'
       path: '/pricing'
@@ -486,6 +505,7 @@ const PlainRouteChildren: PlainRouteChildren = {
 const PlainRouteWithChildren = PlainRoute._addFileChildren(PlainRouteChildren)
 
 interface ShopRouteChildren {
+  ShopGoiCuaToiRoute: typeof ShopGoiCuaToiRoute
   ShopBoSuuTapIdRoute: typeof ShopBoSuuTapIdRoute
   ShopLutsSlugRoute: typeof ShopLutsSlugRoute
   ShopBoSuuTapIndexRoute: typeof ShopBoSuuTapIndexRoute
@@ -494,6 +514,7 @@ interface ShopRouteChildren {
 }
 
 const ShopRouteChildren: ShopRouteChildren = {
+  ShopGoiCuaToiRoute: ShopGoiCuaToiRoute,
   ShopBoSuuTapIdRoute: ShopBoSuuTapIdRoute,
   ShopLutsSlugRoute: ShopLutsSlugRoute,
   ShopBoSuuTapIndexRoute: ShopBoSuuTapIndexRoute,
