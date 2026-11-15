@@ -16,9 +16,9 @@ export function ShopSessionSync() {
   const setLoading = useShopSession((s) => s.setLoading);
   const logout = useShopSession((s) => s.logout);
 
-  const { data, isError, isLoading, isFetching } = useQuery({
+  const { data, isError, isLoading } = useQuery({
     ...accountMeQueryOptions,
-    enabled: Boolean(accessToken && !user)
+    enabled: Boolean(accessToken)
   });
 
   useEffect(() => {
@@ -27,21 +27,17 @@ export function ShopSessionSync() {
       return;
     }
 
-    if (user) {
-      setLoading(false);
-      return;
-    }
-
-    if (isLoading || isFetching) {
-      setLoading(true);
-    } else if (data) {
-      setUser(data);
-      setLoading(false);
+    if (data) {
+      if (user !== data) {
+        setUser(data);
+      }
     } else if (isError) {
       setUser(null);
       setLoading(false);
+    } else if (isLoading && !user) {
+      setLoading(true);
     }
-  }, [accessToken, user, data, isError, isLoading, isFetching, setUser, setLoading, logout]);
+  }, [accessToken, user, data, isError, isLoading, setUser, setLoading, logout]);
 
   return null;
 }

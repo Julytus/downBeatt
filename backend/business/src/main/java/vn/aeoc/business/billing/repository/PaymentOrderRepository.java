@@ -56,6 +56,27 @@ public class PaymentOrderRepository extends AbsMysqlRepository<PaymentOrderRecor
         return getOneByCriteriaWithJoin(fields(), joined(), PAYMENT_ORDER.CODE.eq(code));
     }
 
+    public List<PaymentOrder> myList(Integer userId, int offset, int limit) {
+        if (userId == null) {
+            return List.of();
+        }
+        return dslContext.select(fields())
+                .from(joined())
+                .where(PAYMENT_ORDER.USER_ID.eq(userId))
+                .orderBy(PAYMENT_ORDER.CREATED_TIME.desc(), PAYMENT_ORDER.ID.desc())
+                .limit(limit)
+                .offset(offset)
+                .fetchInto(pojoClass);
+    }
+
+    public long countByUser(Integer userId) {
+        if (userId == null) {
+            return 0L;
+        }
+        Long count = getCountWithCriteria(PAYMENT_ORDER.USER_ID.eq(userId));
+        return count != null ? count : 0L;
+    }
+
     public PaymentOrder getByPayosOrderCode(Long payosOrderCode) {
         if (payosOrderCode == null) {
             return null;

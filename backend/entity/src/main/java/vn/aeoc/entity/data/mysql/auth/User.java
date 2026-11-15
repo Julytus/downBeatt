@@ -37,4 +37,5 @@ public class User {
     private String plan;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate planExpiresAt;
+    private Integer planAutoRenew;
 }

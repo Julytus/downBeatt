@@ -55,6 +55,16 @@ public class SubscriptionRepository extends AbsMysqlRepository<SubscriptionRecor
                 .execute();
     }
 
+    public int disableAutoRenew(Integer id) {
+        if (id == null) {
+            return 0;
+        }
+        return dslContext.update(SUBSCRIPTION)
+                .set(SUBSCRIPTION.AUTO_RENEW, (byte) 0)
+                .where(SUBSCRIPTION.ID.eq(id).and(SUBSCRIPTION.STATUS.eq("ACTIVE")))
+                .execute();
+    }
+
     public int expireOverdue(LocalDate today) {
         return dslContext.update(SUBSCRIPTION)
                 .set(SUBSCRIPTION.STATUS, "EXPIRED")

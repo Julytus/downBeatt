@@ -60,7 +60,8 @@ public enum ErrorCode {
     LUT_FILE_UNAVAILABLE(503, "File LUT đang không sẵn sàng, vui lòng thử lại sau"),
     COLLECTION_LIMIT(403, "Gói Miễn phí lưu được tối đa 3 bộ sưu tập"),
     COLLECTION_NAME_EXISTS(400, "Bạn đã có bộ sưu tập tên này"),
-    PREFERENCE_INVALID(400, "Lựa chọn không hợp lệ");
+    PREFERENCE_INVALID(400, "Lựa chọn không hợp lệ"),
+    NO_ACTIVE_PLAN(400, "Bạn chưa có gói trả phí nào để huỷ");
 
     public final int code;
     public final String message;

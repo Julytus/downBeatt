@@ -155,6 +155,31 @@ public class FileStorageService {
         }
     }
 
+    public boolean existsPublic(String key) {
+        try {
+            minioClient.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(key)
+                            .build()
+            );
+            return true;
+        } catch (ErrorResponseException e) {
+            if ("NoSuchKey".equals(e.errorResponse().code())) {
+                return false;
+            }
+            log.error("MinIO statObject thất bại cho key='{}' trong bucket='{}': {}", key, bucket, e.getMessage());
+            throw new AppException(ErrorCode.UPLOAD_FILE_FAILED);
+        } catch (Exception e) {
+            log.error("MinIO statObject thất bại cho key='{}' trong bucket='{}': {}", key, bucket, e.getMessage());
+            throw new AppException(ErrorCode.UPLOAD_FILE_FAILED);
+        }
+    }
+
+    public String publicBucket() {
+        return bucket;
+    }
+
     public String presignPrivateGet(String key, Duration ttl, String downloadName, String contentType) {
         try {
             int expirySeconds = ttl != null ? (int) ttl.toSeconds() : 300;

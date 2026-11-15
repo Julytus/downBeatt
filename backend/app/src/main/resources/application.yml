@@ -164,4 +164,10 @@ recommend:
   stats-download-window-minutes: 30
   stats-max-days: 366
 
+seed:
+  minio:
+    # Chỉ bật ở local, nơi db/seed chạy
+    enabled: false
+
+
 

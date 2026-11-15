@@ -11,6 +11,7 @@ import vn.aeoc.authenticate.controller.BaseController;
 import vn.aeoc.authenticate.service.auth.UserService;
 import vn.aeoc.authenticate.util.Mapper;
 import vn.aeoc.authenticate.util.SecurityUtils;
+import vn.aeoc.base.config.extention.paging.Page;
 import vn.aeoc.base.config.model.ApiResponse;
 import vn.aeoc.business.billing.service.OrderService;
 import vn.aeoc.entity.data.mysql.billing.PaymentOrder;
@@ -42,5 +43,14 @@ public class OrderController extends BaseController {
     public ResponseEntity<ApiResponse<PaymentOrder>> cancel(@PathVariable String code, Principal principal) {
         Integer userId = SecurityUtils.userId(principal);
         return Mapper.map(orderService.cancel(code, userId), ApiResponse::okEntity);
+    }
+
+    @GetMapping("/order/my-list")
+    public ResponseEntity<ApiResponse<Page<PaymentOrder>>> myList(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer limit,
+            Principal principal) {
+        Integer userId = SecurityUtils.userId(principal);
+        return Mapper.map(orderService.myList(userId, page, limit), ApiResponse::okEntity);
     }
 }

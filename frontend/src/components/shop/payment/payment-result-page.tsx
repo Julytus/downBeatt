@@ -109,11 +109,13 @@ export function PaymentResultPage({ code }: PaymentResultPageProps) {
     }
   }, [order?.status, code, refetch, autoCancelOrderMutate]);
 
-  // Lần đầu thấy PAID: invalidate query account-me để header đổi gói
+  // Lần đầu thấy PAID: invalidate query account-me để header đổi gói, cùng subscription-my và order-my-list
   useEffect(() => {
     if (order?.status === "PAID" && !hasInvalidatedAccountRef.current) {
       hasInvalidatedAccountRef.current = true;
       void queryClient.invalidateQueries({ queryKey: ["account-me"] });
+      void queryClient.invalidateQueries({ queryKey: ["subscription-my"] });
+      void queryClient.invalidateQueries({ queryKey: ["order-my-list"] });
     }
   }, [order?.status, queryClient]);
 

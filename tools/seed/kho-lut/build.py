@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "out"
 SEED = ROOT / "backend/app/src/main/resources/db/seed/V3_1__seed_kho_lut.sql"
+SEED_RES = ROOT / "backend/business/src/main/resources/seed/kho-lut"
 
 CATS = [
  ("dien-anh","Điện ảnh","phong-cach","Tông màu như phim chiếu rạp: tương phản sâu, vùng tối dày, da người vẫn tự nhiên.",1),
@@ -88,7 +89,7 @@ def apply_cube(image,grid):
 
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument('--self-test',action='store_true'); args=ap.parse_args()
-    payload=json.loads((HERE/'luts.json').read_text(encoding='utf-8'))
+    payload=json.loads((SEED_RES/'luts.json').read_text(encoding='utf-8'))
     data=payload['luts'] if isinstance(payload,dict) else payload
     creator_names=[c['name'] for c in payload.get('creators',[])] if isinstance(payload,dict) else []
     if args.self_test:
@@ -122,7 +123,9 @@ def main():
     assets=[]
     for d in data:
         name=d['title']; s=d.get('slug') or slug(name); obj=f'lut/{s}'; local=OUT/s; local.mkdir(exist_ok=True)
-        cache=HERE/'.cache'; cache.mkdir(exist_ok=True); source=cache/f"{d['picsumSeed']}.jpg"
+        cache=HERE/'.cache'; cache.mkdir(exist_ok=True)
+        res_photo=SEED_RES/'photos'/f"{d['picsumSeed']}.jpg"
+        source=res_photo if res_photo.exists() else cache/f"{d['picsumSeed']}.jpg"
         if not source.exists(): urllib.request.urlretrieve(f"https://picsum.photos/seed/{d['picsumSeed']}/1280/720",source)
         base=Image.open(source).convert('RGB').resize((1280,720))
         lut=local/f'{s}.cube'; lut.write_bytes(make_cube(d.get('filter',''),name))
@@ -139,7 +142,8 @@ def main():
         if d.get('previewType')!='VIDEO': files.extend([(before,pub,'image/jpeg'),(after,pub,'image/jpeg')])
         files.append((cover,pub,'image/jpeg'))
         if d.get('previewType')=='VIDEO':
-            video=cache/f"{d['videoSource']}.mp4"
+            res_video=SEED_RES/'videos'/f"{d['videoSource']}.mp4"
+            video=res_video if res_video.exists() else cache/f"{d['videoSource']}.mp4"
             if not video.exists(): urllib.request.urlretrieve(f"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/{d['videoSource']}.mp4",video)
             preview=local/'preview.mp4'; preview.write_bytes(video.read_bytes()); files.append((preview,pub,'video/mp4'))
         files.append((lut,priv,'text/plain'))

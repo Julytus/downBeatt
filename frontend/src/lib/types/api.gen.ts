@@ -36,6 +36,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/subscription/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/role/update": {
         parameters: {
             query?: never;
@@ -301,7 +317,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["cancel"];
+        post: operations["cancel_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -612,6 +628,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/subscription/my": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["my"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/role/list": {
         parameters: {
             query?: never;
@@ -852,6 +884,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/order/my-list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["myList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/order/get": {
         parameters: {
             query?: never;
@@ -1060,6 +1108,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/dashboard/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["summary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/collection/my-list": {
         parameters: {
             query?: never;
@@ -1067,7 +1131,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["myList"];
+        get: operations["myList_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1149,6 +1213,8 @@ export interface components {
             plan?: string;
             /** Format: date */
             planExpiresAt?: string;
+            /** Format: int32 */
+            planAutoRenew?: number;
         };
         ApiResponseTokenResponse: {
             /** Format: int32 */
@@ -1162,6 +1228,39 @@ export interface components {
             refreshToken?: string;
             /** Format: int32 */
             userId?: number;
+        };
+        ApiResponseSubscription: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["Subscription"];
+            errors?: Record<string, never>;
+        };
+        Subscription: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            userId?: number;
+            /** Format: int32 */
+            planId?: number;
+            /** Format: int32 */
+            orderId?: number;
+            cycle?: string;
+            status?: string;
+            /** Format: date */
+            startDate?: string;
+            /** Format: date */
+            endDate?: string;
+            /** Format: int32 */
+            autoRenew?: number;
+            /** Format: int32 */
+            activeUserId?: number;
+            /** Format: date-time */
+            createdTime?: string;
+            /** Format: date-time */
+            updatedTime?: string;
+            planCode?: string;
+            planName?: string;
         };
         Role: {
             /** Format: int32 */
@@ -1931,6 +2030,20 @@ export interface components {
             code?: string;
             actions?: string;
         };
+        ApiResponsePagePaymentOrder: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["PagePaymentOrder"];
+            errors?: Record<string, never>;
+        };
+        PagePaymentOrder: {
+            /** Format: int64 */
+            total?: number;
+            /** Format: int32 */
+            page?: number;
+            items?: components["schemas"]["PaymentOrder"][];
+        };
         ApiResponsePageModule: {
             /** Format: int32 */
             code?: number;
@@ -2006,6 +2119,83 @@ export interface components {
             result?: components["schemas"]["LutCategory"];
             errors?: Record<string, never>;
         };
+        ActivePlans: {
+            /** Format: int64 */
+            totalCustomers?: number;
+            items?: components["schemas"]["PlanCustomers"][];
+        };
+        ApiResponseDashboardSummary: {
+            /** Format: int32 */
+            code?: number;
+            message?: string;
+            result?: components["schemas"]["DashboardSummary"];
+            errors?: Record<string, never>;
+        };
+        DashboardPoint: {
+            period?: string;
+            /** Format: int64 */
+            revenue?: number;
+            /** Format: int64 */
+            paidOrders?: number;
+            /** Format: int64 */
+            newCustomers?: number;
+            /** Format: int64 */
+            downloads?: number;
+        };
+        DashboardSummary: {
+            from?: string;
+            to?: string;
+            groupBy?: string;
+            summary?: components["schemas"]["DashboardTotals"];
+            previous?: components["schemas"]["DashboardTotals"];
+            series?: components["schemas"]["DashboardPoint"][];
+            revenueByPlan?: components["schemas"]["PlanRevenue"][];
+            activePlans?: components["schemas"]["ActivePlans"];
+            topLuts?: components["schemas"]["DashboardTopLut"][];
+        };
+        DashboardTopLut: {
+            /** Format: int32 */
+            id?: number;
+            slug?: string;
+            title?: string;
+            coverUrl?: string;
+            /** Format: int32 */
+            isPremium?: number;
+            status?: string;
+            creatorName?: string;
+            /** Format: int64 */
+            downloads?: number;
+        };
+        DashboardTotals: {
+            from?: string;
+            to?: string;
+            /** Format: int64 */
+            revenue?: number;
+            /** Format: int64 */
+            paidOrders?: number;
+            /** Format: int64 */
+            newCustomers?: number;
+            /** Format: int64 */
+            downloads?: number;
+            /** Format: int64 */
+            premiumDownloads?: number;
+            /** Format: double */
+            premiumRatio?: number;
+        };
+        PlanCustomers: {
+            planCode?: string;
+            planName?: string;
+            /** Format: int64 */
+            customers?: number;
+        };
+        PlanRevenue: {
+            planCode?: string;
+            planName?: string;
+            /** Format: int64 */
+            revenue?: number;
+            /** Format: int64 */
+            paidOrders?: number;
+        };
         ApiResponseListLutCollection: {
             /** Format: int32 */
             code?: number;
@@ -2065,6 +2255,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseTokenResponse"];
+                };
+            };
+        };
+    };
+    cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSubscription"];
                 };
             };
         };
@@ -2443,7 +2653,7 @@ export interface operations {
             };
         };
     };
-    cancel: {
+    cancel_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -2935,6 +3145,26 @@ export interface operations {
             };
         };
     };
+    my: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSubscription"];
+                };
+            };
+        };
+    };
     list: {
         parameters: {
             query?: {
@@ -3276,6 +3506,29 @@ export interface operations {
             };
         };
     };
+    myList: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePagePaymentOrder"];
+                };
+            };
+        };
+    };
     get_2: {
         parameters: {
             query: {
@@ -3581,7 +3834,31 @@ export interface operations {
             };
         };
     };
-    myList: {
+    summary: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+                groupBy?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseDashboardSummary"];
+                };
+            };
+        };
+    };
+    myList_1: {
         parameters: {
             query?: {
                 lutId?: number;

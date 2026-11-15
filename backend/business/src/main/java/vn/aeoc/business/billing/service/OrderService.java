@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import vn.aeoc.base.config.extention.paging.Page;
 import vn.aeoc.base.constant.ErrorCode;
 import vn.aeoc.base.exception.AppException;
 import vn.aeoc.base.service.BaseService;
@@ -55,7 +56,7 @@ public class OrderService extends BaseService<PaymentOrderRepository, PaymentOrd
                         PayosClient payosClient,
                         PaymentActivationService paymentActivationService,
                         LutService lutService,
-                        @Value("${system.frontend-url:http://localhost:4200}") String frontendUrl) {
+                        @Value("${system.frontend-url:http://localhost:4500}") String frontendUrl) {
         this(repository, queryExecutor, planRepository, subscriptionRepository, payosClient, paymentActivationService,
                 lutService, Clock.system(DEFAULT_ZONE), frontendUrl);
     }
@@ -76,7 +77,7 @@ public class OrderService extends BaseService<PaymentOrderRepository, PaymentOrd
         this.paymentActivationService = paymentActivationService;
         this.lutService = lutService;
         this.clock = clock;
-        this.frontendUrl = frontendUrl != null ? frontendUrl.replaceAll("/+$", "") : "http://localhost:4200";
+        this.frontendUrl = frontendUrl != null ? frontendUrl.replaceAll("/+$", "") : "http://localhost:4500";
         this.reconciliationThrottle = Caffeine.newBuilder()
                 .expireAfterWrite(Duration.ofSeconds(5))
                 .build();
@@ -258,5 +259,25 @@ public class OrderService extends BaseService<PaymentOrderRepository, PaymentOrd
             return List.of();
         }
         return repository.purchaseSignals(userId, since);
+    }
+
+    public Page<PaymentOrder> myList(Integer userId, Integer page, Integer limit) {
+        int p = (page == null || page < 1) ? 1 : page;
+        int l = (limit == null || limit < 1) ? 10 : (limit > 50 ? 50 : limit);
+        int offset = (p - 1) * l;
+
+        long total = repository.countByUser(userId);
+        List<PaymentOrder> items = repository.myList(userId, offset, l);
+        if (items != null) {
+            for (PaymentOrder item : items) {
+                if (!"PENDING".equals(item.getStatus())) {
+                    item.setCheckoutUrl(null);
+                }
+            }
+        } else {
+            items = List.of();
+        }
+
+        return new Page<>(total, p, items);
     }
 }
