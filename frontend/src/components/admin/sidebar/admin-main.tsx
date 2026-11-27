@@ -38,7 +38,7 @@ export function AdminMain({ label, items }: { label: string; items: AdminNavItem
                 <SidebarMenuButton
                   asChild
                   tooltip={item.title}
-                  isActive={pathname === item.url}
+                  isActive={pathname === item.url || (item.url !== "/admin" && !!item.url && pathname.startsWith(`${item.url}/`))}
                   className="font-medium"
                 >
                   <Link to={item.url ?? "/"}>

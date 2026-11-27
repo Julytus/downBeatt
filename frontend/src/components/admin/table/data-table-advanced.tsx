@@ -75,6 +75,8 @@ interface DataTableAdvancedProps<TData> {
   toolbarActions?: React.ReactNode;
   bulkActions?: (selectedIds: number[], clearSelection: () => void) => React.ReactNode;
   onRowClick?: (row: TData) => void;
+  /** Chữ khi bảng rỗng */
+  emptyMessage?: string;
 }
 
 export function DataTableAdvanced<TData extends { id: number }>({
@@ -96,6 +98,7 @@ export function DataTableAdvanced<TData extends { id: number }>({
   toolbarActions,
   bulkActions,
   onRowClick,
+  emptyMessage = "Không có dữ liệu.",
   getRowId = (row) => row.id.toString()
 }: DataTableAdvancedProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState({});
@@ -303,7 +306,7 @@ export function DataTableAdvanced<TData extends { id: number }>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Không có dữ liệu.
+                  {emptyMessage}
                 </TableCell>
               </TableRow>
             )}

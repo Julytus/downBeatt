@@ -257,7 +257,7 @@ public class UserService extends BaseService<UserRepository, User, Integer> {
         }
     }
 
-    private void evictAuthUser(Integer userId) {
+    public void evictAuthUser(Integer userId) {
         if (userId != null) authCache.invalidate(CacheKeyFactory.authUser(userId));
     }
 

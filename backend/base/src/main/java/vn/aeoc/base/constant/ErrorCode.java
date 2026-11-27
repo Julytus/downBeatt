@@ -9,6 +9,7 @@ public enum ErrorCode {
     LOGIN(401,  "Chưa đăng nhập"),
     FORBIDDEN(403, "Không có quyền truy cập"),
     LOCK_ACCOUNT(403, "Tài khoản bị khóa"),
+    ACCOUNT_LOCKED(401, "Tài khoản đã bị khoá"),
     INTERNAL_ERROR(500, "Lỗi hệ thống"),
 
     DUPLICATED_USER(400, "Số điện thoại đã tồn tại"),
