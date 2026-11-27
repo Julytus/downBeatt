@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Boxes, Command, Film, House, KeyRound, LayoutGrid, Palette, ShieldCheck, Sparkles } from "lucide-react";
+import { Boxes, Command, Film, House, KeyRound, LayoutGrid, Palette, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 import { AdminMain, type AdminNavItem } from "@/components/admin/sidebar/admin-main";
@@ -24,8 +24,9 @@ const FEATURE_ITEMS: (AdminNavItem & { code: string })[] = [
   { code: "RECOMMEND", title: "Gợi ý", url: "/admin/goi-y", icon: Sparkles }
 ];
 
-/** Nhóm "Hệ thống": các trang phân quyền (resource MODULE / RESOURCE / ROLE / PERMISSION, migration V4). */
+/** Nhóm "Hệ thống": tài khoản (resource USER, V18) + các trang phân quyền (MODULE / RESOURCE / ROLE / PERMISSION, V4). */
 const SYSTEM_ITEMS: (AdminNavItem & { code: string })[] = [
+  { code: "USER", title: "Tài khoản", url: "/admin/tai-khoan", icon: Users },
   { code: "ROLE", title: "Chức vụ", url: "/admin/chuc-vu", icon: ShieldCheck },
   { code: "PERMISSION", title: "Phân quyền", url: "/admin/phan-quyen", icon: KeyRound },
   { code: "RESOURCE", title: "Tài nguyên", url: "/admin/tai-nguyen", icon: Boxes },

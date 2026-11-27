@@ -25,9 +25,11 @@ import { Route as ShopGoiCuaToiRouteImport } from './routes/_shop/goi-cua-toi'
 import { Route as PlainPricingRouteImport } from './routes/_plain/pricing'
 import { Route as AuthLogoutRouteImport } from './routes/_auth/logout'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
+import { Route as AdminTaiKhoanIndexRouteImport } from './routes/admin/tai-khoan/index'
 import { Route as AdminLutsIndexRouteImport } from './routes/admin/luts/index'
 import { Route as ShopLutsIndexRouteImport } from './routes/_shop/luts/index'
 import { Route as ShopBoSuuTapIndexRouteImport } from './routes/_shop/bo-suu-tap/index'
+import { Route as AdminTaiKhoanIdRouteImport } from './routes/admin/tai-khoan/$id'
 import { Route as AdminLutsIdRouteImport } from './routes/admin/luts/$id'
 import { Route as ShopLutsSlugRouteImport } from './routes/_shop/luts/$slug'
 import { Route as ShopBoSuuTapIdRouteImport } from './routes/_shop/bo-suu-tap/$id'
@@ -111,6 +113,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRoute,
 } as any)
+const AdminTaiKhoanIndexRoute = AdminTaiKhoanIndexRouteImport.update({
+  id: '/tai-khoan/',
+  path: '/tai-khoan/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLutsIndexRoute = AdminLutsIndexRouteImport.update({
   id: '/luts/',
   path: '/luts/',
@@ -125,6 +132,11 @@ const ShopBoSuuTapIndexRoute = ShopBoSuuTapIndexRouteImport.update({
   id: '/bo-suu-tap/',
   path: '/bo-suu-tap/',
   getParentRoute: () => ShopRoute,
+} as any)
+const AdminTaiKhoanIdRoute = AdminTaiKhoanIdRouteImport.update({
+  id: '/tai-khoan/$id',
+  path: '/tai-khoan/$id',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminLutsIdRoute = AdminLutsIdRouteImport.update({
   id: '/luts/$id',
@@ -170,9 +182,11 @@ export interface FileRoutesByFullPath {
   '/bo-suu-tap/$id': typeof ShopBoSuuTapIdRoute
   '/luts/$slug': typeof ShopLutsSlugRoute
   '/admin/luts/$id': typeof AdminLutsIdRoute
+  '/admin/tai-khoan/$id': typeof AdminTaiKhoanIdRoute
   '/bo-suu-tap': typeof ShopBoSuuTapIndexRoute
   '/luts': typeof ShopLutsIndexRoute
   '/admin/luts': typeof AdminLutsIndexRoute
+  '/admin/tai-khoan': typeof AdminTaiKhoanIndexRoute
   '/thanh-toan/ket-qua/$code': typeof PlainThanhToanKetQuaCodeRoute
   '/luts/danh-muc/$category': typeof ShopLutsDanhMucCategoryRoute
 }
@@ -192,9 +206,11 @@ export interface FileRoutesByTo {
   '/bo-suu-tap/$id': typeof ShopBoSuuTapIdRoute
   '/luts/$slug': typeof ShopLutsSlugRoute
   '/admin/luts/$id': typeof AdminLutsIdRoute
+  '/admin/tai-khoan/$id': typeof AdminTaiKhoanIdRoute
   '/bo-suu-tap': typeof ShopBoSuuTapIndexRoute
   '/luts': typeof ShopLutsIndexRoute
   '/admin/luts': typeof AdminLutsIndexRoute
+  '/admin/tai-khoan': typeof AdminTaiKhoanIndexRoute
   '/thanh-toan/ket-qua/$code': typeof PlainThanhToanKetQuaCodeRoute
   '/luts/danh-muc/$category': typeof ShopLutsDanhMucCategoryRoute
 }
@@ -219,9 +235,11 @@ export interface FileRoutesById {
   '/_shop/bo-suu-tap/$id': typeof ShopBoSuuTapIdRoute
   '/_shop/luts/$slug': typeof ShopLutsSlugRoute
   '/admin/luts/$id': typeof AdminLutsIdRoute
+  '/admin/tai-khoan/$id': typeof AdminTaiKhoanIdRoute
   '/_shop/bo-suu-tap/': typeof ShopBoSuuTapIndexRoute
   '/_shop/luts/': typeof ShopLutsIndexRoute
   '/admin/luts/': typeof AdminLutsIndexRoute
+  '/admin/tai-khoan/': typeof AdminTaiKhoanIndexRoute
   '/_plain/thanh-toan/ket-qua/$code': typeof PlainThanhToanKetQuaCodeRoute
   '/_shop/luts/danh-muc/$category': typeof ShopLutsDanhMucCategoryRoute
 }
@@ -244,9 +262,11 @@ export interface FileRouteTypes {
     | '/bo-suu-tap/$id'
     | '/luts/$slug'
     | '/admin/luts/$id'
+    | '/admin/tai-khoan/$id'
     | '/bo-suu-tap'
     | '/luts'
     | '/admin/luts'
+    | '/admin/tai-khoan'
     | '/thanh-toan/ket-qua/$code'
     | '/luts/danh-muc/$category'
   fileRoutesByTo: FileRoutesByTo
@@ -266,9 +286,11 @@ export interface FileRouteTypes {
     | '/bo-suu-tap/$id'
     | '/luts/$slug'
     | '/admin/luts/$id'
+    | '/admin/tai-khoan/$id'
     | '/bo-suu-tap'
     | '/luts'
     | '/admin/luts'
+    | '/admin/tai-khoan'
     | '/thanh-toan/ket-qua/$code'
     | '/luts/danh-muc/$category'
   id:
@@ -292,9 +314,11 @@ export interface FileRouteTypes {
     | '/_shop/bo-suu-tap/$id'
     | '/_shop/luts/$slug'
     | '/admin/luts/$id'
+    | '/admin/tai-khoan/$id'
     | '/_shop/bo-suu-tap/'
     | '/_shop/luts/'
     | '/admin/luts/'
+    | '/admin/tai-khoan/'
     | '/_plain/thanh-toan/ket-qua/$code'
     | '/_shop/luts/danh-muc/$category'
   fileRoutesById: FileRoutesById
@@ -421,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/admin/tai-khoan/': {
+      id: '/admin/tai-khoan/'
+      path: '/tai-khoan'
+      fullPath: '/admin/tai-khoan'
+      preLoaderRoute: typeof AdminTaiKhoanIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/luts/': {
       id: '/admin/luts/'
       path: '/luts'
@@ -441,6 +472,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/bo-suu-tap'
       preLoaderRoute: typeof ShopBoSuuTapIndexRouteImport
       parentRoute: typeof ShopRoute
+    }
+    '/admin/tai-khoan/$id': {
+      id: '/admin/tai-khoan/$id'
+      path: '/tai-khoan/$id'
+      fullPath: '/admin/tai-khoan/$id'
+      preLoaderRoute: typeof AdminTaiKhoanIdRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/luts/$id': {
       id: '/admin/luts/$id'
@@ -533,7 +571,9 @@ interface AdminRouteChildren {
   AdminTaiNguyenRoute: typeof AdminTaiNguyenRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminLutsIdRoute: typeof AdminLutsIdRoute
+  AdminTaiKhoanIdRoute: typeof AdminTaiKhoanIdRoute
   AdminLutsIndexRoute: typeof AdminLutsIndexRoute
+  AdminTaiKhoanIndexRoute: typeof AdminTaiKhoanIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -545,7 +585,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminTaiNguyenRoute: AdminTaiNguyenRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminLutsIdRoute: AdminLutsIdRoute,
+  AdminTaiKhoanIdRoute: AdminTaiKhoanIdRoute,
   AdminLutsIndexRoute: AdminLutsIndexRoute,
+  AdminTaiKhoanIndexRoute: AdminTaiKhoanIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

@@ -50,8 +50,15 @@ public class RefreshTokenRepository extends AbsMysqlRepository<RefreshTokenRecor
         delete(REFRESH_TOKEN.USER_ID.eq(userId));
     }
 
+    /**
+     * Đọc id trước (đọc không khoá) rồi mới xoá theo khoá chính: DELETE theo user_id trên tài khoản chưa có dòng nào
+     * giữ gap lock ở index user_id, hai lần đăng ký đồng thời (user_id liền nhau) sẽ deadlock khi INSERT.
+     */
     public void deleteExpiredByUserId(Integer userId) {
-        delete(REFRESH_TOKEN.USER_ID.eq(userId).and(REFRESH_TOKEN.EXPIRES_AT.le(NOW)));
+        java.util.List<Long> ids = dslContext.select(REFRESH_TOKEN.ID).from(REFRESH_TOKEN)
+                .where(REFRESH_TOKEN.USER_ID.eq(userId).and(REFRESH_TOKEN.EXPIRES_AT.le(NOW)))
+                .fetchInto(Long.class);
+        if (!ids.isEmpty()) delete(REFRESH_TOKEN.ID.in(ids));
     }
 
     private static Condition byHash(String hash) {

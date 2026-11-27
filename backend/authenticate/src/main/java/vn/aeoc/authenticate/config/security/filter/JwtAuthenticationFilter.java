@@ -5,7 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import vn.aeoc.base.config.web.PrincipalRequestWrapper;
@@ -13,6 +13,10 @@ import vn.aeoc.base.constant.ErrorCode;
 import vn.aeoc.base.exception.AppException;
 import vn.aeoc.base.util.HttpResponseUtils;
 import vn.aeoc.authenticate.service.auth.JWTService;
+import vn.aeoc.authenticate.service.auth.UserService;
+import vn.aeoc.authenticate.util.SecurityUtils;
+import vn.aeoc.base.util.CommonUtils;
+import vn.aeoc.entity.data.mysql.auth.User;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -20,10 +24,16 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
+    /** Lấy lười để tránh vòng phụ thuộc bean (filter được tạo sớm). */
+    private final ObjectProvider<UserService> userServiceProvider;
+
+    public JwtAuthenticationFilter(JWTService jwtService, ObjectProvider<UserService> userServiceProvider) {
+        this.jwtService = jwtService;
+        this.userServiceProvider = userServiceProvider;
+    }
 
     /**
      * Các API không cần xác thực JWT.
@@ -129,6 +139,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            // Tài khoản bị khoá => chặn ngay (đọc user qua cache Caffeine), không chờ access token hết hạn
+            if (isLocked(principal)) {
+                HttpResponseUtils.writeErrorWithCode(response, request, ErrorCode.ACCOUNT_LOCKED);
+                return;
+            }
+
             request = new PrincipalRequestWrapper(request, principal);
             filterChain.doFilter(request, response);
 
@@ -146,6 +162,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     e.getStatusCode(), e.getMessage()
             );
         }
+    }
+
+    private boolean isLocked(Principal principal) {
+        Integer userId = SecurityUtils.userId(principal);
+        if (CommonUtils.NVL(userId) <= 0) return false;
+        UserService userService = userServiceProvider.getIfAvailable();
+        if (userService == null) return false;
+        User user = userService.getUserById(userId);
+        // User không tồn tại (id null) => giữ hành vi cũ, đi tiếp
+        if (user == null || CommonUtils.NVL(user.getId()) <= 0) return false;
+        return CommonUtils.NVL(user.getActive()) != 1;
     }
 
     private boolean isPublicPath(String path) {
