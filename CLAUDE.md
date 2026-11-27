@@ -9,8 +9,8 @@ Danh sách plan: `plan/README.md`. Các plan cũ trong `plan/` thuộc dự án 
 | Ai | Làm gì | Được sửa |
 |---|---|---|
 | **Claude** (Opus 5.5, effort high) | Lập plan + test case, giao việc qua Orca, theo dõi, review, chạy E2E, viết tài liệu | `plan/**`, `docs/**`, `frontend/tests/e2e/**`, file hướng dẫn (`CLAUDE.md`, `AGENTS.md`), `scripts/ai/**`, skill của worker `.agents/skills/**` |
-| **Codex** (worker Orca `--agent codex`, GPT-6 Luna, effort medium) | Code backend theo plan | `backend/**`, `tools/seed/**` (script nạp dữ liệu mẫu) |
-| **agy** (worker Orca `--agent antigravity`, Gemini 3.8 Flash High) | Code frontend theo plan | `frontend/**` trừ `frontend/tests/e2e/**` |
+| **agy backend** (worker Orca `--agent antigravity`, Gemini 3.8 Flash High) | Code backend theo plan | `backend/**`, `tools/seed/**` (script nạp dữ liệu mẫu) |
+| **agy frontend** (worker Orca `--agent antigravity`, Gemini 3.8 Flash High, terminal riêng) | Code frontend theo plan | `frontend/**` trừ `frontend/tests/e2e/**` |
 
 Claude **không tự viết code nghiệp vụ** ở `backend/src` hay `frontend/src`, trừ khi người dùng bảo. Lỗi tìm được khi review thì giao lại cho worker kèm bằng chứng. Như vậy người code và người kiểm tra luôn là hai bên khác nhau.
 
@@ -25,11 +25,11 @@ Quy tắc cho worker nằm ở `AGENTS.md` (chung), `backend/AGENTS.md`, `fronte
 /cook <slug>            — phiên A (plan approved)
   1. Preflight: Orca, Docker (MySQL/MinIO), backend :9500
   2. Claude viết frontend/tests/e2e/<slug>.spec.ts từ test case (nhóm "API" phủ mọi endpoint §5 + lỗi §5.4)
-  3. Orca giao song song: Codex ← plan/tasks/<slug>-be.md · agy ← plan/tasks/<slug>-fe.md → dừng
+  3. Orca giao song song hai worker agy: agy BE ← plan/tasks/<slug>-be.md · agy FE ← plan/tasks/<slug>-fe.md → dừng
         ▼  /clear
 /cook <slug>            — phiên B (plan in-progress, §12 "phiên A xong")
   4. Theo dõi hộp thư: trả lời câu hỏi, nhận worker_done
-  5. Review BE (diff, mvn test, restart, E2E -g "API") → còn lỗi thì giao bản sửa cho Codex
+  5. Review BE (diff, mvn test, restart, E2E -g "API") → còn lỗi thì giao bản sửa cho agy BE
   6. Review FE (diff, build, lint) → còn lỗi thì giao bản sửa cho agy
   7. E2E có giao diện (--headed, slowMo) + chụp ảnh tài liệu → lỗi thì phân loại BE/FE rồi giao lại
   8. Giải phóng worker, ghi §12 "phiên B xong"

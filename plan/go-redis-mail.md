@@ -193,7 +193,7 @@ Component shadcn dùng: không thêm component nào.
 | TC-11 | api | `/auth/forgot-password` đã xoá | — | Gọi không token; gọi với token admin | 401 "Chưa đăng nhập"; 404 |
 | TC-12 | api | `/auth/reset-password` đã xoá | — | Như TC-11 | 401 "Chưa đăng nhập"; 404 |
 | TC-13 | api | Healthcheck không còn phụ thuộc Redis | Container `downBeat-redis` đã dừng | `GET /api/actuator/health` | 200, `status` = "UP" |
-| TC-14 | api (tay, bước review BE) | Backend chạy không cần Redis / Mailpit | `docker stop downBeat-redis downBeat-mailpit` | `sh scripts/ai/backend-restart.sh`, rồi chạy nhóm "API" | Backend lên :9200, log không có `RedisConnectionFailureException` / `MailSender`; TC-01…TC-13 pass |
+| TC-14 | api (tay, bước review BE) | Backend chạy không cần Redis / Mailpit | `docker stop downBeat-redis downBeat-mailpit` | `sh scripts/ai/backend-restart.sh`, rồi chạy nhóm "API" | Backend lên :9500, log không có `RedisConnectionFailureException` / `MailSender`; TC-01…TC-13 pass |
 | TC-15 | api (tay, bước review BE) | Refresh token sống qua restart | Đăng nhập lấy R | Restart backend → `POST /auth/refresh {R}` | 200 cặp token mới |
 | TC-16 | e2e | Trang đăng nhập không còn "Quên mật khẩu?" | — | Mở `/login` | Có "Ghi nhớ đăng nhập", không có link "Quên mật khẩu?"; đăng nhập admin vẫn vào `/admin` |
 | TC-17 | e2e | Route `/forgot-password` đã xoá | — | Mở `/forgot-password` | Hiện "404" và "Trang bạn đang tìm kiếm không tồn tại."; không có ô `#email` / nút "Gửi mã OTP" |
@@ -226,7 +226,7 @@ Loại: `unit` = Codex viết JUnit · `api` / `e2e` = Claude viết trong `fron
 1. **Mất chức năng quên mật khẩu.** Đã chốt với người dùng: bỏ hẳn. Người quên mật khẩu phải nhờ quản trị đặt lại trong DB (chưa có màn hình quản trị user). Có cần ghi chú cách đặt lại tay vào `docs/chuc-nang/go-redis-mail.md` không?
 2. **Bộ đếm đăng nhập sai nằm trong bộ nhớ**: restart backend là mở khoá, và chạy nhiều instance thì mỗi instance đếm riêng. Đồ án chạy 1 instance nên chọn Caffeine cho đơn giản. Nếu muốn bền như refresh token thì đổi sang bảng `login_attempt`. Giữ Caffeine?
 3. **`docker-compose.yml` (deploy) còn là bản AEOC cũ**: tên project `aeoc`, database mặc định `bpm`, còn Kafka (biến `KAFKA_*`, service `kafka`). Plan này chỉ gỡ Redis + Mail khỏi file đó. Gỡ Kafka / đổi tên thì làm plan riêng?
-4. **Backend đang chạy ở :9200 là bản build cũ** (pool `aeoc-hikari`, query còn cột `bsn_id`) và đăng nhập đang trả 500 vì không lấy được kết nối DB. Preflight của `/cook` sẽ build + restart lại; nếu restart vẫn lỗi thì xử lý trước khi giao việc.
+4. **Backend đang chạy ở :9500 là bản build cũ** (pool `aeoc-hikari`, query còn cột `bsn_id`) và đăng nhập đang trả 500 vì không lấy được kết nối DB. Preflight của `/cook` sẽ build + restart lại; nếu restart vẫn lỗi thì xử lý trước khi giao việc.
 
 ## 12. Nhật ký thực hiện (do /cook và /doc-chuc-nang ghi — nối các phiên A/B/C)
 

@@ -1,6 +1,6 @@
 # =====================================================================
 # LOCAL DEV: chỉ hạ tầng (mysql, minio) — dự án DownBeat cho backend chạy trên máy (:9500)
-# và frontend chạy bằng Vite (:4200). Dùng chung biến với backend/.env.
+# và frontend chạy bằng Vite (:4500). Dùng chung biến với backend/.env.
 #
 #   docker compose -f docker-compose.local.yml --env-file backend/.env up -d
 #   docker compose -f docker-compose.local.yml --env-file backend/.env --profile tools up -d   (+ phpMyAdmin)

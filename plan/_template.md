@@ -83,7 +83,7 @@ Response `result`:
 
 - Toast: tạo "…", sửa "…", xoá "…"
 
-## 7. Việc backend (Codex)
+## 7. Việc backend (agy BE)
 
 Module `<module>`. File cần tạo/sửa:
 
@@ -107,7 +107,7 @@ Component shadcn dùng (skill `shadcn` ở `.agents/skills/`): <có sẵn trong 
 | TC-02 | api | | | | |
 | TC-03 | unit | | | | |
 
-Loại: `unit` = Codex viết JUnit · `api` / `e2e` = Claude viết trong `frontend/tests/e2e/<slug>.spec.ts`.
+Loại: `unit` = agy BE viết JUnit · `api` / `e2e` = Claude viết trong `frontend/tests/e2e/<slug>.spec.ts`.
 
 ## 10. Tiêu chí hoàn thành
 

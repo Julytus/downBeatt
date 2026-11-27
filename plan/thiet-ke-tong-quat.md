@@ -276,7 +276,7 @@ Mọi endpoint dưới `/api`, response bọc `{ code, message, result }` như `
 
 | Method · đường dẫn | Ghi chú |
 |---|---|
-| `POST /account/register` | body `{ name, email, password }`. Tạo `user_app` role Khách hàng, trả **token như `/user/authenticate`** (đăng ký xong là đăng nhập luôn). Lỗi: email trùng |
+| `POST /account/register` | body `{ name, email, plainPassword }` (POJO `User`, như `/user/authenticate`). Tạo `user_app` role Khách hàng, trả **token như `/user/authenticate`** (đăng ký xong là đăng nhập luôn). Lỗi: email trùng |
 | `POST /user/authenticate`, `/auth/refresh`, `/auth/logout` | **có sẵn**, dùng chung với quản trị (`forgot-password`, `reset-password` đã gỡ) |
 | `GET /account/preference`, `POST /account/preference` | sở thích cold-start (§11.5). POST body `{ categorySlugs[] }`, thay toàn bộ; slug phải có thật và thuộc nhóm `phong-cach`, `tong-mau`, `dip`, `phan-mem`, tối đa 12 |
 | `GET /account/me` | `{ id, name, email, plan: free\|pro\|studio, planExpiresAt }`. `plan` lấy từ subscription ACTIVE, không có thì `free` |
@@ -327,7 +327,7 @@ Theo khuôn `/<x>/list | get | update | delete/{id}` của `backend/AGENTS.md`:
 | Tải khi chưa đăng nhập | 401 | `UNAUTHORIZED` | Vui lòng đăng nhập để tải LUT |
 | Tải LUT ★ khi không có gói trả phí | 403 | `PLAN_REQUIRED` | LUT Premium cần gói Pro hoặc Studio |
 | LUT / danh mục không có hoặc chưa xuất bản | 404 | `DATA_NOT_FOUND` | Không tìm thấy LUT / Không tìm thấy danh mục |
-| Mua đúng gói đang dùng còn hạn | 400 | `PLAN_ACTIVE` | Bạn đang dùng gói này |
+| Hạ gói khi gói cao hơn còn hạn trên 3 ngày | 400 | `PLAN_ACTIVE` | Bạn đang dùng gói Studio, cao hơn gói Pro |
 | Huỷ / thanh toán đơn không còn PENDING | 400 | `ORDER_INVALID_STATUS` | Đơn hàng đã được xử lý |
 | Không tạo được link payOS (lỗi mạng, sai khoá) | 502 | `PAYMENT_GATEWAY_ERROR` | Không kết nối được cổng thanh toán, vui lòng thử lại |
 | Webhook sai chữ ký | 400 | `INVALID_SIGNATURE` | (không hiện cho khách; ghi log) |
@@ -430,7 +430,7 @@ Lát 1 và 3 làm song song được (không chung bảng). Lát 8 có thể là
 
 Còn mở (chốt khi lập plan lát tương ứng):
 
-1. **Nâng cấp giữa kỳ**: bản đầu không tính tiền chênh lệch (đóng gói cũ, mở gói mới). Có cần trừ phần còn lại không? (lát 4)
+1. **Nâng cấp giữa kỳ**: đã chốt ở plan `goi-thanh-toan` (10/11/2026): không thu chênh lệch, phần còn lại của gói cũ quy đổi thành ngày dùng thêm ở gói mới; gia hạn bất cứ lúc nào.
 2. **Gói Studio 5 thành viên**: hiện chỉ ghi trên bảng giá. Làm thật cần bảng `team` / `team_member`, để sau lát 6.
 3. **payOS khi demo đồ án**: dùng khoá thật với số tiền nhỏ, hay chỉ chạy `mock-pay` ở local? (lát 4)
 4. **Plugin**: tên đề tài có "LUT và PLUGIN" nhưng chưa có lát nào. Đề xuất ở `docs/tai-lieu-thiet-ke.md` chương 10 (bảng `plugin`, `plugin_host`, dùng chung khung gợi ý). Làm thật trong đồ án hay chỉ trình bày thiết kế? (sau lát 9)

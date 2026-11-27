@@ -2,7 +2,7 @@
 
 # Ghi chú cho Claude (reviewer backend)
 
-Code backend do worker Codex viết; quy tắc ở trên là của Codex và cũng là checklist review của Claude. Claude không sửa `backend/src`. Lỗi tìm được thì giao bản sửa qua Orca (`plan/tasks/<slug>-be-fixN.md`).
+Code backend do worker agy (backend) viết; quy tắc ở trên là của worker đó và cũng là checklist review của Claude. Claude không sửa `backend/src`. Lỗi tìm được thì giao bản sửa qua Orca (`plan/tasks/<slug>-be-fixN.md`).
 
 Checklist review diff `git diff -- backend` (mỗi lỗi ghi `file:line` + quy tắc bị vi phạm):
 

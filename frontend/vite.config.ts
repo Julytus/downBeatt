@@ -14,8 +14,8 @@ export default ({ mode }: ConfigEnv) => {
       cssCodeSplit: true
     },
     server: {
-      port: 4200,
-      // Báo lỗi nếu 4200 bận thay vì lặng lẽ nhảy sang cổng khác (backend/CORS/e2e đều giả định 4200)
+      port: 4500,
+      // Báo lỗi nếu 4500 bận thay vì lặng lẽ nhảy sang cổng khác (backend/CORS/e2e đều giả định 4500)
       strictPort: true,
       host: true,
       allowedHosts: [
@@ -24,7 +24,7 @@ export default ({ mode }: ConfigEnv) => {
       watch: { usePolling: true, interval: 1000 }
     },
     preview: {
-      port: 4200,
+      port: 4500,
       host: process.env.VITE_SERVER_URL
         ? new URL(process.env.VITE_SERVER_URL).hostname
         : "localhost"

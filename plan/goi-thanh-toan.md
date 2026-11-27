@@ -257,7 +257,7 @@ payos:
   api-key: ${PAYOS_API_KEY:}
   checksum-key: ${PAYOS_CHECKSUM_KEY:}
 system:
-  frontend-url: ${FRONTEND_URL:http://localhost:4200}
+  frontend-url: ${FRONTEND_URL:http://localhost:4500}
 ```
 Thêm 4 dòng `PAYOS_*` (để trống) + `FRONTEND_URL` vào `backend/.env.example` kèm chú thích.
 
@@ -265,8 +265,8 @@ Tạo link: `POST {base-url}/v2/payment-requests`, header `x-client-id`, `x-api-
 ```json
 {
   "orderCode": 2611100001, "amount": 948000, "description": "DownBeat",
-  "returnUrl": "http://localhost:4200/thanh-toan/ket-qua/DB2611100001",
-  "cancelUrl": "http://localhost:4200/thanh-toan/ket-qua/DB2611100001",
+  "returnUrl": "http://localhost:4500/thanh-toan/ket-qua/DB2611100001",
+  "cancelUrl": "http://localhost:4500/thanh-toan/ket-qua/DB2611100001",
   "expiredAt": 1762834442,
   "items": [ { "name": "Gói Pro - 12 tháng", "quantity": 1, "price": 948000 } ],
   "signature": "HMAC_SHA256(\"amount=948000&cancelUrl=...&description=DownBeat&orderCode=2611100001&returnUrl=...\", checksumKey)"
@@ -414,7 +414,7 @@ Component shadcn dùng: có sẵn trong `components/ui/`: `dialog`, `alert-dialo
 **Cách test webhook mà không cần payOS gọi vào máy:** spec đọc `PAYOS_CHECKSUM_KEY` từ `backend/.env` (phía Node, không ra trình duyệt, không commit), tự dựng thân webhook như §5.5 và ký bằng `crypto.createHmac` của Node (một bản cài đặt độc lập với Java → kiểm chéo được cách ký của backend), rồi `POST /api/payment/payos/webhook`. `order/create` gọi **payOS thật** bằng khoá trong `.env`: tạo link không mất tiền; test huỷ hoặc để đơn tự hết hạn.
 
 **Vector chữ ký** (khoá `downbeat-test-checksum`, tính sẵn bằng Node để unit test Java đối chiếu):
-- Tạo link: chuỗi `amount=99000&cancelUrl=http://localhost:4200/thanh-toan/ket-qua/DB2611100001&description=DownBeat&orderCode=2611100001&returnUrl=http://localhost:4200/thanh-toan/ket-qua/DB2611100001` → `de1cc872870f3f3c6c2f56b2fca94727348d4898e3a72cdbae787970b8c7dd08`.
+- Tạo link: chuỗi `amount=99000&cancelUrl=http://localhost:4500/thanh-toan/ket-qua/DB2611100001&description=DownBeat&orderCode=2611100001&returnUrl=http://localhost:4500/thanh-toan/ket-qua/DB2611100001` → `de1cc872870f3f3c6c2f56b2fca94727348d4898e3a72cdbae787970b8c7dd08`.
 - Webhook: `data` ở §5.5 nhưng `amount: 99000`, `paymentLinkId: "a1b2c3d4"` → chuỗi `accountNumber=12345678&amount=99000&code=00&counterAccountBankId=&counterAccountBankName=&counterAccountName=&counterAccountNumber=&currency=VND&desc=success&description=DownBeat&orderCode=2611100001&paymentLinkId=a1b2c3d4&reference=FT2611100001&transactionDateTime=2026-11-10 10:15:30&virtualAccountName=&virtualAccountNumber=` → `c96085b61553e71c579afc9051bfa92e743cb042aa727ae4457a3b7cb58361f6`.
 
 | ID | Loại | Mô tả | Tiền điều kiện | Bước | Kết quả mong đợi |

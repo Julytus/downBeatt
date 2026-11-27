@@ -124,7 +124,7 @@ docker compose -f docker-compose.local.yml --env-file backend/.env up -d
 cd backend && mvn -q -DskipTests package && java -jar app/target/aeoc-backend.jar
 #    hoặc trên Windows / Git Bash: sh scripts/ai/backend-restart.sh
 
-# 4. Frontend: http://localhost:4200
+# 4. Frontend: http://localhost:4500
 cd frontend && pnpm install && pnpm dev
 ```
 
@@ -153,7 +153,7 @@ Tài khoản cửa hàng và tài khoản quản trị là hai hệ riêng: tài
 
 ```bash
 cd frontend && pnpm build && pnpm lint
-cd frontend && pnpm test:e2e                       # Playwright, cần dev server :4200 (và backend cho auth.spec)
+cd frontend && pnpm test:e2e                       # Playwright, cần dev server :4500 (và backend cho auth.spec)
 cd backend  && mvn -q "-Djooq.codegen.skip=true" test
 ```
 
@@ -167,4 +167,4 @@ Mã test (`frontend/tests/`, `backend/**/src/test/`) đang nằm trong `.gitigno
 - [plan/README.md](plan/README.md): danh sách plan.
 - `docs/chuc-nang/`: tài liệu từng chức năng khi làm xong (phục vụ báo cáo).
 
-Ảnh trong README chụp tự động bằng `node scripts/ai/chup-anh-readme.mjs` (chỉ chụp lại ảnh trang chủ: `README_ONLY=trang-chu node scripts/ai/chup-anh-readme.mjs`) (cần frontend :4200; ảnh quản trị cần thêm backend :9500). Giao diện đổi thì chạy lại lệnh này.
+Ảnh trong README chụp tự động bằng `node scripts/ai/chup-anh-readme.mjs` (chỉ chụp lại ảnh trang chủ: `README_ONLY=trang-chu node scripts/ai/chup-anh-readme.mjs`) (cần frontend :4500; ảnh quản trị cần thêm backend :9500). Giao diện đổi thì chạy lại lệnh này.

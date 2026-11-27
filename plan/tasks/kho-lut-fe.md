@@ -33,5 +33,5 @@ Chỉ `frontend/**` trừ `frontend/tests/e2e/**`. Không restart backend. Cấm
 1. `cd frontend && pnpm build` xanh.
 2. `pnpm lint` 0 error.
 3. `grep` ở mục Ràng buộc rỗng.
-4. Nếu `curl -s http://localhost:9200/api/v3/api-docs | grep -c "lut/public"` > 0 (backend đã xong): `pnpm test:e2e tests/e2e/kho-lut.spec.ts -g "giao diện" --reporter=line` và dán `N passed / M failed`. Chưa có thì ghi rõ "backend chưa sẵn sàng, chưa chạy E2E".
+4. Nếu `curl -s http://localhost:9500/api/v3/api-docs | grep -c "lut/public"` > 0 (backend đã xong): `pnpm test:e2e tests/e2e/kho-lut.spec.ts -g "giao diện" --reporter=line` và dán `N passed / M failed`. Chưa có thì ghi rõ "backend chưa sẵn sàng, chưa chạy E2E".
 5. Báo cáo có dòng "Skill: …" (component shadcn đã dùng, quy tắc UX đã áp).

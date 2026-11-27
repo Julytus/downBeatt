@@ -1,6 +1,6 @@
 // Chụp ảnh giao diện cho README.md → docs/img/readme/*.png
 //   node scripts/ai/chup-anh-readme.mjs
-// Cần: frontend dev đang chạy :4200 (cd frontend && pnpm dev). Ảnh trang quản trị cần thêm backend :9500;
+// Cần: frontend dev đang chạy :4500 (cd frontend && pnpm dev). Ảnh trang quản trị cần thêm backend :9500;
 // backend tắt thì bỏ qua hai ảnh đó. Đổi địa chỉ: README_BASE_URL.
 import { createRequire } from "node:module";
 import { mkdirSync } from "node:fs";
@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const { chromium } = createRequire(path.join(ROOT, "frontend/package.json"))("@playwright/test");
-const BASE = process.env.README_BASE_URL ?? "http://localhost:4200";
+const BASE = process.env.README_BASE_URL ?? "http://localhost:4500";
 const OUT = path.join(ROOT, "docs/img/readme");
 mkdirSync(OUT, { recursive: true });
 

@@ -6,7 +6,7 @@
 #   docker compose --profile tools up -d      -> thêm Kafka UI (127.0.0.1:${DEPLOY_KAFKA_UI_PORT})
 #   docker compose --profile tunnel up -d     -> thêm Cloudflare Tunnel (trỏ tunnel tới http://nginx:80)
 #
-# Chạy song song với môi trường dev trên cùng máy (docker-compose.local.yml, :9100, :4200):
+# Chạy song song với môi trường dev trên cùng máy (docker-compose.local.yml, :9500, :4500):
 # chỉ nginx mở cổng ra host; mysql/minio/kafka/backend chỉ nằm trong mạng docker nội bộ
 # và dùng volume riêng của project "aeoc".
 # =====================================================================

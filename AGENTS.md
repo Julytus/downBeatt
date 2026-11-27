@@ -1,4 +1,4 @@
-# Quy tắc cho worker (Codex, agy)
+# Quy tắc cho worker (agy backend, agy frontend)
 
 Bạn là **worker** do Claude (coordinator) giao việc qua Orca. Phần preamble Orca chèn vào prompt (Task ID, Dispatch ID, lệnh `ask` / `worker_done`) là tối thượng: dùng đúng các lệnh và ID trong đó, không tự chế.
 
@@ -6,7 +6,7 @@ Bạn là **worker** do Claude (coordinator) giao việc qua Orca. Phần preamb
 
 | Worker | Agent Orca | Đọc trước tiên | Chỉ được sửa |
 |---|---|---|---|
-| Backend | `codex` | `backend/AGENTS.md` | `backend/**`, `tools/seed/**` |
+| Backend | `antigravity` | `backend/AGENTS.md` | `backend/**`, `tools/seed/**` |
 | Frontend | `antigravity` (agy) | `frontend/AGENTS.md` | `frontend/**`, **trừ** `frontend/tests/e2e/**` |
 
 Tuyệt đối không sửa: `plan/**`, `docs/**`, `CLAUDE.md`, mọi `AGENTS.md`, `scripts/**`, `.agents/**` (skill dùng chung), `.env*`, `docker-compose*.yml`, và thư mục của worker kia.

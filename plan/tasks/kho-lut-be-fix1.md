@@ -6,7 +6,7 @@ Vòng trước: dispatch `ctx_d16ffc1e98f5`, outcome `failed`. Task gốc vẫn 
 
 | # | Hiện trạng | Bằng chứng | Mong đợi |
 |---|---|---|---|
-| 1 | Backend :9200 không chạy | `curl :9200/api/v3/api-docs` → `000`; `backend/target/backend-run.err.log`: `FlywayValidateException: Validate failed: Migrations have failed validation` | `sh scripts/ai/backend-restart.sh` → "backend sẵn sàng", Flyway áp V3 + V3_1 thành công |
+| 1 | Backend :9500 không chạy | `curl :9500/api/v3/api-docs` → `000`; `backend/target/backend-run.err.log`: `FlywayValidateException: Validate failed: Migrations have failed validation` | `sh scripts/ai/backend-restart.sh` → "backend sẵn sàng", Flyway áp V3 + V3_1 thành công |
 | 2 | `flyway_schema_history` có dòng `3.1 seed kho lut success=0` | `select … from flyway_schema_history` (container `downBeat-mysql`) | Sửa lỗi quote URL trong `build.py` → sinh lại `V3_1__seed_kho_lut.sql`; xoá dòng thất bại (`flyway repair`, hoặc `DELETE FROM flyway_schema_history WHERE version='3.1' AND success=0` trên DB local); kiểm tra không còn dữ liệu nửa chừng của V3_1 trong `creator`/`lut`/`lut_category_map`/`lut_tag` (nếu còn thì xoá trước khi chạy lại). **Không** sửa `V3__kho_lut.sql` đã áp thành công (checksum) — nếu bắt buộc phải sửa V3 thì hỏi Claude trước |
 | 3 | Seed chưa đủ: map danh mục và hai LUT bẫy (theo §7 / task gốc bước 1) | báo cáo worker_done vòng trước | `luts.json` + V3_1 có đủ 36 LUT, map danh mục, hai LUT bẫy đúng plan |
 | 4 | Task gốc bước 4: chưa `mvn -q -DskipTests package` sinh jOOQ cho bảng mới sau khi Flyway thành công | — | jOOQ sinh `Creator`, `Lut`, `LutCategory`, `LutCategoryMap`, `LutTag` (không sửa tay file sinh) |

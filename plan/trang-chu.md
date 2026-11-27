@@ -334,7 +334,7 @@ Ngoài ra Claude sửa test cũ trong `shop-flows.spec.ts` (dòng `goto("/")` đ
 
 Còn lưu ý:
 
-6. Lát chỉ có frontend nên `/cook` chỉ giao agy (không giao Codex), không cần backend :9200 để chạy E2E.
+6. Lát chỉ có frontend nên `/cook` chỉ giao agy (không giao Codex), không cần backend :9500 để chạy E2E.
 7. Ảnh tải từ picsum.photos lúc chạy: mất mạng thì ô ảnh trống (giữ nền `--sh-surface` để không vỡ bố cục).
 
 ## 12. Nhật ký thực hiện (do /cook và /doc-chuc-nang ghi — nối các phiên A/B/C)
@@ -344,7 +344,7 @@ Còn lưu ý:
 | 2026-11-05 | Lập plan (draft) từ video tham khảo |
 | 2026-11-05 | Chốt 5 câu hỏi §11: menu giống video, nút sáng / tối, ảnh picsum chọn theo id, giữ số liệu minh hoạ, chấp nhận tìm giả |
 | 2026-11-05 | Người dùng duyệt → `approved` |
-| 2026-11-05 | Phiên A: `status: in-progress`. Preflight: Orca ready; Docker / backend :9200 bỏ qua (lát chỉ frontend, §11.6). File bẩn có sẵn trước khi giao: `frontend/AGENTS.md`, `frontend/public/favicon.ico`, `plan/README.md` |
+| 2026-11-05 | Phiên A: `status: in-progress`. Preflight: Orca ready; Docker / backend :9500 bỏ qua (lát chỉ frontend, §11.6). File bẩn có sẵn trước khi giao: `frontend/AGENTS.md`, `frontend/public/favicon.ico`, `plan/README.md` |
 | 2026-11-05 | Claude viết `frontend/tests/e2e/trang-chu.spec.ts` (26 test: TC-01…TC-24 + TC-04b + TC-22b "có chuyển động khi không giảm chuyển động", thêm để chắc băng khối 2 thật sự chạy). Không có nhóm "API" (không endpoint). Sửa `shop-flows.spec.ts`: test "/ chuyển về /luts" → "/ là trang chủ" |
 | 2026-11-05 | Task spec: `plan/tasks/trang-chu-fe.md`. Không giao Codex (§7 trống) |
 | 2026-11-05 | Orca run `run_94559aaee3f0`, coordinator `term_e365d44f-aff4-44ba-816a-c3266f4b9ce6`. agy: dispatch `ctx_27458a7cd08a`, task `task_93dcd070fabe`, terminal `term_ccdf3566-3eea-4d27-baa5-0f2d3feb6bbd` (gemini-3.8-flash-high, turnStart observed) |

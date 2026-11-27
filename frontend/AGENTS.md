@@ -7,7 +7,7 @@ React 19 · Vite 7 · TypeScript · TanStack Router / Query / Table / Form · Zu
 ## Lệnh (chạy trong `frontend/`)
 
 ```bash
-pnpm dev            # :4200, gọi backend theo VITE_API_URL (frontend/.env)
+pnpm dev            # :4500, gọi backend theo VITE_API_URL (frontend/.env)
 pnpm build          # tsc -b + vite build = type-check; cũng sinh lại src/routeTree.gen.ts
 pnpm lint           # eslint (0 error mới được coi là xong; warning cũ chấp nhận)
 pnpm test:e2e tests/e2e/<slug>.spec.ts --reporter=line   # chạy test nghiệm thu của Claude; CẦN backend :9500

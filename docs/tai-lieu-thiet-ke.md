@@ -696,7 +696,7 @@ Quy tắc của `event`:
 | Tải khi chưa đăng nhập | 401 | `UNAUTHORIZED` | Vui lòng đăng nhập để tải LUT |
 | Tải LUT Premium khi không có gói trả phí | 403 | `PLAN_REQUIRED` | LUT Premium cần gói Pro hoặc Studio |
 | LUT hoặc danh mục không có | 404 | `DATA_NOT_FOUND` | Không tìm thấy LUT |
-| Mua đúng gói đang dùng còn hạn | 400 | `PLAN_ACTIVE` | Bạn đang dùng gói này |
+| Hạ gói khi gói cao hơn còn hạn trên 3 ngày | 400 | `PLAN_ACTIVE` | Bạn đang dùng gói Studio, cao hơn gói Pro |
 | Huỷ hoặc thanh toán đơn không còn PENDING | 400 | `ORDER_INVALID_STATUS` | Đơn hàng đã được xử lý |
 | Không tạo được link payOS | 502 | `PAYMENT_GATEWAY_ERROR` | Không kết nối được cổng thanh toán, vui lòng thử lại |
 | Webhook sai chữ ký | 400 | `INVALID_SIGNATURE` | Chỉ ghi log |
@@ -831,7 +831,7 @@ stateDiagram-v2
 | Sự kiện | Xử lý |
 |---|---|
 | Thanh toán gói giống gói đang ACTIVE | Cộng thêm một kỳ vào `end_date` |
-| Thanh toán gói khác (nâng cấp) | Gói cũ chuyển `CANCELLED`, gói mới bắt đầu hôm nay. Bản đầu không tính tiền chênh lệch |
+| Thanh toán gói khác (nâng cấp) | Gói cũ chuyển `CANCELLED`, gói mới bắt đầu hôm nay; giá trị phần còn lại của gói cũ quy đổi thành ngày dùng thêm: floor(số ngày còn lại × giá tháng cũ / giá tháng mới). Số tiền đơn vẫn là giá gói mới. Hạ gói chỉ được khi gói cao hơn còn ≤ 3 ngày |
 | Khách bấm "Huỷ gói" | `auto_renew = 0`, vẫn dùng tới `end_date` |
 | Còn 3 ngày | Menu tài khoản và trang bảng giá hiện nhắc gia hạn (không gửi email) |
 | Quá `end_date` | Tác vụ 00:10 chuyển `EXPIRED`; khách về gói Miễn phí |
@@ -1821,7 +1821,7 @@ Lát 1 và 3 làm song song được. Lát 8 có thể bắt đầu trước lá
 
 | # | Vấn đề | Đề xuất | Chốt ở lát |
 |---|---|---|---|
-| 1 | Nâng cấp giữa kỳ có tính tiền chênh lệch không | Bản đầu không tính | 4 |
+| 1 | Nâng cấp giữa kỳ có tính tiền chênh lệch không | Đã chốt (10/11/2026): không thu chênh lệch, quy đổi phần còn lại thành ngày dùng thêm ở gói mới; gia hạn bất cứ lúc nào | 4 |
 | 2 | Gói Studio 5 thành viên | Cần bảng nhóm, để sau | sau 6 |
 | 3 | Demo thanh toán bằng khoá payOS thật hay chỉ `mock-pay` | Khoá thử nghiệm của payOS | 4 |
 | 4 | Plugin làm thật hay chỉ trình bày thiết kế | Tuỳ thời gian còn lại sau lát 9 | sau 9 |

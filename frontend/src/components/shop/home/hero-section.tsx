@@ -90,7 +90,7 @@ export function HeroSection() {
       className="relative -mt-18 overflow-x-clip bg-(--sh-home-a) px-4 pt-32 pb-24 md:px-8 md:pt-38 md:pb-32"
     >
       {/* Video nền + lớp phủ cùng màu nền để chữ vẫn đọc được ở cả hai theme */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <video
           ref={videoRef}
           src="/home.mp4"
@@ -102,7 +102,7 @@ export function HeroSection() {
         />
         <div className="absolute inset-0 bg-(--sh-home-a)/60" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-b from-transparent to-(--sh-home-a)" />
-      </div>
+      </div> */}
 
       {/* Dải lụa: trên phải nằm sau header trong suốt; dưới trái tràn xuống khối kế tiếp */}
       <img

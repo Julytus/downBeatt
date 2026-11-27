@@ -272,6 +272,6 @@ public class RestService {
             url = "/" + url;
         }
 
-        return String.format("%s%s", "http://localhost:9100", url);
+        return String.format("%s%s", "http://localhost:9500", url);
     }
 }
